@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "707485444506",
+    "project_id": "traiteurmanagement-bdd43",
+    "storage_bucket": "traiteurmanagement-bdd43.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707485444506:android:1ef981e0bb6c06866c3223",
+        "android_client_info": {
+          "package_name": "com.example.traiteur_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRi-t4NSQzRhtHcEWLddLMPRNjmgEbIu8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
