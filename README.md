@@ -1,6 +1,6 @@
 # traiteur_management
 
-A new Flutter project.
+A catering management application
 
 ## Getting Started
 
