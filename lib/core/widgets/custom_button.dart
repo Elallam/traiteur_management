@@ -11,6 +11,7 @@ class CustomButton extends StatelessWidget {
   final double height;
   final IconData? icon;
   final bool outlined;
+  final double? fontSize;
 
   const CustomButton({
     Key? key,
@@ -23,6 +24,8 @@ class CustomButton extends StatelessWidget {
     this.height = 50,
     this.icon,
     this.outlined = false,
+    this.fontSize,
+
   }) : super(key: key);
 
   @override
@@ -82,8 +85,8 @@ class CustomButton extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 8),
+          Icon(icon, size: 15),
+          const SizedBox(width: 4),
           Text(
             text,
             style: TextStyle(

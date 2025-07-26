@@ -12,7 +12,8 @@ import '../../models/meal_model.dart';
 import '../../models/occasion_model.dart';
 import '../../providers/occasion_provider.dart';
 import '../../providers/stock_provider.dart';
-
+import '../../providers/equipment_booking_provider.dart';
+import '../../core/widgets/equipment_availability_widget.dart';
 
 class AddOccasionDialog extends StatefulWidget {
   final OccasionModel? occasion;
@@ -314,7 +315,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.black),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -351,7 +352,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.black),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -432,7 +433,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
                 ),
                 const Spacer(),
                 Text(
-                  '\${totalPrice.toStringAsFixed(2)}',
+                  '${totalPrice.toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -482,7 +483,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '\${meal.sellingPrice.toStringAsFixed(2)} per serving',
+                        '${meal.sellingPrice.toStringAsFixed(2)} per serving',
                         style: const TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
@@ -532,8 +533,8 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildEquipmentTab() {
-    return Consumer<StockProvider>(
-      builder: (context, stockProvider, child) {
+    return Consumer2<StockProvider, EquipmentBookingProvider>(
+      builder: (context, stockProvider, bookingProvider, child) {
         if (stockProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -550,7 +551,27 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
 
         return Column(
           children: [
-            // Selected Equipment Summary
+            // Equipment Availability Widget - NEW
+            EquipmentAvailabilityWidget(
+              occasionDate: DateTime(
+                _selectedDate.year,
+                _selectedDate.month,
+                _selectedDate.day,
+                _selectedTime.hour,
+                _selectedTime.minute,
+              ),
+              selectedEquipment: _selectedEquipment,
+              onEquipmentChanged: (updatedEquipment) {
+                setState(() {
+                  _selectedEquipment = updatedEquipment;
+                });
+              },
+              excludeOccasionId: widget.occasion?.id,
+            ),
+
+            const SizedBox(height: 16),
+
+            // Rest of your existing equipment selection UI
             if (_selectedEquipment.isNotEmpty) ...[
               _buildSelectedEquipmentSummary(),
               const SizedBox(height: 16),
@@ -573,6 +594,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
       },
     );
   }
+
 
   Widget _buildSelectedEquipmentSummary() {
     return Card(
@@ -814,6 +836,36 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
       return;
     }
 
+    // NEW: Validate equipment availability
+    if (_selectedEquipment.isNotEmpty) {
+      final bookingProvider = Provider.of<EquipmentBookingProvider>(context, listen: false);
+
+      final eventDateTime = DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        _selectedTime.hour,
+        _selectedTime.minute,
+      );
+
+      final validation = await bookingProvider.validateEquipmentBooking(
+        equipment: _selectedEquipment,
+        occasionDate: eventDateTime,
+        excludeOccasionId: widget.occasion?.id,
+      );
+
+      if (!validation['isValid']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Equipment availability conflicts detected. Please resolve them first.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        _tabController.animateTo(2); // Switch to equipment tab
+        return;
+      }
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -857,7 +909,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(widget.occasion == null
-                ? 'Event created successfully'
+                ? 'Event created successfully with equipment booking confirmed'
                 : 'Event updated successfully'),
             backgroundColor: AppColors.success,
           ),

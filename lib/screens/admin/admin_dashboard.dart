@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/screens/admin/add_edit_occaion_screen.dart';
 import 'package:traiteur_management/screens/admin/occasion_management.dart';
 import 'package:traiteur_management/screens/admin/profit_analytics_screen.dart';
 import 'package:traiteur_management/screens/admin/stock_management.dart';

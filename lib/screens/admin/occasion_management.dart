@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:traiteur_management/screens/admin/add_edit_occaion_screen.dart';
+import 'package:traiteur_management/screens/admin/enhanced_occasion_details_screen.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../models/occasion_model.dart';
@@ -857,22 +859,18 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
 
   void _showOccasionDetails(OccasionModel occasion) {
     // TODO: Navigate to occasion details screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening details for ${occasion.title}'),
-        backgroundColor: AppColors.info,
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => EnhancedOccasionDetailsScreen(occasion: occasion)));
   }
 
   void _showAddOccasionDialog(BuildContext context, {OccasionModel? occasion}) {
-    // TODO: Show add/edit occasion dialog
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(occasion == null ? 'Opening new event form' : 'Opening edit form'),
-        backgroundColor: AppColors.primary,
-      ),
-    );
+    showDialog(
+      context: context,
+      builder: (context) => AddOccasionDialog(),
+    ).then((result) {
+      if (result == true) {
+        _loadData();
+      }
+    });
   }
 
   void _duplicateOccasion(OccasionModel occasion) {

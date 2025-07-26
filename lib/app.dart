@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/screens/admin/enhanced_admin_dashboard.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/splash_screen.dart';
@@ -61,7 +62,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         if (authProvider.isAuthenticated) {
           if (authProvider.currentUser?.role == 'admin') {
-            return const AdminDashboard();
+            return const EnhancedAdminDashboard();
           } else {
             return const EmployeeDashboard();
           }

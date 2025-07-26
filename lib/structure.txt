@@ -1,0 +1,80 @@
+lib
+¦   app.dart
+¦   firebase_options.dart
+¦   main.dart
+¦   structure.docx
+¦   structure.txt
+¦   
++---core
+¦   +---constants
+¦   ¦       app_colors.dart
+¦   ¦       app_dimensions.dart
+¦   ¦       app_strings.dart
+¦   ¦       
+¦   +---theme
+¦   ¦       app_theme.dart
+¦   ¦       
+¦   +---utils
+¦   ¦       date_utils.dart
+¦   ¦       helpers.dart
+¦   ¦       validators.dart
+¦   ¦       
+¦   +---widgets
+¦           add_article_dialog.dart
+¦           add_edit_equipment_dialog.dart
+¦           add_edit_meal_dialog.dart
+¦           article_details_dialog.dart
+¦           custom_button.dart
+¦           custom_text_field.dart
+¦           equipment_availability_widget.dart
+¦           equipment_booking_calendar_widget.dart
+¦           equipment_details_dialog.dart
+¦           error_widget.dart
+¦           loading_widget.dart
+¦           meal_details_dialog.dart
+¦           
++---models
+¦       article_model.dart
+¦       equipment_model.dart
+¦       meal_model.dart
+¦       occasion_model.dart
+¦       user_model.dart
+¦       
++---providers
+¦       auth_provider.dart
+¦       employee_provider.dart
+¦       equipment_booking_provider.dart
+¦       occasion_provider.dart
+¦       stock_provider.dart
+¦       
++---routes
+¦       app_routes.dart
+¦       
++---screens
+¦   +---admin
+¦   ¦       add_edit_occaion_screen.dart
+¦   ¦       admin_dashboard.dart
+¦   ¦       dashboard_notifications_screen.dart
+¦   ¦       employee_management.dart
+¦   ¦       enhanced_admin_dashboard.dart
+¦   ¦       enhanced_occasion_details_screen.dart
+¦   ¦       occasion_details_screen.dart
+¦   ¦       occasion_management.dart
+¦   ¦       profit_analytics_screen.dart
+¦   ¦       stock_management.dart
+¦   ¦       
+¦   +---auth
+¦   ¦       login_screen.dart
+¦   ¦       splash_screen.dart
+¦   ¦       
+¦   +---employee
+¦           employee_dashboard.dart
+¦           equipment_checkout.dart
+¦           
++---services
+        auth_service.dart
+        equipment_booking_service.dart
+        firestore_service.dart
+        notification_service.dart
+        storage_service.dart
+        

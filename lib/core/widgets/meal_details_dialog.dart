@@ -157,11 +157,11 @@ class MealDetailsDialog extends StatelessWidget {
                     // Pricing info
                     Row(
                       children: [
-                        _buildInfoChip('Cost', '\$${meal.calculatedPrice.toStringAsFixed(2)}'),
+                        _buildInfoChip('Cost', '${meal.calculatedPrice.toStringAsFixed(2)}'),
                         const SizedBox(width: 8),
-                        _buildInfoChip('Price', '\$${meal.sellingPrice.toStringAsFixed(2)}'),
+                        _buildInfoChip('Price', '${meal.sellingPrice.toStringAsFixed(2)}'),
                         const SizedBox(width: 8),
-                        _buildInfoChip('Profit', '\$${meal.profitMargin.toStringAsFixed(2)}'),
+                        _buildInfoChip('Profit', '${meal.profitMargin.toStringAsFixed(2)}'),
                       ],
                     ),
                     const SizedBox(height: 16),
