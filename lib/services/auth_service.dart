@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -34,6 +35,21 @@ class AuthService {
     }
   }
 
+  Future<FirebaseApp> getSecondaryFirebaseApp() async {
+    return await Firebase.initializeApp(
+      name: 'Secondary',
+      options: Firebase.app().options,
+    );
+  }
+
+  Future<UserCredential> createUser(String email, String password) async {
+    FirebaseApp secondaryApp = await getSecondaryFirebaseApp();
+    FirebaseAuth secondaryAuth = FirebaseAuth.instanceFor(app: secondaryApp);
+
+    return await secondaryAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
+  }
+
   // Create user account (Admin only function)
   Future<UserModel?> createUserAccount({
     required String fullName,
@@ -44,10 +60,8 @@ class AuthService {
     required String role,
   }) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential result =
+      await createUser(email, password);
 
       if (result.user != null) {
         // Create user document in Firestore

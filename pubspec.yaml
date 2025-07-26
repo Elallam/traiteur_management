@@ -33,6 +33,9 @@ dependencies:
 
   # Form validation
   email_validator: ^2.1.17
+  firebase_app_check: ^0.2.2
+  url_launcher: ^6.3.2
+
 
 dev_dependencies:
   flutter_test:

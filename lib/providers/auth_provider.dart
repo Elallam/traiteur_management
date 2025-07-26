@@ -95,6 +95,8 @@ class AuthProvider extends ChangeNotifier {
         role: role,
       );
 
+
+
       if (newUser != null) {
         _setLoading(false);
         return true;
