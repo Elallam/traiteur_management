@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:traiteur_management/screens/admin/occasion_management.dart';
+import 'package:traiteur_management/screens/admin/profit_analytics_screen.dart';
 import 'package:traiteur_management/screens/admin/stock_management.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
@@ -434,21 +435,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
   void _navigateToSection(int index) {
     switch (index) {
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => EmployeeManagementScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const EmployeeManagementScreen()));
         break;
       case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => StockManagementScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const StockManagementScreen()));
         break;
       case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (_) => OccasionManagementScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const OccasionManagementScreen()));
         break;
       case 3:
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${_dashboardItems[index].title} - Coming soon'),
-            backgroundColor: AppColors.info,
-          ),
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfitAnalyticsScreen()));
         break;
     }
   }
