@@ -1,15 +1,22 @@
-lib
+Folder PATH listing for volume OS
+Volume serial number is 00000080 3065:E17F
+C:.
 ¦   app.dart
 ¦   firebase_options.dart
 ¦   main.dart
-¦   structure.docx
 ¦   structure.txt
 ¦   
 +---core
+¦   ¦   form_validators.dart
+¦   ¦   
 ¦   +---constants
 ¦   ¦       app_colors.dart
 ¦   ¦       app_dimensions.dart
 ¦   ¦       app_strings.dart
+¦   ¦       
+¦   +---error
+¦   ¦       app_error.dart
+¦   ¦       error_handler.dart
 ¦   ¦       
 ¦   +---theme
 ¦   ¦       app_theme.dart
@@ -17,6 +24,10 @@ lib
 ¦   +---utils
 ¦   ¦       date_utils.dart
 ¦   ¦       helpers.dart
+¦   ¦       optimized_future_builder.dart
+¦   ¦       optimized_tab_bar.dart
+¦   ¦       performance_utils.dart
+¦   ¦       smart_refresher.dart
 ¦   ¦       validators.dart
 ¦   ¦       
 ¦   +---widgets
@@ -29,6 +40,7 @@ lib
 ¦           equipment_availability_widget.dart
 ¦           equipment_booking_calendar_widget.dart
 ¦           equipment_details_dialog.dart
+¦           error_boundary.dart
 ¦           error_widget.dart
 ¦           loading_widget.dart
 ¦           meal_details_dialog.dart
@@ -37,6 +49,7 @@ lib
 ¦       article_model.dart
 ¦       equipment_model.dart
 ¦       meal_model.dart
+¦       mock_usercredential.dart
 ¦       occasion_model.dart
 ¦       user_model.dart
 ¦       
@@ -69,6 +82,7 @@ lib
 ¦   ¦       
 ¦   +---employee
 ¦           employee_dashboard.dart
+¦           equipment_activity_screen.dart
 ¦           equipment_checkout.dart
 ¦           
 +---services

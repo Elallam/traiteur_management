@@ -1,27 +1,142 @@
+// lib/screens/employee/enhanced_employee_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
+import '../../core/widgets/loading_widget.dart';
+import '../../models/equipment_model.dart';
+import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/firestore_service.dart';
+import 'equipment_checkout.dart';
 
 class EmployeeDashboard extends StatefulWidget {
-  const EmployeeDashboard({Key? key}) : super(key: key);
+  const EmployeeDashboard({super.key});
 
   @override
   State<EmployeeDashboard> createState() => _EmployeeDashboardState();
 }
 
 class _EmployeeDashboardState extends State<EmployeeDashboard> {
-  final List<EquipmentItem> _checkedOutEquipment = [
-    EquipmentItem(name: 'Chairs', quantity: 10, checkedOut: DateTime.now().subtract(const Duration(hours: 2))),
-    EquipmentItem(name: 'Tables', quantity: 5, checkedOut: DateTime.now().subtract(const Duration(hours: 1))),
-  ];
+  final FirestoreService _firestoreService = FirestoreService();
+
+  List<EquipmentCheckout> _myCheckouts = [];
+  List<Map<String, dynamic>> _recentActivity = [];
+  Map<String, dynamic> _stats = {};
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDashboardData();
+  }
+
+  Future<void> _loadDashboardData() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final UserModel? currentUser = authProvider.currentUser;
+
+      if (currentUser != null) {
+        await Future.wait([
+          _loadMyCheckouts(currentUser.id),
+          _loadRecentActivity(currentUser.id),
+          _loadStats(currentUser.id),
+        ]);
+      }
+    } catch (e) {
+      _showErrorSnackBar('Failed to load dashboard data: $e');
+    }
+
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _loadMyCheckouts(String employeeId) async {
+    _myCheckouts = await _firestoreService.getEmployeeCheckouts(employeeId);
+    // Only show active checkouts (not returned)
+    _myCheckouts = _myCheckouts.where((checkout) => checkout.status == 'checked_out').toList();
+    _myCheckouts.sort((a, b) => b.checkoutDate.compareTo(a.checkoutDate));
+  }
+
+  Future<void> _loadRecentActivity(String employeeId) async {
+    List<EquipmentCheckout> allCheckouts = await _firestoreService.getEmployeeCheckouts(employeeId);
+
+    // Create activity entries from checkouts
+    _recentActivity = allCheckouts.take(10).map((checkout) {
+      return {
+        'type': checkout.status == 'returned' ? 'return' : 'checkout',
+        'equipmentName': 'Loading...', // Will be loaded separately
+        'equipmentId': checkout.equipmentId,
+        'quantity': checkout.quantity,
+        'date': checkout.status == 'returned' ? checkout.returnDate ?? checkout.checkoutDate : checkout.checkoutDate,
+        'status': checkout.status,
+      };
+    }).toList();
+
+    // Load equipment names for activities
+    for (var activity in _recentActivity) {
+      try {
+        EquipmentModel equipment = await _firestoreService.getEquipmentById(activity['equipmentId']);
+        activity['equipmentName'] = equipment.name;
+      } catch (e) {
+        activity['equipmentName'] = 'Unknown Equipment';
+      }
+    }
+
+    _recentActivity.sort((a, b) => (b['date'] as DateTime).compareTo(a['date'] as DateTime));
+  }
+
+  Future<void> _loadStats(String employeeId) async {
+    Map<String, dynamic> summary = await _firestoreService.getEmployeeCheckoutSummary(employeeId);
+    _stats = summary;
+  }
+
+  Future<void> _returnEquipment(EquipmentCheckout checkout) async {
+    try {
+      // Update checkout status
+      EquipmentCheckout updatedCheckout = checkout.copyWith(
+        status: 'returned',
+        returnDate: DateTime.now(),
+      );
+      await _firestoreService.updateEquipmentCheckout(updatedCheckout);
+
+      // Get current equipment data
+      EquipmentModel equipment = await _firestoreService.getEquipmentById(checkout.equipmentId);
+
+      // Update equipment availability
+      EquipmentModel updatedEquipment = equipment.copyWith(
+        availableQuantity: equipment.availableQuantity + checkout.quantity,
+        updatedAt: DateTime.now(),
+      );
+      await _firestoreService.updateEquipment(updatedEquipment);
+
+      // Refresh dashboard data
+      await _loadDashboardData();
+
+      _showSuccessSnackBar('Equipment returned successfully');
+    } catch (e) {
+      _showErrorSnackBar('Failed to return equipment: $e');
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: AppColors.error),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: AppColors.success),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _buildBody(),
+      body: _isLoading ? const LoadingWidget() : _buildBody(),
       floatingActionButton: _buildFloatingActionButton(),
       drawer: _buildDrawer(),
     );
@@ -32,10 +147,34 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
       title: const Text('Employee Dashboard'),
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications),
-          onPressed: () {
-            // TODO: Implement notifications
-          },
+          icon: Stack(
+            children: [
+              const Icon(Icons.notifications_outlined),
+              if (_stats['overdueItems'] != null && _stats['overdueItems'] > 0)
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: AppColors.error,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    child: Text(
+                      '${_stats['overdueItems']}',
+                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          onPressed: _showNotifications,
+        ),
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: _loadDashboardData,
         ),
       ],
     );
@@ -44,29 +183,25 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
   Widget _buildBody() {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Welcome Section
-              _buildWelcomeSection(authProvider),
-
-              const SizedBox(height: 24),
-
-              // Quick Actions
-              _buildQuickActions(),
-
-              const SizedBox(height: 24),
-
-              // Current Checkout Status
-              _buildCheckoutStatus(),
-
-              const SizedBox(height: 24),
-
-              // Recent Activity
-              _buildRecentActivity(),
-            ],
+        return RefreshIndicator(
+          onRefresh: _loadDashboardData,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildWelcomeSection(authProvider),
+                const SizedBox(height: 24),
+                _buildStatsCards(),
+                const SizedBox(height: 24),
+                _buildQuickActions(),
+                const SizedBox(height: 24),
+                _buildActiveCheckouts(),
+                const SizedBox(height: 24),
+                _buildRecentActivity(),
+              ],
+            ),
           ),
         );
       },
@@ -75,17 +210,18 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
 
   Widget _buildWelcomeSection(AuthProvider authProvider) {
     return Card(
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundColor: AppColors.secondary,
+              backgroundColor: AppColors.primary,
               child: Text(
                 authProvider.currentUser?.fullName.substring(0, 1).toUpperCase() ?? 'E',
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -97,7 +233,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hello,',
+                    'Welcome back,',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -109,14 +245,105 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                     ),
                   ),
                   Text(
-                    'Ready to serve excellence',
+                    'Ready to manage equipment',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.secondary,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
+            ),
+            if (_stats['overdueItems'] != null && _stats['overdueItems'] > 0)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                ),
+                child: Text(
+                  '${_stats['overdueItems']} overdue',
+                  style: const TextStyle(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsCards() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatCard(
+            title: 'Active Checkouts',
+            value: '${_stats['activeCheckouts'] ?? 0}',
+            icon: Icons.shopping_cart,
+            color: AppColors.warning,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildStatCard(
+            title: 'Total Returns',
+            value: '${_stats['returnedItems'] ?? 0}',
+            icon: Icons.assignment_return,
+            color: AppColors.success,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildStatCard(
+            title: 'Total Checkouts',
+            value: '${_stats['totalCheckouts'] ?? 0}',
+            icon: Icons.history,
+            color: AppColors.info,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -141,23 +368,20 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               child: _buildActionCard(
                 title: 'Checkout Equipment',
                 subtitle: 'Take items for event',
-                icon: Icons.shopping_cart,
+                icon: Icons.add_shopping_cart,
                 color: AppColors.primary,
-                onTap: () {
-                  _showCheckoutDialog();
-                },
+                onTap: _navigateToCheckout,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildActionCard(
-                title: 'Return Equipment',
-                subtitle: 'Return used items',
+                title: 'Quick Return',
+                subtitle: 'Return multiple items',
                 icon: Icons.assignment_return,
                 color: AppColors.success,
-                onTap: () {
-                  _showReturnDialog();
-                },
+                onTap: _showQuickReturnDialog,
+                enabled: _myCheckouts.isNotEmpty,
               ),
             ),
           ],
@@ -172,51 +396,51 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     required IconData icon,
     required Color color,
     required VoidCallback onTap,
+    bool enabled = true,
   }) {
     return Card(
       child: InkWell(
-        onTap: onTap,
+        onTap: enabled ? onTap : null,
         borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+        child: Opacity(
+          opacity: enabled ? 1.0 : 0.5,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, size: 28, color: color),
                 ),
-                child: Icon(
-                  icon,
-                  size: 28,
-                  color: color,
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCheckoutStatus() {
+  Widget _buildActiveCheckouts() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -224,29 +448,28 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Currently Checked Out',
+              'Active Checkouts',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (_checkedOutEquipment.isNotEmpty)
-              Chip(
-                label: Text('${_checkedOutEquipment.length} items'),
-                backgroundColor: AppColors.warning.withOpacity(0.2),
-                labelStyle: const TextStyle(color: AppColors.warning),
+            if (_myCheckouts.isNotEmpty)
+              TextButton(
+                onPressed: _showAllCheckouts,
+                child: const Text('View All'),
               ),
           ],
         ),
         const SizedBox(height: 12),
-        if (_checkedOutEquipment.isEmpty)
-          _buildEmptyCheckout()
+        if (_myCheckouts.isEmpty)
+          _buildEmptyCheckouts()
         else
-          _buildEquipmentList(),
+          _buildCheckoutsList(),
       ],
     );
   }
 
-  Widget _buildEmptyCheckout() {
+  Widget _buildEmptyCheckouts() {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -259,14 +482,14 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No equipment checked out',
+              'No active checkouts',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'All clear! You have no items currently checked out.',
+              'All equipment has been returned.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -278,32 +501,75 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     );
   }
 
-  Widget _buildEquipmentList() {
+  Widget _buildCheckoutsList() {
     return Card(
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: _checkedOutEquipment.length,
+        itemCount: _myCheckouts.take(5).length, // Show only first 5
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
-          final item = _checkedOutEquipment[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: AppColors.warning.withOpacity(0.1),
-              child: Icon(
-                Icons.inventory,
-                color: AppColors.warning,
-                size: 20,
-              ),
-            ),
-            title: Text(item.name),
-            subtitle: Text('Quantity: ${item.quantity} • ${_formatDuration(item.checkedOut)}'),
-            trailing: IconButton(
-              icon: const Icon(Icons.assignment_return),
-              onPressed: () {
-                _returnItem(index);
-              },
-            ),
+          final checkout = _myCheckouts[index];
+          return FutureBuilder<EquipmentModel>(
+            future: _firestoreService.getEquipmentById(checkout.equipmentId),
+            builder: (context, snapshot) {
+              String equipmentName = snapshot.data?.name ?? 'Loading...';
+
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: checkout.isOverdue
+                      ? AppColors.error.withOpacity(0.1)
+                      : AppColors.warning.withOpacity(0.1),
+                  child: Icon(
+                    Icons.inventory,
+                    color: checkout.isOverdue ? AppColors.error : AppColors.warning,
+                    size: 20,
+                  ),
+                ),
+                title: Text(equipmentName),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Quantity: ${checkout.quantity}'),
+                    Text(
+                      'Checked out ${_formatDuration(checkout.checkoutDate)}',
+                      style: TextStyle(
+                        color: checkout.isOverdue ? AppColors.error : AppColors.textSecondary,
+                        fontWeight: checkout.isOverdue ? FontWeight.w500 : null,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (checkout.isOverdue)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'OVERDUE',
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.assignment_return),
+                      onPressed: () => _showReturnConfirmation(checkout),
+                      tooltip: 'Return equipment',
+                    ),
+                  ],
+                ),
+                isThreeLine: true,
+              );
+            },
           );
         },
       ),
@@ -321,41 +587,74 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           ),
         ),
         const SizedBox(height: 12),
-        Card(
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
-            separatorBuilder: (context, index) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.secondary.withOpacity(0.1),
-                  child: Icon(
-                    index == 0 ? Icons.shopping_cart : Icons.assignment_return,
-                    color: AppColors.secondary,
-                    size: 20,
+        if (_recentActivity.isEmpty)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.history,
+                    size: 48,
+                    color: Colors.grey[400],
                   ),
-                ),
-                title: Text(index == 0 ? 'Checked out 5 tables' : 'Returned 10 chairs'),
-                subtitle: Text('${index + 1}h ago'),
-                trailing: Icon(
-                  Icons.check_circle,
-                  color: AppColors.success,
-                  size: 16,
-                ),
-              );
-            },
+                  const SizedBox(height: 16),
+                  Text(
+                    'No recent activity',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          Card(
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _recentActivity.take(5).length,
+              separatorBuilder: (context, index) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final activity = _recentActivity[index];
+                final isReturn = activity['type'] == 'return';
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: isReturn
+                        ? AppColors.success.withOpacity(0.1)
+                        : AppColors.primary.withOpacity(0.1),
+                    child: Icon(
+                      isReturn ? Icons.assignment_return : Icons.shopping_cart,
+                      color: isReturn ? AppColors.success : AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                  title: Text(
+                    '${isReturn ? 'Returned' : 'Checked out'} ${activity['equipmentName']}',
+                  ),
+                  subtitle: Text('Quantity: ${activity['quantity']}'),
+                  trailing: Text(
+                    _formatDuration(activity['date']),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
 
   Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: _showCheckoutDialog,
-      child: const Icon(Icons.add_shopping_cart),
+    return FloatingActionButton.extended(
+      onPressed: _navigateToCheckout,
+      icon: const Icon(Icons.add_shopping_cart),
+      label: const Text('Checkout'),
+      backgroundColor: AppColors.primary,
     );
   }
 
@@ -368,18 +667,22 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
             children: [
               DrawerHeader(
                 decoration: const BoxDecoration(
-                  color: AppColors.secondary,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [AppColors.primary, AppColors.secondary],
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
                       radius: 30,
-                      backgroundColor: AppColors.white,
+                      backgroundColor: Colors.white,
                       child: Text(
                         authProvider.currentUser?.fullName.substring(0, 1).toUpperCase() ?? 'E',
                         style: const TextStyle(
-                          color: AppColors.secondary,
+                          color: AppColors.primary,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -389,7 +692,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                     Text(
                       authProvider.currentUser?.fullName ?? 'Employee',
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -397,7 +700,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                     Text(
                       authProvider.currentUser?.email ?? '',
                       style: TextStyle(
-                        color: AppColors.white.withOpacity(0.8),
+                        color: Colors.white.withOpacity(0.8),
                         fontSize: 14,
                       ),
                     ),
@@ -407,16 +710,15 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               ListTile(
                 leading: const Icon(Icons.dashboard),
                 title: const Text('Dashboard'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
+                selected: true,
+                onTap: () => Navigator.pop(context),
               ),
               ListTile(
-                leading: const Icon(Icons.shopping_cart),
+                leading: const Icon(Icons.add_shopping_cart),
                 title: const Text('Checkout Equipment'),
                 onTap: () {
                   Navigator.pop(context);
-                  _showCheckoutDialog();
+                  _navigateToCheckout();
                 },
               ),
               ListTile(
@@ -424,15 +726,16 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                 title: const Text('Return Equipment'),
                 onTap: () {
                   Navigator.pop(context);
-                  _showReturnDialog();
+                  _showQuickReturnDialog();
                 },
+                enabled: _myCheckouts.isNotEmpty,
               ),
               ListTile(
                 leading: const Icon(Icons.history),
                 title: const Text('My Activity'),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Navigate to activity history
+                  _showAllCheckouts();
                 },
               ),
               const Divider(),
@@ -445,8 +748,17 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Sign Out'),
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Navigate to settings
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.logout, color: AppColors.error),
+                title: const Text('Sign Out', style: TextStyle(color: AppColors.error)),
                 onTap: () async {
                   Navigator.pop(context);
                   await authProvider.signOut();
@@ -459,58 +771,60 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     );
   }
 
-  void _showCheckoutDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Checkout Equipment'),
-        content: const Text('Equipment checkout functionality will be implemented in Phase 4.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
+  // Navigation and dialog methods
+  void _navigateToCheckout() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const EquipmentCheckoutScreen(),
       ),
-    );
+    ).then((result) {
+      if (result == true) {
+        _loadDashboardData(); // Refresh data after successful checkout
+      }
+    });
   }
 
-  void _showReturnDialog() {
-    if (_checkedOutEquipment.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No equipment to return'),
-          backgroundColor: AppColors.info,
-        ),
-      );
+  void _showQuickReturnDialog() {
+    if (_myCheckouts.isEmpty) {
+      _showErrorSnackBar('No equipment to return');
       return;
     }
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Return Equipment'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Select equipment to return:'),
-            const SizedBox(height: 16),
-            ..._checkedOutEquipment.asMap().entries.map((entry) {
-              int index = entry.key;
-              EquipmentItem item = entry.value;
-              return ListTile(
-                title: Text(item.name),
-                subtitle: Text('Quantity: ${item.quantity}'),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _returnItem(index);
-                  },
-                  child: const Text('Return'),
-                ),
+        title: const Text('Quick Return'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: _myCheckouts.length,
+            itemBuilder: (context, index) {
+              final checkout = _myCheckouts[index];
+              return FutureBuilder<EquipmentModel>(
+                future: _firestoreService.getEquipmentById(checkout.equipmentId),
+                builder: (context, snapshot) {
+                  String equipmentName = snapshot.data?.name ?? 'Loading...';
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: ListTile(
+                      title: Text(equipmentName),
+                      subtitle: Text('Quantity: ${checkout.quantity}'),
+                      trailing: checkout.isOverdue
+                          ? const Icon(Icons.warning, color: AppColors.error)
+                          : null,
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showReturnConfirmation(checkout);
+                      },
+                    ),
+                  );
+                },
               );
-            }).toList(),
-          ],
+            },
+          ),
         ),
         actions: [
           TextButton(
@@ -522,36 +836,170 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     );
   }
 
-  void _returnItem(int index) {
-    setState(() {
-      _checkedOutEquipment.removeAt(index);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Equipment returned successfully'),
-        backgroundColor: AppColors.success,
+  void _showReturnConfirmation(EquipmentCheckout checkout) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Return'),
+        content: FutureBuilder<EquipmentModel>(
+          future: _firestoreService.getEquipmentById(checkout.equipmentId),
+          builder: (context, snapshot) {
+            String equipmentName = snapshot.data?.name ?? 'Loading...';
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Are you sure you want to return this equipment?'),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Equipment: $equipmentName', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Quantity: ${checkout.quantity}'),
+                      Text('Checked out: ${_formatDuration(checkout.checkoutDate)}'),
+                      if (checkout.isOverdue)
+                        const Text('Status: OVERDUE', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _returnEquipment(checkout);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
+            child: const Text('Return'),
+          ),
+        ],
       ),
     );
   }
 
-  String _formatDuration(DateTime checkedOut) {
-    final duration = DateTime.now().difference(checkedOut);
-    if (duration.inHours > 0) {
+  void _showAllCheckouts() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: const Text('My Equipment History')),
+          body: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: _recentActivity.length,
+            itemBuilder: (context, index) {
+              final activity = _recentActivity[index];
+              final isReturn = activity['type'] == 'return';
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: isReturn
+                        ? AppColors.success.withOpacity(0.1)
+                        : AppColors.primary.withOpacity(0.1),
+                    child: Icon(
+                      isReturn ? Icons.assignment_return : Icons.shopping_cart,
+                      color: isReturn ? AppColors.success : AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                  title: Text(activity['equipmentName']),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${isReturn ? 'Returned' : 'Checked out'} • Quantity: ${activity['quantity']}'),
+                      Text(_formatDateTime(activity['date'])),
+                    ],
+                  ),
+                  isThreeLine: true,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showNotifications() {
+    List<Map<String, dynamic>> notifications = [];
+
+    // Add overdue notifications
+    for (var checkout in _myCheckouts.where((c) => c.isOverdue)) {
+      notifications.add({
+        'type': 'overdue',
+        'title': 'Equipment Overdue',
+        'message': 'Equipment checked out ${_formatDuration(checkout.checkoutDate)} ago',
+        'checkout': checkout,
+      });
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Notifications'),
+        content: notifications.isEmpty
+            ? const Text('No new notifications')
+            : SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final notification = notifications[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: const Icon(Icons.warning, color: AppColors.error),
+                  title: Text(notification['title']),
+                  subtitle: Text(notification['message']),
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (notification['checkout'] != null) {
+                      _showReturnConfirmation(notification['checkout']);
+                    }
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDuration(DateTime dateTime) {
+    final duration = DateTime.now().difference(dateTime);
+    if (duration.inDays > 0) {
+      return '${duration.inDays}d ago';
+    } else if (duration.inHours > 0) {
       return '${duration.inHours}h ago';
     } else {
       return '${duration.inMinutes}m ago';
     }
   }
-}
 
-class EquipmentItem {
-  final String name;
-  final int quantity;
-  final DateTime checkedOut;
-
-  EquipmentItem({
-    required this.name,
-    required this.quantity,
-    required this.checkedOut,
-  });
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
 }

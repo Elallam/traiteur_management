@@ -26,6 +26,23 @@ class _StockManagementScreenState extends State<StockManagementScreen>
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
+  final Map<String, String?> _selectedCategories = {
+    'articles': null,
+    'equipment': null,
+    'meals': null,
+  };
+
+  // Add this method to handle category selection
+  void handleCategorySelected(String type, String? category) {
+    setState(() {
+      _selectedCategories[type] = category;
+    });
+
+    // Refresh the data with the new filter
+    final stockProvider = Provider.of<StockProvider>(context, listen: false);
+    stockProvider.applyCategoryFilters(_selectedCategories);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -159,9 +176,21 @@ class _StockManagementScreenState extends State<StockManagementScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  ArticlesTab(searchQuery: _searchQuery),
-                  EquipmentTab(searchQuery: _searchQuery),
-                  MealsTab(searchQuery: _searchQuery),
+                  ArticlesTab(
+                    searchQuery: _searchQuery,
+                    selectedCategory: _selectedCategories['articles'],
+                    onCategorySelected: (category) => handleCategorySelected('articles', category),
+                  ),
+                  EquipmentTab(
+                    searchQuery: _searchQuery,
+                    selectedCategory: _selectedCategories['equipment'],
+                    onCategorySelected: (category) => handleCategorySelected('equipment', category),
+                  ),
+                  MealsTab(
+                    searchQuery: _searchQuery,
+                    selectedCategory: _selectedCategories['meals'],
+                    onCategorySelected: (category) => handleCategorySelected('meals', category),
+                  ),
                 ],
               ),
             ),
@@ -290,28 +319,38 @@ class _StockManagementScreenState extends State<StockManagementScreen>
 // Articles Tab
 class ArticlesTab extends StatelessWidget {
   final String searchQuery;
+  final String? selectedCategory;
+  final Function(String?) onCategorySelected;
 
-  const ArticlesTab({Key? key, required this.searchQuery}) : super(key: key);
+  const ArticlesTab({
+    super.key,
+    required this.searchQuery,
+    required this.selectedCategory,
+    required this.onCategorySelected,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Consumer<StockProvider>(
       builder: (context, stockProvider, child) {
-        List<ArticleModel> articles = searchQuery.isEmpty
-            ? stockProvider.articles
-            : stockProvider.searchArticles(searchQuery);
+        List<ArticleModel> articles = _getFilteredArticles(stockProvider);
 
         return Column(
           children: [
             // Filter Chips
-            _buildCategoryFilters(stockProvider.articleCategories, 'articles'),
+            _buildCategoryFilters(
+              stockProvider.articleCategories,
+              'articles',
+              selectedCategory,
+              onCategorySelected,
+            ),
             // Articles List
             Expanded(
               child: articles.isEmpty
                   ? _buildEmptyState(
                 'No articles found',
-                searchQuery.isNotEmpty
-                    ? 'Try adjusting your search'
+                searchQuery.isNotEmpty || selectedCategory != null
+                    ? 'Try adjusting your search or filters'
                     : 'Add your first article to get started',
                 Icons.inventory_2,
                     () => _showAddArticleDialog(context),
@@ -331,6 +370,22 @@ class ArticlesTab extends StatelessWidget {
         );
       },
     );
+  }
+
+  List<ArticleModel> _getFilteredArticles(StockProvider stockProvider) {
+    List<ArticleModel> articles = stockProvider.filteredArticles;
+
+    // Apply search filter
+    if (searchQuery.isNotEmpty) {
+      articles = stockProvider.searchArticles(searchQuery);
+    }
+
+    // Apply category filter
+    if (selectedCategory != null) {
+      articles = articles.where((article) => article.category == selectedCategory).toList();
+    }
+
+    return articles;
   }
 
   Widget _buildArticleCard(BuildContext context, ArticleModel article, StockProvider stockProvider) {
@@ -524,23 +579,6 @@ class ArticlesTab extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoChip(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.greyLight.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        '$label: $value',
-        style: const TextStyle(
-          fontSize: 12,
-          color: AppColors.textSecondary,
-        ),
-      ),
-    );
-  }
-
   void _handleArticleAction(BuildContext context, String action, ArticleModel article, StockProvider stockProvider) {
     switch (action) {
       case 'view':
@@ -684,28 +722,38 @@ class ArticlesTab extends StatelessWidget {
 // Equipment Tab
 class EquipmentTab extends StatelessWidget {
   final String searchQuery;
+  final String? selectedCategory;
+  final Function(String?) onCategorySelected;
 
-  const EquipmentTab({Key? key, required this.searchQuery}) : super(key: key);
+  const EquipmentTab({
+    Key? key,
+    required this.searchQuery,
+    required this.selectedCategory,
+    required this.onCategorySelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Consumer<StockProvider>(
       builder: (context, stockProvider, child) {
-        List<EquipmentModel> equipment = searchQuery.isEmpty
-            ? stockProvider.equipment
-            : stockProvider.searchEquipment(searchQuery);
+        List<EquipmentModel> equipment = _getFilteredEquipment(stockProvider);
 
         return Column(
           children: [
             // Filter Chips
-            _buildCategoryFilters(stockProvider.equipmentCategories, 'equipment'),
+            _buildCategoryFilters(
+              stockProvider.equipmentCategories,
+              'equipment',
+              selectedCategory,
+              onCategorySelected,
+            ),
             // Equipment List
             Expanded(
               child: equipment.isEmpty
                   ? _buildEmptyState(
                 'No equipment found',
-                searchQuery.isNotEmpty
-                    ? 'Try adjusting your search'
+                searchQuery.isNotEmpty || selectedCategory != null
+                    ? 'Try adjusting your search or filters'
                     : 'Add your first equipment to get started',
                 Icons.build,
                     () => _showAddEquipmentDialog(context),
@@ -725,6 +773,22 @@ class EquipmentTab extends StatelessWidget {
         );
       },
     );
+  }
+
+  List<EquipmentModel> _getFilteredEquipment(StockProvider stockProvider) {
+    List<EquipmentModel> equipment = stockProvider.equipment;
+
+    // Apply search filter
+    if (searchQuery.isNotEmpty) {
+      equipment = stockProvider.searchEquipment(searchQuery);
+    }
+
+    // Apply category filter
+    if (selectedCategory != null) {
+      equipment = equipment.where((item) => item.category == selectedCategory).toList();
+    }
+
+    return equipment;
   }
 
   Widget _buildEquipmentCard(BuildContext context, EquipmentModel equipment, StockProvider stockProvider) {
@@ -1079,28 +1143,38 @@ class EquipmentTab extends StatelessWidget {
 // Meals Tab
 class MealsTab extends StatelessWidget {
   final String searchQuery;
+  final String? selectedCategory;
+  final Function(String?) onCategorySelected;
 
-  const MealsTab({Key? key, required this.searchQuery}) : super(key: key);
+  const MealsTab({
+    Key? key,
+    required this.searchQuery,
+    required this.selectedCategory,
+    required this.onCategorySelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Consumer<StockProvider>(
       builder: (context, stockProvider, child) {
-        List<MealModel> meals = searchQuery.isEmpty
-            ? stockProvider.meals
-            : stockProvider.searchMeals(searchQuery);
+        List<MealModel> meals = _getFilteredMeals(stockProvider);
 
         return Column(
           children: [
             // Filter Chips
-            _buildCategoryFilters(stockProvider.mealCategories, 'meals'),
+            _buildCategoryFilters(
+              stockProvider.mealCategories,
+              'meals',
+              selectedCategory,
+              onCategorySelected,
+            ),
             // Meals List
             Expanded(
               child: meals.isEmpty
                   ? _buildEmptyState(
                 'No meals found',
-                searchQuery.isNotEmpty
-                    ? 'Try adjusting your search'
+                searchQuery.isNotEmpty || selectedCategory != null
+                    ? 'Try adjusting your search or filters'
                     : 'Add your first meal to get started',
                 Icons.restaurant,
                     () => _showAddMealDialog(context),
@@ -1120,6 +1194,22 @@ class MealsTab extends StatelessWidget {
         );
       },
     );
+  }
+
+  List<MealModel> _getFilteredMeals(StockProvider stockProvider) {
+    List<MealModel> meals = stockProvider.meals;
+
+    // Apply search filter
+    if (searchQuery.isNotEmpty) {
+      meals = stockProvider.searchMeals(searchQuery);
+    }
+
+    // Apply category filter
+    if (selectedCategory != null) {
+      meals = meals.where((meal) => meal.category == selectedCategory).toList();
+    }
+
+    return meals;
   }
 
   Widget _buildMealCard(BuildContext context, MealModel meal, StockProvider stockProvider) {
@@ -1284,6 +1374,7 @@ class MealsTab extends StatelessWidget {
               const SizedBox(height: 12),
               // Pricing Info
               SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     _buildInfoChip('Cost', meal.calculatedPrice.toStringAsFixed(2)),
@@ -1293,7 +1384,7 @@ class MealsTab extends StatelessWidget {
                     _buildInfoChip('Profit', meal.profitMargin.toStringAsFixed(2)),
                     const SizedBox(width: 8),
                     _buildInfoChip('Servings', meal.servings.toString()),
-                    const Spacer(),
+                    const SizedBox(width: 8),
                     if (!canBePrepared && meal.isAvailable)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -1460,7 +1551,12 @@ class MealsTab extends StatelessWidget {
 }
 
 // Common helper widgets and functions
-Widget _buildCategoryFilters(List<String> categories, String type) {
+Widget _buildCategoryFilters(
+    List<String> categories,
+    String type,
+    String? selectedCategory,
+    Function(String?) onCategorySelected,
+    ) {
   if (categories.isEmpty) return const SizedBox.shrink();
 
   return Container(
@@ -1476,9 +1572,9 @@ Widget _buildCategoryFilters(List<String> categories, String type) {
               padding: const EdgeInsets.only(right: 8),
               child: FilterChip(
                 label: const Text('All'),
-                selected: true, // TODO: Implement category filtering
+                selected: selectedCategory == null,
                 onSelected: (selected) {
-                  // TODO: Implement category filtering
+                  onCategorySelected(null);
                 },
               ),
             );
@@ -1489,9 +1585,9 @@ Widget _buildCategoryFilters(List<String> categories, String type) {
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
               label: Text(category),
-              selected: false, // TODO: Implement category filtering
+              selected: selectedCategory == category,
               onSelected: (selected) {
-                // TODO: Implement category filtering
+                onCategorySelected(selected ? category : null);
               },
             ),
           );

@@ -43,6 +43,43 @@ class StockProvider extends ChangeNotifier {
     return _meals.map((meal) => meal.category).toSet().toList()..sort();
   }
 
+
+  // Filters
+  Map<String, String?> _categoryFilters = {
+    'articles': null,
+    'equipment': null,
+    'meals': null,
+  };
+
+  Map<String, String?> get categoryFilters => _categoryFilters;
+
+  // Add this method to apply category filters
+  void applyCategoryFilters(Map<String, String?> filters) {
+    _categoryFilters = filters;
+    notifyListeners();
+  }
+
+
+
+  List<ArticleModel> get filteredArticles {
+    if (_categoryFilters['articles'] == null) return _articles;
+    return _articles.where((article) =>
+    article.category == _categoryFilters['articles']).toList();
+  }
+
+  List<EquipmentModel> get filteredEquipment {
+    if (_categoryFilters['equipment'] == null) return _equipment;
+    return _equipment.where((equip) =>
+    equip.category == _categoryFilters['equipment']).toList();
+  }
+
+  List<MealModel> get filteredMeals {
+    if (_categoryFilters['meals'] == null) return _meals;
+    return _meals.where((meal) =>
+    meal.category == _categoryFilters['meals']).toList();
+  }
+  ///
+
   // ==================== ARTICLES ====================
 
   /// Load all articles
@@ -125,9 +162,16 @@ class StockProvider extends ChangeNotifier {
 
   /// Get articles by category
   List<ArticleModel> getArticlesByCategory(String category) {
-    return _articles.where((article) => article.category == category).toList();
+    return filteredArticles.where((article) => article.category == category).toList();
   }
 
+  List<EquipmentModel> getEquipmentByCategory(String category) {
+    return filteredEquipment.where((equipment) => equipment.category == category).toList();
+  }
+
+  List<MealModel> getMealsByCategory(String category) {
+    return filteredMeals.where((meal) => meal.category == category).toList();
+  }
   /// Get low stock articles
   List<ArticleModel> getLowStockArticles() {
     return _articles.where((article) => article.isLowStock).toList();
@@ -219,9 +263,9 @@ class StockProvider extends ChangeNotifier {
   }
 
   /// Get equipment by category
-  List<EquipmentModel> getEquipmentByCategory(String category) {
-    return _equipment.where((equipment) => equipment.category == category).toList();
-  }
+  // List<EquipmentModel> getEquipmentByCategory(String category) {
+  //   return _equipment.where((equipment) => equipment.category == category).toList();
+  // }
 
   /// Get available equipment
   List<EquipmentModel> getAvailableEquipment() {
@@ -451,9 +495,9 @@ class StockProvider extends ChangeNotifier {
   }
 
   /// Get meals by category
-  List<MealModel> getMealsByCategory(String category) {
-    return _meals.where((meal) => meal.category == category).toList();
-  }
+  // List<MealModel> getMealsByCategory(String category) {
+  //   return _meals.where((meal) => meal.category == category).toList();
+  // }
 
   /// Get available meals
   List<MealModel> getAvailableMeals() {
@@ -501,14 +545,18 @@ class StockProvider extends ChangeNotifier {
   // ==================== ANALYTICS ====================
 
   /// Get stock summary
-  Map<String, dynamic> getStockSummary() {
-    int totalArticles = _articles.length;
-    int lowStockArticles = getLowStockArticles().length;
-    int totalEquipment = _equipment.length;
-    int availableEquipment = getAvailableEquipment().length;
-    int totalMeals = _meals.length;
-    int availableMeals = getAvailableMeals().length;
-    double totalStockValue = getTotalArticlesValue();
+  Map<String, dynamic> getStockSummary({bool useFilters = false}) {
+    List<ArticleModel> articles = useFilters ? filteredArticles : _articles;
+    List<EquipmentModel> equipment = useFilters ? filteredEquipment : _equipment;
+    List<MealModel> meals = useFilters ? filteredMeals : _meals;
+
+    int totalArticles = articles.length;
+    int lowStockArticles = articles.where((article) => article.isLowStock).length;
+    int totalEquipment = equipment.length;
+    int availableEquipment = equipment.where((equip) => equip.isAvailable).length;
+    int totalMeals = meals.length;
+    int availableMeals = meals.where((meal) => meal.isAvailable).length;
+    double totalStockValue = articles.fold(0.0, (sum, article) => sum + article.totalValue);
 
     return {
       'totalArticles': totalArticles,
@@ -520,7 +568,6 @@ class StockProvider extends ChangeNotifier {
       'totalStockValue': totalStockValue,
     };
   }
-
   /// Get low stock alert count
   int getLowStockAlertCount() {
     return getLowStockArticles().length;
@@ -540,32 +587,40 @@ class StockProvider extends ChangeNotifier {
 
   /// Search articles by name
   List<ArticleModel> searchArticles(String query) {
-    return _articles
-        .where((article) =>
+    final filtered = _categoryFilters['articles'] == null
+        ? _articles
+        : _articles.where((a) => a.category == _categoryFilters['articles']).toList();
+
+    return filtered.where((article) =>
     article.name.toLowerCase().contains(query.toLowerCase()) ||
+        (article.description?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
         article.category.toLowerCase().contains(query.toLowerCase()))
         .toList();
   }
 
-  /// Search equipment by name
   List<EquipmentModel> searchEquipment(String query) {
-    return _equipment
-        .where((equipment) =>
-    equipment.name.toLowerCase().contains(query.toLowerCase()) ||
-        equipment.category.toLowerCase().contains(query.toLowerCase()))
+    final filtered = _categoryFilters['equipment'] == null
+        ? _equipment
+        : _equipment.where((e) => e.category == _categoryFilters['equipment']).toList();
+
+    return filtered.where((equip) =>
+    equip.name.toLowerCase().contains(query.toLowerCase()) ||
+        (equip.description?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+        equip.category.toLowerCase().contains(query.toLowerCase()))
         .toList();
   }
 
-  /// Search meals by name
   List<MealModel> searchMeals(String query) {
-    return _meals
-        .where((meal) =>
+    final filtered = _categoryFilters['meals'] == null
+        ? _meals
+        : _meals.where((m) => m.category == _categoryFilters['meals']).toList();
+
+    return filtered.where((meal) =>
     meal.name.toLowerCase().contains(query.toLowerCase()) ||
-        meal.category.toLowerCase().contains(query.toLowerCase()) ||
-        meal.description.toLowerCase().contains(query.toLowerCase()))
+        meal.description.toLowerCase().contains(query.toLowerCase()) ||
+        meal.category.toLowerCase().contains(query.toLowerCase()))
         .toList();
   }
-
   // ==================== LOAD ALL DATA ====================
 
   /// Load all stock data
@@ -579,6 +634,15 @@ class StockProvider extends ChangeNotifier {
   }
 
   // ==================== HELPER METHODS ====================
+
+  void clearAllFilters() {
+    _categoryFilters = {
+      'articles': null,
+      'equipment': null,
+      'meals': null,
+    };
+    notifyListeners();
+  }
 
   void _setLoading(bool loading) {
     _isLoading = loading;

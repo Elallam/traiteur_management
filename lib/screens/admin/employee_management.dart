@@ -1038,9 +1038,18 @@ class EmployeeDetailsDialog extends StatelessWidget {
           child: const Text('Close'),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: ()  {
             Navigator.pop(context);
             // TODO: Navigate to employee edit screen
+            showDialog(
+              context: context,
+              builder: (context) => AddEditEmployeeDialog(employee: employee),
+            ).then((result) async {
+              if (result == true) {
+                final employeeProvider = Provider.of<EmployeeProvider>(context, listen: false);
+                await employeeProvider.loadAllEmployeeData();
+              }
+            });
           },
           child: const Text('Edit Employee'),
         ),

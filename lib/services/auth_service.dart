@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import '../models/mock_usercredential.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -35,22 +36,64 @@ class AuthService {
     }
   }
 
+  /// Initialize a secondary Firebase app to avoid affecting the admin's session
   Future<FirebaseApp> getSecondaryFirebaseApp() async {
-    return await Firebase.initializeApp(
-      name: 'Secondary',
-      options: Firebase.app().options,
-    );
+    try {
+      // Check if 'Secondary' app is already initialized
+      return Firebase.app('Secondary');
+    } catch (e) {
+      print('Initializing secondary Firebase app');
+      FirebaseApp defaultApp = Firebase.app();
+      return await Firebase.initializeApp(
+        name: 'Secondary',
+        options: defaultApp.options,
+      );
+    }
   }
-
+  /// Use the secondary app to create a user (admin action)
   Future<UserCredential> createUser(String email, String password) async {
-    FirebaseApp secondaryApp = await getSecondaryFirebaseApp();
-    FirebaseAuth secondaryAuth = FirebaseAuth.instanceFor(app: secondaryApp);
+    try {
+      final secondaryApp = await getSecondaryFirebaseApp();
+      final secondaryAuth = FirebaseAuth.instanceFor(app: secondaryApp);
+      final userCredential;
+      // Attempt to create user normally
+      try {
+        userCredential = await secondaryAuth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        await secondaryAuth.signOut();
+        return userCredential;
+      }
+      // Handle type casting error specifically
+      catch (e) {
+        if (e is TypeError) {
+          print('Handling type cast exception during user creation');
 
-    return await secondaryAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
+          // Get the current user directly
+          final user = secondaryAuth.currentUser;
+          if (user != null) {
+            // Create a UserCredential manually using the private constructor
+            return MockUserCredential(
+                  auth: secondaryAuth,
+                  credential: null,
+                  additionalUserInfo: null,
+                  user: user,
+            );
+          }
+        }
+        rethrow;
+      }
+    } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException: ${e.code} - ${e.message}');
+      rethrow;
+    } catch (e, stackTrace) {
+      print('Unexpected error in createUser: $e');
+      print('Stack trace: $stackTrace');
+      throw Exception('Failed to create user: ${e.toString()}');
+    }
   }
-
-  // Create user account (Admin only function)
+  /// Admin creates a user account
   Future<UserModel?> createUserAccount({
     required String fullName,
     required String email,
@@ -60,11 +103,11 @@ class AuthService {
     required String role,
   }) async {
     try {
-      UserCredential result =
-      await createUser(email, password);
+      UserCredential result = await createUser(email, password);
+
+      print("The user is created : ${result.user}");
 
       if (result.user != null) {
-        // Create user document in Firestore
         UserModel newUser = UserModel(
           id: result.user!.uid,
           fullName: fullName,
@@ -76,18 +119,27 @@ class AuthService {
           updatedAt: DateTime.now(),
         );
 
-        await _firestore
-            .collection('users')
-            .doc(result.user!.uid)
-            .set(newUser.toMap());
+        try {
+          await _firestore
+              .collection('users')
+              .doc(result.user!.uid)
+              .set(newUser.toMap());
+        } catch (e) {
+          print('Firestore error: $e');
+          throw Exception('Failed to write user to Firestore.');
+        }
+
+        // Sign out from secondary to clean up
+        await FirebaseAuth.instanceFor(app: Firebase.app('Secondary')).signOut();
 
         return newUser;
       }
       return null;
     } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
+      throw Exception(_handleAuthException(e));
     } catch (e) {
-      throw 'Failed to create user account. Please try again.';
+      print("The exception is : ${e}");
+      throw Exception('Failed to create user account. Please try again. ${e}');
     }
   }
 
