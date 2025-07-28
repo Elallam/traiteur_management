@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:traiteur_management/firebase_options.dart';
 import 'package:traiteur_management/providers/equipment_booking_provider.dart';
+import 'package:traiteur_management/providers/locale_provider.dart';
 import 'app.dart';
 import 'providers/auth_provider.dart';
 import 'providers/stock_provider.dart';
@@ -24,6 +25,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => StockProvider()),
         ChangeNotifierProvider(create: (_) => OccasionProvider()),
