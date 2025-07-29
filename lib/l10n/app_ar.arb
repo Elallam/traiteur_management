@@ -53,6 +53,7 @@
   "mealPrice": "السعر",
   "mealCategory": "الفئة",
   "mealIngredients": "المكونات",
+  "ingredients": "المكونات",
 
   "equipment": "المعدات",
   "equipmentBooking": "حجز المعدات",
@@ -128,5 +129,941 @@
   "back": "رجوع",
   "next": "التالي",
   "previous": "السابق",
-  "close": "إغلاق"
+  "close": "إغلاق",
+
+  "keyMetrics": "المؤشرات الرئيسية",
+  "totalRevenue": "إجمالي الإيرادات",
+  "thisMonth": "هذا الشهر",
+  "thisWeek": "هذا الأسبوع",
+  "thisYear": "هذا العام",
+  "activeEvents": "الأحداث النشطة",
+  "upcoming": "القادمة",
+  "stockValue": "قيمة المخزون",
+  "lowStock": "مخزون منخفض",
+  "todaysEvents": "أحداث اليوم",
+  "noEventsToday": "لا توجد أحداث اليوم",
+  "enjoyFreeDay": "استمتع بيومك الحر!",
+  "recentActivities": "الأنشطة الحديثة",
+  "noRecentActivities": "لا توجد أنشطة حديثة",
+  "updatedAgo": "تم التحديث منذ {time}",
+  "@updatedAgo": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "quickStats": "إحصائيات سريعة",
+  "equipmentUtilization": "استخدام المعدات",
+  "averageOrderValue": "متوسط قيمة الطلب",
+  "monthlyRevenue": "الإيرادات الشهرية",
+  "average": "متوسط",
+  "fullyBooked": "محجوز بالكامل",
+  "mostUtilizedEquipment": "المعدات الأكثر استخداماً",
+  "reportFilters": "مرشحات التقرير",
+  "financialReport": "التقرير المالي",
+  "totalCost": "إجمالي التكلفة",
+  "netProfit": "صافي الربح",
+  "profitMargin": "هامش الربح",
+  "completedEvents": "الأحداث المكتملة",
+  "equipmentStatusReport": "تقرير حالة المعدات",
+  "totalEquipment": "إجمالي المعدات",
+  "checkedOut": "تم الاستخراج",
+  "lowStockAlerts": "تنبيهات المخزون المنخفض",
+  "exportReports": "تصدير التقارير",
+  "exportPdf": "تصدير PDF",
+  "exportExcel": "تصدير Excel",
+  "quickActions": "إجراءات سريعة",
+  "createNewEvent": "إنشاء حدث جديد",
+  "allGood": "كل شيء على ما يرام!",
+  "all": "الكل",
+  "noAlertsMessage": "لا توجد تنبيهات أو إشعارات في الوقت الحالي",
+  "viewAll": "عرض الكل",
+  "generatingReport": "جاري إنشاء تقرير {period}...",
+  "@generatingReport": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingToPdf": "جاري التصدير إلى PDF...",
+  "exportingToExcel": "جاري التصدير إلى Excel...",
+  "utilizationReport": "تقرير الاستخدام",
+  "basedOnEvents": "بناءً على {count} حدث مكتمل",
+  "@basedOnEvents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "guestsCount": "{count} ضيف",
+  "@guestsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "itemsCount": "{count} عنصر",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "january": "يناير",
+  "february": "فبراير",
+  "march": "مارس",
+  "april": "أبريل",
+  "may": "مايو",
+  "june": "يونيو",
+  "july": "يوليو",
+  "august": "أغسطس",
+  "september": "سبتمبر",
+  "october": "أكتوبر",
+  "november": "نوفمبر",
+  "december": "ديسمبر",
+  "dayAbbreviation": "ي",
+  "hourAbbreviation": "س",
+  "minuteAbbreviation": "د",
+  "justNow": "الآن",
+  "popular": "شائع",
+  "searchEmployeeHint": "ابحث عن الموظفين بالاسم أو البريد الإلكتروني أو الهاتف...",
+  "sortByName": "الترتيب حسب الاسم",
+  "sortByDate": "الترتيب حسب التاريخ",
+  "sortByCheckouts": "الترتيب حسب عمليات الاستلام",
+  "totalEmployees": "إجمالي الموظفين",
+  "activeCheckouts": "عمليات الاستلام النشطة",
+  "overdue": "متأخر",
+  "totalCheckouts": "إجمالي عمليات الاستلام",
+  "needsAttention": "يحتاج إلى اهتمام",
+  "noEmployeesFoundSearch": "لم يتم العثور على موظفين يطابقون \"{query}\"",
+  "@noEmployeesFoundSearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noEmployeesFound": "لم يتم العثور على موظفين",
+  "adjustSearchFilters": "حاول تعديل البحث أو الفلاتر",
+  "addFirstEmployeeHint": "أضف أول موظف لديك للبدء",
+  "deactivate": "تعطيل",
+  "activate": "تفعيل",
+  "viewDetails": "عرض التفاصيل",
+  "viewCheckouts": "عرض عمليات الاستلام",
+  "employeeCheckoutsComingSoon": "عمليات الاستلام لـ {employeeName} - قريباً",
+  "@employeeCheckoutsComingSoon": {
+    "placeholders": {
+      "employeeName": {
+        "type": "String"
+      }
+    }
+  },
+  "employeeDeactivatedSuccess": "تم تعطيل الموظف بنجاح",
+  "employeeActivatedSuccess": "تم تفعيل الموظف بنجاح",
+  "failedToUpdateEmployeeStatus": "فشل تحديث حالة الموظف",
+  "deleteEmployee": "حذف موظف",
+  "deleteEmployeeConfirmation": "هل أنت متأكد أنك تريد حذف {employeeName}؟ لا يمكن التراجع عن هذا الإجراء.",
+  "@deleteEmployeeConfirmation": {
+    "placeholders": {
+      "employeeName": {
+        "type": "String"
+      }
+    }
+  },
+  "employeeDeletedSuccess": "تم حذف الموظف بنجاح",
+  "failedToDeleteEmployee": "فشل حذف الموظف",
+  "validationNameTooShort": "يجب أن يتكون الاسم من حرفين على الأقل",
+  "address": "العنوان",
+  "update": "تحديث",
+  "create": "إنشاء",
+  "employeeUpdatedSuccess": "تم تحديث الموظف بنجاح",
+  "employeeCreatedSuccess": "تم إنشاء الموظف بنجاح",
+  "failedToUpdateEmployee": "فشل تحديث الموظف",
+  "failedToCreateEmployee": "فشل إنشاء الموظف",
+  "errorOccurred": "حدث خطأ",
+  "employeeInformation": "معلومات الموظف",
+  "joined": "تاريخ الانضمام",
+  "performanceStatistics": "إحصائيات الأداء",
+  "completedCheckouts": "عمليات الاستلام المكتملة",
+  "overdueItems": "العناصر المتأخرة",
+  "reliabilityScore": "نقاط الموثوقية",
+  "currentCheckouts": "عمليات الاستلام الحالية",
+  "equipmentId": "معرف المعدة",
+  "quantity": "الكمية",
+  "overdueByDays": "متأخر بـ {days} أيام",
+  "@overdueByDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "employeeAnalytics": "تحليلات الموظفين",
+  "overview": "نظرة عامة",
+  "activeEmployees": "الموظفين النشطين",
+  "topPerformingEmployees": "الموظفين الأعلى أداءً",
+  "reliability": "الموثوقية",
+  "totalCheckoutsCount": "{count} عمليات استلام",
+  "@totalCheckoutsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "employeesRequiringAttention": "الموظفين الذين يحتاجون إلى اهتمام",
+  "detailedAnalyticsExportComingSoon": "تصدير تحليلات مفصلة - قريباً",
+  "exportReport": "تصدير التقرير",
+  "articles": "المقالات",
+  "searchStockItems": "البحث في عناصر المخزون...",
+  "addItem": "إضافة عنصر",
+  "stockData": "بيانات المخزون",
+  "totalArticles": "إجمالي المقالات",
+  "totalValue": "القيمة الإجمالية",
+  "updateQuantity": "تحديث الكمية",
+  "newQuantity": "كمية جديدة",
+  "quantityUpdatedSuccess": "تم تحديث الكمية بنجاح",
+  "failedToUpdateQuantity": "فشل تحديث الكمية",
+  "deleteArticle": "حذف مقال",
+  "deleteArticleConfirmation": "هل أنت متأكد أنك تريد حذف \"{articleName}\"؟",
+  "@deleteArticleConfirmation": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "articleDeletedSuccess": "تم حذف المقال بنجاح",
+  "failedToDeleteArticle": "فشل حذف المقال",
+  "noArticlesFound": "لم يتم العثور على مقالات",
+  "addFirstArticleHint": "أضف أول مقال لديك للبدء",
+  "allCheckedOut": "تم استلام الكل",
+  "checkout": "استلام",
+  "equipmentCheckoutComingSoon": "استلام المعدات - قريباً",
+  "equipmentCheckoutHistoryComingSoon": "سجل استلام المعدات - قريباً",
+  "deleteEquipment": "حذف معدة",
+  "deleteEquipmentConfirmation": "هل أنت متأكد أنك تريد حذف \"{equipmentName}\"؟",
+  "@deleteEquipmentConfirmation": {
+    "placeholders": {
+      "equipmentName": {
+        "type": "String"
+      }
+    }
+  },
+  "equipmentDeletedSuccess": "تم حذف المعدة بنجاح",
+  "failedToDeleteEquipment": "فشل حذف المعدة",
+  "allOut": "نفدت الكمية",
+  "noEquipmentFound": "لم يتم العثور على معدات",
+  "addFirstEquipmentHint": "أضف أول معدة لديك للبدء",
+  "disabled": "معطل",
+  "outOfStock": "نفد المخزون",
+  "disable": "تعطيل",
+  "enable": "تفعيل",
+  "cost": "التكلفة",
+  "profit": "الربح",
+  "servings": "حصص",
+  "ingredientsLow": "المكونات منخفضة",
+  "minutes": "{count} دقيقة",
+  "@minutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ingredientsCount": "{count} مكونات",
+  "@ingredientsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mealDisabledSuccess": "تم تعطيل الوجبة بنجاح",
+  "mealEnabledSuccess": "تم تفعيل الوجبة بنجاح",
+  "failedToUpdateMealAvailability": "فشل تحديث توفر الوجبة",
+  "deleteMeal": "حذف وجبة",
+  "deleteMealConfirmation": "هل أنت متأكد أنك تريد حذف \"{mealName}\"؟",
+  "@deleteMealConfirmation": {
+    "placeholders": {
+      "mealName": {
+        "type": "String"
+      }
+    }
+  },
+  "mealDeletedSuccess": "تم حذف الوجبة بنجاح",
+  "failedToDeleteMeal": "فشل حذف الوجبة",
+  "noMealsFound": "لم يتم العثور على وجبات",
+  "addFirstMealHint": "أضف أول وجبة لديك للبدء",
+  "stockAnalyticsComingSoon": "تحليلات المخزون - قريباً",
+  "price": "السعر",
+  "articleNameRequired": "اسم المقال *",
+  "validationEnterArticleName": "يرجى إدخال اسم المقال",
+  "categoryRequired": "الفئة *",
+  "pricePerUnitRequired": "السعر لكل وحدة *",
+  "validationEnterPrice": "أدخل السعر",
+  "validationEnterValidPrice": "أدخل سعرًا صالحًا",
+  "quantityRequired": "الكمية *",
+  "validationEnterQuantity": "أدخل الكمية",
+  "validationEnterValidQuantity": "أدخل كمية صالحة",
+  "unitRequired": "الوحدة *",
+  "descriptionOptional": "الوصف (اختياري)",
+  "imageUrlOptional": "رابط الصورة (اختياري)",
+  "articleAddedSuccessfully": "تمت إضافة المقال بنجاح",
+  "articleUpdatedSuccessfully": "تم تحديث المقال بنجاح",
+  "failedToAddArticle": "فشل في إضافة المقال",
+  "failedToUpdateArticle": "فشل في تحديث المقال",
+  "equipmentNameRequired": "اسم المعدة *",
+  "validationEnterEquipmentName": "يرجى إدخال اسم المعدة",
+  "totalQuantityRequired": "الكمية الإجمالية *",
+  "validationEnterTotalQuantity": "أدخل الكمية الإجمالية",
+  "availableQuantityRequired": "الكمية المتاحة *",
+  "validationEnterAvailableQuantity": "أدخل الكمية المتاحة",
+  "validationCannotExceedTotalQuantity": "لا يمكن أن تتجاوز الكمية الإجمالية",
+  "equipmentAddedSuccessfully": "تمت إضافة المعدة بنجاح",
+  "equipmentUpdatedSuccessfully": "تم تحديث المعدة بنجاح",
+  "failedToAddEquipment": "فشل في إضافة المعدة",
+  "failedToUpdateEquipment": "فشل في تحديث المعدة",
+  "mealNameRequired": "اسم الوجبة *",
+  "validationEnterMealName": "يرجى إدخال اسم الوجبة",
+  "descriptionRequired": "الوصف *",
+  "validationEnterDescription": "يرجى إدخال الوصف",
+  "sellingPriceRequired": "سعر البيع *",
+  "servingsRequired": "الكمية *",
+  "validationEnterServings": "أدخل الكمية",
+  "validationEnterValidServings": "أدخل كمية صالحة",
+  "preparationTimeMinutesRequired": "وقت التحضير (بالدقائق) *",
+  "validationEnterPreparationTime": "أدخل وقت التحضير",
+  "validationEnterValidTime": "أدخل وقتًا صالحًا",
+  "addIngredient": "إضافة مكون",
+  "sellingPrice": "سعر البيع",
+  "selectArticle": "تحديد مقال",
+  "searchArticles": "البحث عن مقالات",
+  "addArticleName": "إضافة {articleName}",
+  "@addArticleName": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "quantityUnit": "الكمية ({unit})",
+  "@quantityUnit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "availableQuantityUnit": "المتاح: {quantity} {unit}",
+  "@availableQuantityUnit": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "mealAddedSuccessfully": "تمت إضافة الوجبة بنجاح",
+  "mealUpdatedSuccessfully": "تم تحديث الوجبة بنجاح",
+  "failedToAddMeal": "فشل في إضافة الوجبة",
+  "failedToUpdateMeal": "فشل في تحديث الوجبة",
+  "inStock": "في المخزون",
+  "pricePerUnit": "السعر لكل وحدة",
+  "unit": "الوحدة",
+  "category": "الفئة",
+  "created": "تاريخ الإنشاء",
+  "lastUpdated": "آخر تحديث",
+  "updateArticleQuantityTitle": "تحديث كمية {articleName}",
+  "@updateArticleQuantityTitle": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "newQuantityUnit": "كمية جديدة ({unit})",
+  "@newQuantityUnit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "availability": "التوفر",
+  "totalQuantity": "الكمية الإجمالية",
+  "prepTime": "وقت التحضير",
+  "equipmentCheckoutFunctionalityComingSoon": "وظيفة استلام المعدات - قريباً",
+  "ingredientDetails": "{articleName} ({quantity} {unit})",
+  "@ingredientDetails": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      },
+      "quantity": {
+        "type": "double"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "basicInfo": "المعلومات الأساسية",
+  "createEvent": "إنشاء حدث",
+  "updateEvent": "تحديث الحدث",
+  "eventTitle": "عنوان الحدث",
+  "enterEventTitle": "أدخل عنوان الحدث",
+  "describeEvent": "وصف الحدث",
+  "eventDate": "تاريخ الحدث",
+  "eventTime": "وقت الحدث",
+  "eventAddress": "عنوان الحدث",
+  "enterCompleteAddress": "أدخل العنوان الكامل",
+  "expectedGuests": "الضيوف المتوقعون",
+  "numberOfGuests": "عدد الضيوف",
+  "clientInformation": "معلومات العميل",
+  "clientName": "اسم العميل",
+  "enterClientName": "أدخل اسم العميل",
+  "clientPhone": "هاتف العميل",
+  "enterPhoneNumber": "أدخل رقم الهاتف",
+  "clientEmail": "بريد العميل الإلكتروني",
+  "enterEmailAddress": "أدخل عنوان البريد الإلكتروني",
+  "notesOptional": "ملاحظات (اختياري)",
+  "additionalNotes": "ملاحظات إضافية",
+  "selectedMeals": "الوجبات المختارة",
+  "mealsSelected": "{count} وجبة (وجبات) مختارة",
+  "@mealsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pricePerServing": "{price} لكل وجبة",
+  "@pricePerServing": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedEquipment": "المعدات المختارة",
+  "itemsSelected": "{count} عنصر (عناصر) مختارة",
+  "@itemsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "availableQuantityTotal": "المتاح: {available}/{total}",
+  "@availableQuantityTotal": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAtLeastOneMeal": "يرجى اختيار وجبة واحدة على الأقل",
+  "equipmentAvailabilityConflicts": "تم الكشف عن تعارضات في توفر المعدات. يرجى حلها أولاً.",
+  "eventCreatedSuccessWithBooking": "تم إنشاء الحدث بنجاح مع تأكيد حجز المعدات",
+  "failedToSaveEvent": "فشل حفظ الحدث",
+  "checkoutEquipment": "استخراج المعدات",
+  "returnEquipment": "إرجاع المعدات",
+  "editEvent": "تعديل الحدث",
+  "duplicateEvent": "تكرار الحدث",
+  "duplicate": "تكرار",
+  "notes": "ملاحظات",
+  "cancelEvent": "إلغاء الحدث",
+  "timeline": "الجدول الزمني",
+  "inDays": "في {days} يوم (أيام)",
+  "@inDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "eventDetails": "تفاصيل الحدث",
+  "dateTime": "التاريخ والوقت",
+  "name": "الاسم",
+  "phone": "الهاتف",
+  "financialSummary": "الملخص المالي",
+  "totalPrice": "السعر الإجمالي",
+  "profitMarginValue": "هامش الربح: {value}%",
+  "@profitMarginValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "totalPriceValue": "القيمة الإجمالية: {value}%",
+  "@totalPriceValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "totalItems": "إجمالي العناصر",
+  "returned": "تم الإرجاع",
+  "quantityValue": "الكمية: {value}",
+  "@quantityValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "statusValue": "الحالة: {value}",
+  "@statusValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "checkedOutDate": "تم الاستخراج: {date}",
+  "@checkedOutDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "returnedDate": "تم الإرجاع: {date}",
+  "@returnedDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "eventCreated": "تم إنشاء الحدث",
+  "eventCreatedSystem": "تم إنشاء الحدث في النظام",
+  "equipmentAssigned": "تم تعيين المعدات",
+  "equipmentItemsAssigned": "{count} عنصر (عناصر) معدات معينة",
+  "@equipmentItemsAssigned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "equipmentCheckedOut": "تم استخراج المعدات",
+  "itemsCheckedOut": "{count} عنصر (عناصر) تم استخراجها",
+  "@itemsCheckedOut": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eventScheduled": "الحدث مجدول",
+  "eventScheduledToTakePlace": "الحدث مجدول ليتم",
+  "eventCompleted": "الحدث مكتمل",
+  "eventTookPlace": "تم الحدث",
+  "equipmentReturned": "تم إرجاع المعدات",
+  "itemsReturned": "{count} عنصر (عناصر) تم إرجاعها",
+  "@itemsReturned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAsStatus": "وضع علامة كـ {status}",
+  "@markAsStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "eventStatusPlanned": "الحدث قيد التخطيط",
+  "eventStatusConfirmed": "الحدث مؤكد وجاهز",
+  "eventStatusInProgress": "الحدث قيد التنفيذ حالياً",
+  "eventStatusCompleted": "تم اكتمال الحدث",
+  "eventStatusCancelled": "تم إلغاء الحدث",
+  "unknownStatus": "حالة غير معروفة",
+  "status": "الحال",
+  "unkown": "غير معروف",
+  "checkoutDate": "تاريخ الإستلام",
+  "returnDate": "تاريخ الإرجاع",
+  "statusUpdatedTo": "تم تحديث الحالة إلى {status}",
+  "@statusUpdatedTo": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateStatus": "فشل تحديث الحالة",
+  "checkoutEquipmentConfirmation": "سيؤدي هذا إلى استخراج جميع المعدات المخصصة لهذا الحدث. تأكد من أن المعدات جاهزة للاستلام.",
+  "equipmentCheckedOutSuccessfully": "تم استخراج المعدات بنجاح",
+  "failedToCheckoutEquipment": "فشل استخراج المعدات",
+  "returnEquipmentConfirmation": "سيؤدي هذا إلى إرجاع جميع المعدات المستخرجة لهذا الحدث. تأكد من جمع جميع المعدات وأنها في حالة جيدة.",
+  "returnText": "إرجاع",
+  "equipmentReturnedSuccessfully": "تم إرجاع المعدات بنجاح",
+  "failedToReturnEquipment": "فشل إرجاع المعدات",
+  "occasionManagement": "إدارة المناسبات",
+  "allEvents": "جميع الأحداث",
+  "newEvent": "حدث جديد",
+  "searchOccasions": "البحث عن المناسبات...",
+  "noOccasionsFoundSearch": "لم يتم العثور على مناسبات لـ \"{query}\"",
+  "@noOccasionsFoundSearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noOccasionsFound": "لم يتم العثور على مناسبات",
+  "addFirstEvent": "أضف أول حدث",
+  "planned": "مخطط له",
+  "confirmed": "مؤكد",
+  "inProgress": "قيد التقدم",
+  "today": "اليوم",
+  "eventIsToday": "الحدث اليوم!",
+  "margin": "الهامش",
+  "requiresAttention": "يتطلب اهتمام",
+  "totalEvents": "إجمالي الأحداث",
+  "totalProfit": "إجمالي الربح",
+  "viewCalendar": "عرض التقويم",
+  "analyticsDashboard": "لوحة تحكم التحليلات",
+  "comingSoon": "قريباً",
+  "duplicatingEvent": "جاري تكرار {eventName}",
+  "@duplicatingEvent": {
+    "placeholders": {
+      "eventName": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteEvent": "حذف الحدث",
+  "deleteEventConfirmation": "هل أنت متأكد أنك تريد حذف \"{eventName}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "@deleteEventConfirmation": {
+    "placeholders": {
+      "eventName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventDeletedSuccessfully": "تم حذف الحدث بنجاح",
+  "eventUpdatedSuccessfully": "تم تحديث الحدث بنجاح",
+  "isRunningLow": "قيد النفاذ",
+  "remaining": "متبقي",
+  "equipmentFullyBooked": "المعدات محجوزة بالكامل",
+  "isFullyCheckedOut": "تم استخراجها بالكامل",
+  "refreshAlerts": "تحديث التنبيهات",
+  "markAllAsRead": "وضع علامة مقروء الكل",
+  "notificationSettings": "إعدادات الإشعارات",
+  "noUrgentAlerts": "لا توجد تنبيهات عاجلة",
+  "noEventAlerts": "لا توجد تنبيهات أحداث",
+  "noEquipmentAlerts": "لا توجد تنبيهات معدات",
+  "allCaughtUp": "كل شيء محدث!",
+  "alertDismissed": "تم تجاهل التنبيه",
+  "undo": "تراجع",
+  "inHours": "في {hours} ساعة",
+  "@inHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "soon": "قريباً",
+  "tomorrow": "غداً",
+  "restock": "إعادة التخزين",
+  "action": "إجراء",
+  "allAlertsMarkedAsRead": "تم وضع علامة مقروءة على جميع التنبيهات",
+  "checkoutEquipmentForEvent": "استخراج المعدات لهذا الحدث",
+  "event": "الحدث",
+  "equipmentItems": "عناصر المعدات",
+  "restockItem": "إعادة تخزين العنصر",
+  "item": "العنصر",
+  "currentStock": "المخزون الحالي",
+  "addQuantity": "إضافة كمية",
+  "addStock": "إضافة إلى المخزون",
+  "eventReminders": "تذكيرات الأحداث",
+  "getNotifiedAboutUpcomingEvents": "احصل على إشعارات حول الأحداث القادمة",
+  "equipmentAlerts": "تنبيهات المعدات",
+  "equipmentCheckoutAndAvailabilityAlerts": "تنبيهات استلام المعدات وتوفرها",
+  "stockAlerts": "تنبيهات المخزون",
+  "lowStockAndInventoryAlerts": "تنبيهات المخزون المنخفض والجرد",
+  "pushNotifications": "إشعارات الدفع",
+  "receivePushNotifications": "تلقي إشعارات الدفع",
+  "settingsSaved": "تم حفظ الإعدادات",
+  "addedQuantityToItem": "تمت إضافة {quantity} {unit} إلى {itemName}",
+  "@addedQuantityToItem": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      },
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRestock": "فشل في إعادة التخزين",
+  "shareAnalytics": "مشاركة التحليلات",
+  "trends": "الاتجاهات",
+  "performance": "الأداء",
+  "changePeriod": "تغيير الفترة",
+  "quickInsights": "رؤى سريعة",
+  "excellent": "ممتاز",
+  "good": "جيد",
+  "needsImprovement": "يحتاج إلى تحسين",
+  "highestRevenueMonth": "الشهر الأعلى إيرادًا",
+  "eventSuccessRate": "معدل نجاح الأحداث",
+  "eventsCompletedSuccessfully": "أحداث مكتملة بنجاح",
+  "topPerformingEvents": "أفضل الأحداث أداءً",
+  "noCompletedEventsInPeriod": "لا توجد أحداث مكتملة في هذه الفترة",
+  "revenueTrend": "اتجاه الإيرادات",
+  "eventsCount": "عدد الأحداث",
+  "profitMarginTrend": "اتجاه هامش الربح",
+  "revenueChart": "مخطط الإيرادات",
+  "eventsCountChart": "مخطط عدد الأحداث",
+  "description": "الوصف",
+  "urgent": "عاجل",
+  "events": "الأحداث",
+  "bestMonth": "أفضل شهر",
+  "profitMarginChart": "مخطط هامش الربح",
+  "noDataAvailableForPeriod": "لا توجد بيانات متاحة لهذه الفترة",
+  "performanceSummary": "ملخص الأداء",
+  "successRate": "معدل النجاح",
+  "avgProfitMargin": "متوسط هامش الربح",
+  "growthRate": "معدل النمو",
+  "performanceByEventSize": "الأداء حسب حجم الحدث",
+  "smallEvents": "الأحداث الصغيرة",
+  "mediumEvents": "الأحداث المتوسطة",
+  "largeEvents": "الأحداث الكبيرة",
+  "eventsCountLabel": "{count} أحداث",
+  "@eventsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyComparison": "المقارنة الشهرية",
+  "noDataAvailableForMonthlyComparison": "لا توجد بيانات متاحة للمقارنة الشهرية",
+  "customRange": "نطاق مخصص",
+  "exportFunctionalityComingSoon": "وظيفة التصدير قريباً",
+  "shareFunctionalityComingSoon": "وظيفة المشاركة قريباً",
+  "settingsFunctionalityComingSoon": "وظيفة الإعدادات قريباً",
+  "loginScreenTitle": "إدارة المأكولات",
+  "welcomeBack": "مرحباً بعودتك!",
+  "signInToManage": "سجل الدخول لإدارة أعمال تقديم الطعام الخاصة بك",
+  "emailAddress": "عنوان البريد الإلكتروني",
+  "enterYourEmail": "أدخل بريدك الإلكتروني",
+  "passwordText": "كلمة المرور",
+  "enterYourPassword": "أدخل كلمة المرور الخاصة بك",
+  "rememberMe": "تذكرني",
+  "forgotPasswordQuestion": "نسيت كلمة المرور؟",
+  "signIn": "تسجيل الدخول",
+  "orText": "أو",
+  "dontHaveAccount": "ليس لديك حساب؟",
+  "signUp": "اشتراك",
+  "copyrightText": "© 2024 نظام إدارة المأكولات",
+  "versionText": "الإصدار 1.0.0",
+  "loginFailedMessage": "فشل تسجيل الدخول",
+  "pleaseEnterEmailFirst": "الرجاء إدخال عنوان بريدك الإلكتروني أولاً",
+  "passwordResetEmailSent": "تم إرسال بريد إلكتروني لإعادة تعيين كلمة المرور بنجاح",
+  "failedToSendResetEmail": "فشل إرسال بريد إعادة التعيين",
+  "signingIn": "جاري تسجيل الدخول...",
+  "professionalCateringManagement": "إدارة المطاعم الاحترافية",
+  "loadingMessage": "جاري التحميل...",
+  "totalReturns": "إجمالي الإرجاعات",
+  "takeItemsForEvent": "أخذ العناصر للحدث",
+  "quickReturn": "إرجاع سريع",
+  "returnMultipleItems": "إرجاع عناصر متعددة",
+  "noActiveCheckouts": "لا توجد عمليات استلام نشطة",
+  "allEquipmentReturned": "تم إرجاع جميع المعدات.",
+  "myActivity": "نشاطاتي",
+  "noEquipmentToReturn": "لا توجد معدات للإرجاع",
+  "confirmReturn": "تأكيد الإرجاع",
+  "confirmReturnEquipment": "هل أنت متأكد أنك تريد إرجاع هذه المعدة؟",
+  "myEquipmentHistory": "سجل معداتي",
+  "equipmentOverdue": "المعدات متأخرة",
+  "equipmentCheckedOutAgo": "تم استخراج المعدات منذ {duration}",
+  "@equipmentCheckedOutAgo": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "noNewNotifications": "لا توجد إشعارات جديدة",
+  "atText": "في",
+  "failedToLoadActivityData": "فشل في تحميل بيانات النشاط: {error}",
+  "@failedToLoadActivityData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownEquipment": "معدات غير معروفة",
+  "duration": "المدة",
+  "occasionId": "معرف المناسبة",
+  "equipmentOverdueForReturn": "هذه المعدات متأخرة عن الإرجاع",
+  "filterByDateRange": "تصفية حسب النطاق الزمني",
+  "clearDateFilter": "مسح فلتر التاريخ",
+  "searchEquipmentOrNotes": "البحث عن معدات أو ملاحظات...",
+  "showingDateRange": "عرض {startDate} - {endDate}",
+  "@showingDateRange": {
+    "placeholders": {
+      "startDate": {
+        "type": "String"
+      },
+      "endDate": {
+        "type": "String"
+      }
+    }
+  },
+  "noReturnedItems": "لا توجد عناصر تم إرجاعها",
+  "noEquipmentReturnedYet": "لم يتم إرجاع أي معدات بعد.",
+  "noOverdueItems": "لا توجد عناصر متأخرة",
+  "allEquipmentReturnedOnTime": "رائع! تم إرجاع جميع المعدات في الوقت المحدد.",
+  "noActivityFound": "لم يتم العثور على نشاط",
+  "noEquipmentActivityMatchesSearch": "لا يوجد نشاط معدات يطابق بحثك.",
+  "out": "خارج",
+  "inText": "في",
+  "ongoing": "جاري",
+  "durationDaysHours": "{days}ي {hours}س",
+  "@durationDaysHours": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHoursMinutes": "{hours}س {minutes}د",
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "durationMinutes": "{minutes}د",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "pleaseSelectEquipmentToCheckout": "الرجاء تحديد المعدات لاستعارتها.",
+    "userNotAuthenticated": "المستخدم غير مصادق عليه.",
+    "requested": "مطلوب",
+    "checkoutSuccessful": "تمت الاستعارة بنجاح",
+    "successfullyCheckedOut": "تم الاستعارة بنجاح!",
+    "equipmentTypesCount": "{count} أنواع محددة",
+    "@equipmentTypesCount": {
+      "placeholders": {
+        "count": {
+          "type": "int"
+        }
+      }
+    },
+      "equipmentTypesCount": "{count} أنواع",
+        "@equipmentTypesCount": {
+          "description": "عدد أنواع المعدات",
+          "placeholders": {
+            "count": {
+              "type": "int"
+            }
+          }
+        },
+        "typesSelected": "{equipmentTypesString} محددة",
+        "@typesSelected": {
+          "description": "يشير إلى تحديد عدد معين من أنواع المعدات",
+          "placeholders": {
+            "equipmentTypesString": {
+              "type": "String"
+            }
+          }
+        },
+    "totalItemsCount": "{count} عناصر",
+    "@totalItemsCount": {
+      "placeholders": {
+        "count": {
+          "type": "int"
+        }
+      }
+    },
+    "forText": "لـ",
+    "done": "تم",
+    "equipmentUnavailable": "المعدات غير متوفرة",
+    "equipmentNotAvailableInRequestedQuantity": "بعض المعدات غير متوفرة بالكمية المطلوبة.",
+    "adjustQuantitiesOrRemoveUnavailableItems": "الرجاء تعديل الكميات أو إزالة العناصر غير المتوفرة.",
+    "ok": "موافق",
+    "searchEquipment": "البحث عن معدات...",
+    "tryAdjustingYourSearchTerms": "حاول تعديل مصطلحات البحث.",
+    "noEquipmentAvailableInCategory": "لا توجد معدات متاحة في هذه الفئة.",
+    "quantityToCheckout": "الكمية المراد استعارتها",
+    "processing": "جاري المعالجة...",
+    "chairs": "كراسي",
+    "tables": "طاولات",
+    "utensils": "أواني",
+    "decorations": "ديكورات",
+    "other": "أخرى",
+    "failedToLoadEquipment": "فشل تحميل المعدات: {error}",
+    "@failedToLoadEquipment": {
+      "placeholders": {
+        "error": {
+          "type": "String"
+        }
+      }
+    },
+    "equipmentCheckoutTitle": "استعارة المعدات",
+    "notes": "ملاحظات",
+    "checkout": "استعارة",
+    "totalItems": "إجمالي العناصر",
+    "checkoutConfirmation": "تأكيد الاستعارة",
+    "confirmCheckoutMessage": "هل أنت متأكد من رغبتك في استعارة المعدات المحددة؟",
+    "confirm": "تأكيد",
+    "checkoutSuccess": "تم استعارة المعدات بنجاح!",
+    "checkoutFailed": "فشل في استعارة المعدات.",
+    "quantityUnavailable": "الكمية المحددة لـ {equipmentName} غير متوفرة. المتاح: {availableQuantity}",
+    "@quantityUnavailable": {
+      "placeholders": {
+        "equipmentName": {
+          "type": "String"
+        },
+        "availableQuantity": {
+          "type": "int"
+        }
+      }
+    },
+    "selectedQuantity": "الكمية المحددة: {quantity}",
+    "@selectedQuantity": {
+      "placeholders": {
+        "quantity": {
+          "type": "int"
+        }
+      }
+    }
 }

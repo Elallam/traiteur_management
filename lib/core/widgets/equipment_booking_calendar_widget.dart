@@ -14,10 +14,10 @@ class EquipmentBookingCalendarWidget extends StatefulWidget {
   final DateTime? selectedDate;
 
   const EquipmentBookingCalendarWidget({
-    Key? key,
+    super.key,
     this.onDateSelected,
     this.selectedDate,
-  }) : super(key: key);
+  });
 
   @override
   State<EquipmentBookingCalendarWidget> createState() => _EquipmentBookingCalendarWidgetState();

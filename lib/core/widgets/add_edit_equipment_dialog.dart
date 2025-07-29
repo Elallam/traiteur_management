@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models/equipment_model.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class AddEditEquipmentDialog extends StatefulWidget {
   final EquipmentModel? equipment;
@@ -45,8 +46,9 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: Text(widget.equipment == null ? 'Add Equipment' : 'Edit Equipment'),
+      title: Text(widget.equipment == null ? l10n.addEquipment : l10n.editEquipment), // Localized title
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.8,
         child: SingleChildScrollView(
@@ -58,13 +60,13 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                 // Name Field
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Equipment Name *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.equipmentNameRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter equipment name';
+                      return l10n.validationEnterEquipmentName; // Localized validation
                     }
                     return null;
                   },
@@ -74,9 +76,9 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                 // Category Dropdown
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
-                  decoration: const InputDecoration(
-                    labelText: 'Category *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.categoryRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   items: _categories.map((category) {
                     return DropdownMenuItem(
@@ -98,18 +100,18 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _totalQuantityController,
-                        decoration: const InputDecoration(
-                          labelText: 'Total Quantity *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.totalQuantityRequired, // Localized label
+                          border: const OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Enter total quantity';
+                            return l10n.validationEnterTotalQuantity; // Localized validation
                           }
                           final quantity = int.tryParse(value);
                           if (quantity == null || quantity <= 0) {
-                            return 'Enter valid quantity';
+                            return l10n.validationEnterValidQuantity; // Localized validation
                           }
                           return null;
                         },
@@ -125,22 +127,22 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _availableQuantityController,
-                        decoration: const InputDecoration(
-                          labelText: 'Available Quantity *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.availableQuantityRequired, // Localized label
+                          border: const OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Enter available quantity';
+                            return l10n.validationEnterAvailableQuantity; // Localized validation
                           }
                           final available = int.tryParse(value);
                           final total = int.tryParse(_totalQuantityController.text);
                           if (available == null || available < 0) {
-                            return 'Enter valid quantity';
+                            return l10n.validationEnterValidQuantity; // Localized validation
                           }
                           if (total != null && available > total) {
-                            return 'Cannot exceed total quantity';
+                            return l10n.validationCannotExceedTotalQuantity; // Localized validation
                           }
                           return null;
                         },
@@ -153,9 +155,9 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                 // Description Field
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description (Optional)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.descriptionOptional, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   maxLines: 3,
                 ),
@@ -164,9 +166,9 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                 // Image URL Field
                 TextFormField(
                   controller: _imageUrlController,
-                  decoration: const InputDecoration(
-                    labelText: 'Image URL (Optional)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.imageUrlOptional, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ],
@@ -177,7 +179,7 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel), // Localized
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _saveEquipment,
@@ -187,7 +189,7 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           )
-              : Text(widget.equipment == null ? 'Add' : 'Update'),
+              : Text(widget.equipment == null ? l10n.add : l10n.update), // Localized
         ),
       ],
     );
@@ -202,6 +204,7 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
 
     try {
       final stockProvider = Provider.of<StockProvider>(context, listen: false);
+      final l10n = AppLocalizations.of(context)!;
 
       final equipment = EquipmentModel(
         id: widget.equipment?.id ?? '',
@@ -233,8 +236,8 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
           SnackBar(
             content: Text(
               widget.equipment == null
-                  ? 'Equipment added successfully'
-                  : 'Equipment updated successfully',
+                  ? l10n.equipmentAddedSuccessfully
+                  : l10n.equipmentUpdatedSuccessfully,
             ),
             backgroundColor: AppColors.success,
           ),
@@ -245,17 +248,18 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
             content: Text(
               stockProvider.errorMessage ??
                   (widget.equipment == null
-                      ? 'Failed to add equipment'
-                      : 'Failed to update equipment'),
+                      ? l10n.failedToAddEquipment
+                      : l10n.failedToUpdateEquipment),
             ),
             backgroundColor: AppColors.error,
           ),
         );
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text('${l10n.error}: $e'), // Localized error message
           backgroundColor: AppColors.error,
         ),
       );

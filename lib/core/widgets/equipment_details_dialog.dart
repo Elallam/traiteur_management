@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/equipment_model.dart';
 import '../constants/app_colors.dart';
 import 'add_edit_equipment_dialog.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class EquipmentDetailsDialog extends StatelessWidget {
   final EquipmentModel equipment;
@@ -11,6 +12,7 @@ class EquipmentDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
@@ -117,7 +119,7 @@ class EquipmentDetailsDialog extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            equipment.isAvailable ? 'Available' : 'All Checked Out',
+                            equipment.isAvailable ? l10n.available : l10n.allCheckedOut, // Localized
                             style: TextStyle(
                               color: equipment.isAvailable ? AppColors.success : AppColors.error,
                               fontWeight: FontWeight.w600,
@@ -144,9 +146,9 @@ class EquipmentDetailsDialog extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Availability',
-                              style: TextStyle(
+                            Text(
+                              l10n.availability, // Localized
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
                               ),
@@ -181,16 +183,16 @@ class EquipmentDetailsDialog extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Details Grid
-                    _buildDetailRow('Total Quantity', equipment.totalQuantity.toString()),
-                    _buildDetailRow('Available', equipment.availableQuantity.toString()),
-                    _buildDetailRow('Checked Out', equipment.checkedOutQuantity.toString()),
-                    _buildDetailRow('Category', equipment.category.replaceAll('_', ' ').toUpperCase()),
+                    _buildDetailRow(l10n.totalQuantity, equipment.totalQuantity.toString()), // Localized
+                    _buildDetailRow(l10n.available, equipment.availableQuantity.toString()), // Localized
+                    _buildDetailRow(l10n.checkedOut, equipment.checkedOutQuantity.toString()), // Localized
+                    _buildDetailRow(l10n.category, equipment.category.replaceAll('_', ' ').toUpperCase()), // Localized
 
                     if (equipment.description != null && equipment.description!.isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      const Text(
-                        'Description',
-                        style: TextStyle(
+                      Text(
+                        l10n.description, // Localized
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
@@ -217,11 +219,11 @@ class EquipmentDetailsDialog extends StatelessWidget {
                       child: Column(
                         children: [
                           _buildDetailRow(
-                            'Created',
+                            l10n.created, // Localized
                             _formatDateTime(equipment.createdAt),
                           ),
                           _buildDetailRow(
-                            'Last Updated',
+                            l10n.lastUpdated, // Localized
                             _formatDateTime(equipment.updatedAt),
                           ),
                         ],
@@ -243,7 +245,7 @@ class EquipmentDetailsDialog extends StatelessWidget {
                         _showEditDialog(context);
                       },
                       icon: const Icon(Icons.edit),
-                      label: const Text('Edit'),
+                      label: Text(l10n.edit), // Localized
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -254,7 +256,7 @@ class EquipmentDetailsDialog extends StatelessWidget {
                         _showCheckoutDialog(context);
                       } : null,
                       icon: const Icon(Icons.output),
-                      label: const Text('Checkout'),
+                      label: Text(l10n.checkout), // Localized
                     ),
                   ),
                 ],
@@ -307,10 +309,10 @@ class EquipmentDetailsDialog extends StatelessWidget {
   }
 
   void _showCheckoutDialog(BuildContext context) {
-    // TODO: Implement checkout dialog functionality
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Equipment checkout functionality - Coming soon'),
+      SnackBar(
+        content: Text(l10n.equipmentCheckoutFunctionalityComingSoon), // Localized
       ),
     );
   }

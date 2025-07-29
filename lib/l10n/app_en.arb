@@ -56,6 +56,7 @@
   "mealPrice": "Price",
   "mealCategory": "Category",
   "mealIngredients": "Ingredients",
+  "ingredients": "Ingredients",
 
   "equipment": "Equipment",
   "equipmentBooking": "Equipment Booking",
@@ -131,5 +132,1026 @@
   "back": "Back",
   "next": "Next",
   "previous": "Previous",
-  "close": "Close"
+  "close": "Close",
+
+  "keyMetrics": "Key Metrics",
+  "totalRevenue": "Total Revenue",
+  "thisMonth": "This Month",
+  "thisWeek": "This Week",
+  "thisYear": "This Year",
+  "activeEvents": "Active Events",
+  "upcoming": "Upcoming",
+  "stockValue": "Stock Value",
+  "lowStock": "Low Stock",
+  "todaysEvents": "Today's Events",
+  "noEventsToday": "No Events Today",
+  "enjoyFreeDay": "Enjoy your free day!",
+  "recentActivities": "Recent Activities",
+  "noRecentActivities": "No recent activities",
+  "updatedAgo": "Updated {time} ago",
+  "@updatedAgo": {
+    "description": "Shows when something was last updated",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "2h"
+      }
+    }
+  },
+  "quickStats": "Quick Stats",
+  "equipmentUtilization": "Equipment Utilization",
+  "averageOrderValue": "Avg Order Value",
+  "monthlyRevenue": "Monthly Revenue",
+  "average": "Average",
+  "fullyBooked": "Fully Booked",
+  "mostUtilizedEquipment": "Most Utilized Equipment",
+  "reportFilters": "Report Filters",
+  "financialReport": "Financial Report",
+  "totalCost": "Total Cost",
+  "netProfit": "Net Profit",
+  "profitMargin": "Profit Margin",
+  "completedEvents": "Completed Events",
+  "equipmentStatusReport": "Equipment Status Report",
+  "totalEquipment": "Total Equipment",
+  "checkedOut": "Checked Out",
+  "lowStockAlerts": "Low Stock Alerts",
+  "exportReports": "Export Reports",
+  "exportPdf": "Export PDF",
+  "exportExcel": "Export Excel",
+  "quickActions": "Quick Actions",
+  "createNewEvent": "Create New Event",
+  "allGood": "All Good!",
+  "all": "All",
+  "noAlertsMessage": "No alerts or notifications at the moment",
+  "viewAll": "View All",
+  "generatingReport": "Generating {period} report...",
+  "@generatingReport": {
+    "description": "Message shown when generating a report",
+    "placeholders": {
+      "period": {
+        "type": "String",
+        "example": "monthly"
+      }
+    }
+  },
+  "exportingToPdf": "Exporting to PDF...",
+  "exportingToExcel": "Exporting to Excel...",
+  "utilizationReport": "Utilization Report",
+  "basedOnEvents": "Based on {count} completed events",
+  "@basedOnEvents": {
+    "description": "Shows number of events in financial report",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "25"
+      }
+    }
+  },
+  "guestsCount": "{count} guests",
+  "@guestsCount": {
+    "description": "Number of guests",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "itemsCount": "{count} Items",
+  "@itemsCount": {
+    "description": "Number of items",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "january": "Jan",
+  "february": "Feb",
+  "march": "Mar",
+  "april": "Apr",
+  "may": "May",
+  "june": "Jun",
+  "july": "Jul",
+  "august": "Aug",
+  "september": "Sep",
+  "october": "Oct",
+  "november": "Nov",
+  "december": "Dec",
+  "dayAbbreviation": "d",
+  "hourAbbreviation": "h",
+  "minuteAbbreviation": "m",
+  "justNow": "Just now",
+  "popular": "Popular",
+  "searchEmployeeHint": "Search employees by name, email, or phone...",
+  "sortByName": "Sort by Name",
+  "sortByDate": "Sort by Date",
+  "sortByCheckouts": "Sort by Checkouts",
+  "totalEmployees": "Total Employees",
+  "activeCheckouts": "Active Checkouts",
+  "overdue": "Overdue",
+  "totalCheckouts": "Total Checkouts",
+  "needsAttention": "Needs Attention",
+  "noEmployeesFoundSearch": "No employees found matching \"{query}\"",
+  "@noEmployeesFoundSearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noEmployeesFound": "No employees found",
+  "adjustSearchFilters": "Try adjusting your search or filters",
+  "addFirstEmployeeHint": "Add your first employee to get started",
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "viewDetails": "View Details",
+  "viewCheckouts": "View Checkouts",
+  "employeeCheckoutsComingSoon": "Checkouts for {employeeName} - Coming soon",
+  "@employeeCheckoutsComingSoon": {
+    "placeholders": {
+      "employeeName": {
+        "type": "String"
+      }
+    }
+  },
+  "employeeDeactivatedSuccess": "Employee deactivated successfully",
+  "employeeActivatedSuccess": "Employee activated successfully",
+  "failedToUpdateEmployeeStatus": "Failed to update employee status",
+  "deleteEmployee": "Delete Employee",
+  "deleteEmployeeConfirmation": "Are you sure you want to delete {employeeName}? This action cannot be undone.",
+  "@deleteEmployeeConfirmation": {
+    "placeholders": {
+      "employeeName": {
+        "type": "String"
+      }
+    }
+  },
+  "employeeDeletedSuccess": "Employee deleted successfully",
+  "failedToDeleteEmployee": "Failed to delete employee",
+  "validationNameTooShort": "Name must be at least 2 characters",
+  "address": "Address",
+  "update": "Update",
+  "create": "Create",
+  "employeeUpdatedSuccess": "Employee updated successfully",
+  "employeeCreatedSuccess": "Employee created successfully",
+  "failedToUpdateEmployee": "Failed to update employee",
+  "failedToCreateEmployee": "Failed to create employee",
+  "errorOccurred": "An error occurred",
+  "employeeInformation": "Employee Information",
+  "joined": "Joined",
+  "performanceStatistics": "Performance Statistics",
+  "completedCheckouts": "Completed Checkouts",
+  "overdueItems": "Overdue Items",
+  "reliabilityScore": "Reliability Score",
+  "currentCheckouts": "Current Checkouts",
+  "equipmentId": "Equipment ID",
+  "quantity": "Quantity",
+  "overdueByDays": "Overdue by {days} days",
+  "@overdueByDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "employeeAnalytics": "Employee Analytics",
+  "overview": "Overview",
+  "activeEmployees": "Active Employees",
+  "topPerformingEmployees": "Top Performing Employees",
+  "reliability": "Reliability",
+  "totalCheckoutsCount": "{count} checkouts",
+  "@totalCheckoutsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "employeesRequiringAttention": "Employees Requiring Attention",
+  "detailedAnalyticsExportComingSoon": "Detailed analytics export - Coming soon",
+  "exportReport": "Export Report",
+  "articles": "Articles",
+  "searchStockItems": "Search stock items...",
+  "addItem": "Add Item",
+  "stockData": "stock data",
+  "totalArticles": "Total Articles",
+  "totalValue": "Total Value",
+  "updateQuantity": "Update Quantity",
+  "newQuantity": "New Quantity",
+  "quantityUpdatedSuccess": "Quantity updated successfully",
+  "failedToUpdateQuantity": "Failed to update quantity",
+  "deleteArticle": "Delete Article",
+  "deleteArticleConfirmation": "Are you sure you want to delete \"{articleName}\"?",
+  "@deleteArticleConfirmation": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "articleDeletedSuccess": "Article deleted successfully",
+  "failedToDeleteArticle": "Failed to delete article",
+  "noArticlesFound": "No articles found",
+  "addFirstArticleHint": "Add your first article to get started",
+  "allCheckedOut": "All Checked Out",
+  "checkout": "Checkout",
+  "equipmentCheckoutComingSoon": "Equipment checkout - Coming soon",
+  "equipmentCheckoutHistoryComingSoon": "Equipment checkout history - Coming soon",
+  "deleteEquipment": "Delete Equipment",
+  "deleteEquipmentConfirmation": "Are you sure you want to delete \"{equipmentName}\"?",
+  "@deleteEquipmentConfirmation": {
+    "placeholders": {
+      "equipmentName": {
+        "type": "String"
+      }
+    }
+  },
+  "equipmentDeletedSuccess": "Equipment deleted successfully",
+  "failedToDeleteEquipment": "Failed to delete equipment",
+  "allOut": "All Out",
+  "noEquipmentFound": "No equipment found",
+  "addFirstEquipmentHint": "Add your first equipment to get started",
+  "disabled": "Disabled",
+  "outOfStock": "Out of Stock",
+  "disable": "Disable",
+  "enable": "Enable",
+  "cost": "Cost",
+  "profit": "Profit",
+  "servings": "Servings",
+  "ingredientsLow": "Ingredients Low",
+  "minutes": "{count} minutes",
+  "@minutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ingredientsCount": "{count} ingredients",
+  "@ingredientsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mealDisabledSuccess": "Meal disabled successfully",
+  "mealEnabledSuccess": "Meal enabled successfully",
+  "failedToUpdateMealAvailability": "Failed to update meal availability",
+  "deleteMeal": "Delete Meal",
+  "deleteMealConfirmation": "Are you sure you want to delete \"{mealName}\"?",
+  "@deleteMealConfirmation": {
+    "placeholders": {
+      "mealName": {
+        "type": "String"
+      }
+    }
+  },
+  "mealDeletedSuccess": "Meal deleted successfully",
+  "failedToDeleteMeal": "Failed to delete meal",
+  "noMealsFound": "No meals found",
+  "addFirstMealHint": "Add your first meal to get started",
+  "stockAnalyticsComingSoon": "Stock analytics - Coming soon",
+  "price": "Price",
+  "articleNameRequired": "Article Name *",
+  "validationEnterArticleName": "Please enter article name",
+  "categoryRequired": "Category *",
+  "pricePerUnitRequired": "Price per Unit *",
+  "validationEnterPrice": "Enter price",
+  "validationEnterValidPrice": "Enter valid price",
+  "quantityRequired": "Quantity *",
+  "validationEnterQuantity": "Enter quantity",
+  "validationEnterValidQuantity": "Enter valid quantity",
+  "unitRequired": "Unit *",
+  "descriptionOptional": "Description (Optional)",
+  "imageUrlOptional": "Image URL (Optional)",
+  "articleAddedSuccessfully": "Article added successfully",
+  "articleUpdatedSuccessfully": "Article updated successfully",
+  "failedToAddArticle": "Failed to add article",
+  "failedToUpdateArticle": "Failed to update article",
+  "equipmentNameRequired": "Equipment Name *",
+  "validationEnterEquipmentName": "Please enter equipment name",
+  "totalQuantityRequired": "Total Quantity *",
+  "validationEnterTotalQuantity": "Enter total quantity",
+  "availableQuantityRequired": "Available Quantity *",
+  "validationEnterAvailableQuantity": "Enter available quantity",
+  "validationCannotExceedTotalQuantity": "Cannot exceed total quantity",
+  "equipmentAddedSuccessfully": "Equipment added successfully",
+  "equipmentUpdatedSuccessfully": "Equipment updated successfully",
+  "failedToAddEquipment": "Failed to add equipment",
+  "failedToUpdateEquipment": "Failed to update equipment",
+  "mealNameRequired": "Meal Name *",
+  "validationEnterMealName": "Please enter meal name",
+  "descriptionRequired": "Description *",
+  "validationEnterDescription": "Please enter description",
+  "sellingPriceRequired": "Selling Price *",
+  "servingsRequired": "Servings *",
+  "validationEnterServings": "Enter servings",
+  "validationEnterValidServings": "Enter valid servings",
+  "preparationTimeMinutesRequired": "Preparation Time (minutes) *",
+  "validationEnterPreparationTime": "Enter preparation time",
+  "validationEnterValidTime": "Enter valid time",
+  "addIngredient": "Add Ingredient",
+  "sellingPrice": "Selling Price",
+  "selectArticle": "Select Article",
+  "searchArticles": "Search Articles",
+  "addArticleName": "Add {articleName}",
+  "@addArticleName": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "quantityUnit": "Quantity ({unit})",
+  "@quantityUnit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "availableQuantityUnit": "Available: {quantity} {unit}",
+  "@availableQuantityUnit": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "mealAddedSuccessfully": "Meal added successfully",
+  "mealUpdatedSuccessfully": "Meal updated successfully",
+  "failedToAddMeal": "Failed to add meal",
+  "failedToUpdateMeal": "Failed to update meal",
+  "inStock": "In Stock",
+  "pricePerUnit": "Price per unit",
+  "unit": "Unit",
+  "category": "Category",
+  "created": "Created",
+  "lastUpdated": "Last updated",
+  "updateArticleQuantityTitle": "Update {articleName} quantity",
+  "@updateArticleQuantityTitle": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "newQuantityUnit": "New quantity ({unit})",
+  "@newQuantityUnit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "availability": "Availability",
+  "totalQuantity": "Total Quantity",
+  "prepTime": "Prep Time",
+  "equipmentCheckoutFunctionalityComingSoon": "Equipment checkout functionality - Coming soon",
+  "ingredientDetails": "{articleName} ({quantity} {unit})",
+  "@ingredientDetails": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      },
+      "quantity": {
+        "type": "double"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "basicInfo": "Basic Info",
+  "createEvent": "Create Event",
+  "updateEvent": "Update Event",
+  "eventTitle": "Event Title",
+  "enterEventTitle": "Enter event title",
+  "describeEvent": "Describe the event",
+  "eventDate": "Event Date",
+  "eventTime": "Event Time",
+  "eventAddress": "Event Address",
+  "enterCompleteAddress": "Enter complete address",
+  "expectedGuests": "Expected Guests",
+  "numberOfGuests": "Number of guests",
+  "clientInformation": "Client Information",
+  "clientName": "Client Name",
+  "enterClientName": "Enter client name",
+  "clientPhone": "Client Phone",
+  "enterPhoneNumber": "Enter phone number",
+  "clientEmail": "Client Email",
+  "enterEmailAddress": "Enter email address",
+  "notesOptional": "Notes (Optional)",
+  "additionalNotes": "Additional notes",
+  "selectedMeals": "Selected Meals",
+  "mealsSelected": "{count} meal(s) selected",
+  "@mealsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pricePerServing": "{price} per serving",
+  "@pricePerServing": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedEquipment": "Selected Equipment",
+  "itemsSelected": "{count} item(s) selected",
+  "@itemsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "availableQuantityTotal": "Available: {available}/{total}",
+  "@availableQuantityTotal": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAtLeastOneMeal": "Please select at least one meal",
+  "equipmentAvailabilityConflicts": "Equipment availability conflicts detected. Please resolve them first.",
+  "eventCreatedSuccessWithBooking": "Event created successfully with equipment booking confirmed",
+  "failedToSaveEvent": "Failed to save event",
+  "checkoutEquipment": "Checkout Equipment",
+  "returnEquipment": "Return Equipment",
+  "editEvent": "Edit Event",
+  "duplicateEvent": "Duplicate Event",
+  "duplicate": "Duplicate",
+  "notes": "Notes",
+  "cancelEvent": "Cancel Event",
+  "timeline": "Timeline",
+  "inDays": "In {days} day(s)",
+  "@inDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "eventDetails": "Event Details",
+  "dateTime": "Date & Time",
+  "name": "Name",
+  "phone": "Phone",
+  "financialSummary": "Financial Summary",
+  "totalPrice": "Total Price",
+  "profitMarginValue": "Profit Margin: {value}%",
+  "@profitMarginValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "totalPriceValue": "Total Price Value: {value}%",
+  "@totalPriceValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "totalItems": "Total Items",
+  "returned": "Returned",
+  "quantityValue": "Quantity: {value}",
+  "@quantityValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "statusValue": "Status: {value}",
+  "@statusValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "checkedOutDate": "Checked out: {date}",
+  "@checkedOutDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "returnedDate": "Returned: {date}",
+  "@returnedDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "eventCreated": "Event Created",
+  "eventCreatedSystem": "Event was created in the system",
+  "equipmentAssigned": "Equipment Assigned",
+  "equipmentItemsAssigned": "{count} equipment items assigned",
+  "@equipmentItemsAssigned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "equipmentCheckedOut": "Equipment Checked Out",
+  "itemsCheckedOut": "{count} items checked out",
+  "@itemsCheckedOut": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eventScheduled": "Event Scheduled",
+  "eventScheduledToTakePlace": "Event is scheduled to take place",
+  "eventCompleted": "Event Completed",
+  "eventTookPlace": "Event took place",
+  "equipmentReturned": "Equipment Returned",
+  "itemsReturned": "{count} items returned",
+  "@itemsReturned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAsStatus": "Mark as {status}",
+  "@markAsStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "eventStatusPlanned": "Event is being planned",
+  "eventStatusConfirmed": "Event is confirmed and ready",
+  "eventStatusInProgress": "Event is currently happening",
+  "eventStatusCompleted": "Event has been completed",
+  "eventStatusCancelled": "Event has been cancelled",
+  "unknownStatus": "Unknown status",
+  "statusUpdatedTo": "Status updated to {status}",
+  "@statusUpdatedTo": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateStatus": "Failed to update status",
+  "status": "Status",
+  "unkown": "Unkown",
+  "checkoutDate": "Checkout Date",
+  "returnDate": "Return Date",
+  "checkoutEquipmentConfirmation": "This will check out all assigned equipment for this event. Make sure the equipment is ready for pickup.",
+  "equipmentCheckedOutSuccessfully": "Equipment checked out successfully",
+  "failedToCheckoutEquipment": "Failed to checkout equipment",
+  "returnEquipmentConfirmation": "This will return all checked out equipment for this event. Make sure all equipment has been collected and is in good condition.",
+  "returnText": "Return",
+  "equipmentReturnedSuccessfully": "Equipment returned successfully",
+  "failedToReturnEquipment": "Failed to return equipment",
+  "occasionManagement": "Occasion Management",
+  "allEvents": "All Events",
+  "newEvent": "New Event",
+  "searchOccasions": "Search occasions...",
+  "noOccasionsFoundSearch": "No occasions found for \"{query}\"",
+  "@noOccasionsFoundSearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noOccasionsFound": "No occasions found",
+  "addFirstEvent": "Add First Event",
+  "planned": "Planned",
+  "confirmed": "Confirmed",
+  "inProgress": "In Progress",
+  "today": "Today",
+  "eventIsToday": "Event is today!",
+  "margin": "Margin",
+  "requiresAttention": "Requires Attention",
+  "totalEvents": "Total Events",
+  "totalProfit": "Total Profit",
+  "viewCalendar": "View Calendar",
+  "analyticsDashboard": "Analytics Dashboard",
+  "comingSoon": "Coming Soon",
+  "duplicatingEvent": "Duplicating {eventName}",
+  "@duplicatingEvent": {
+    "placeholders": {
+      "eventName": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteEvent": "Delete Event",
+  "deleteEventConfirmation": "Are you sure you want to delete \"{eventName}\"? This action cannot be undone.",
+  "@deleteEventConfirmation": {
+    "placeholders": {
+      "eventName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventDeletedSuccessfully": "Event deleted successfully",
+  "eventUpdatedSuccessfully": "Event updated successfully",
+  "isRunningLow": "is running low",
+  "remaining": "remaining",
+  "equipmentFullyBooked": "Equipment Fully Booked",
+  "isFullyCheckedOut": "is fully checked out",
+  "refreshAlerts": "Refresh Alerts",
+  "markAllAsRead": "Mark All as Read",
+  "notificationSettings": "Notification Settings",
+  "noUrgentAlerts": "No urgent alerts",
+  "noEventAlerts": "No event alerts",
+  "noEquipmentAlerts": "No equipment alerts",
+  "allCaughtUp": "All caught up!",
+  "alertDismissed": "Alert dismissed",
+  "undo": "Undo",
+  "inHours": "in {hours} hour(s)",
+  "@inHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "soon": "Soon",
+  "tomorrow": "Tomorrow",
+  "restock": "Restock",
+  "action": "Action",
+  "allAlertsMarkedAsRead": "All alerts marked as read",
+  "checkoutEquipmentForEvent": "Checkout equipment for this event",
+  "event": "Event",
+  "equipmentItems": "Equipment Items",
+  "restockItem": "Restock Item",
+  "item": "Item",
+  "currentStock": "Current Stock",
+  "addQuantity": "Add Quantity",
+  "addStock": "Add Stock",
+  "eventReminders": "Event Reminders",
+  "getNotifiedAboutUpcomingEvents": "Get notified about upcoming events",
+  "equipmentAlerts": "Equipment Alerts",
+  "equipmentCheckoutAndAvailabilityAlerts": "Equipment checkout and availability alerts",
+  "stockAlerts": "Stock Alerts",
+  "lowStockAndInventoryAlerts": "Low stock and inventory alerts",
+  "pushNotifications": "Push Notifications",
+  "receivePushNotifications": "Receive push notifications",
+  "settingsSaved": "Settings saved",
+  "addedQuantityToItem": "Added {quantity} {unit} to {itemName}",
+  "@addedQuantityToItem": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      },
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRestock": "Failed to restock",
+  "shareAnalytics": "Share Analytics",
+  "trends": "Trends",
+  "performance": "Performance",
+  "changePeriod": "Change Period",
+  "quickInsights": "Quick Insights",
+  "excellent": "Excellent",
+  "good": "Good",
+  "needsImprovement": "Needs Improvement",
+  "highestRevenueMonth": "Highest Revenue Month",
+  "eventSuccessRate": "Event Success Rate",
+  "eventsCompletedSuccessfully": "Events completed successfully",
+  "topPerformingEvents": "Top Performing Events",
+  "noCompletedEventsInPeriod": "No completed events in this period",
+  "revenueTrend": "Revenue Trend",
+  "eventsCount": "Events Count",
+  "profitMarginTrend": "Profit Margin Trend",
+  "revenueChart": "Revenue Chart",
+  "eventsCountChart": "Events Count Chart",
+  "profitMarginChart": "Profit Margin Chart",
+  "noDataAvailableForPeriod": "No data available for this period",
+  "performanceSummary": "Performance Summary",
+  "successRate": "Success Rate",
+  "description": "Description",
+  "urgent": "Urgent",
+  "events": "Events",
+  "bestMonth": "Best Month",
+  "avgProfitMargin": "Avg Profit Margin",
+  "growthRate": "Growth Rate",
+  "performanceByEventSize": "Performance by Event Size",
+  "smallEvents": "Small Events",
+  "mediumEvents": "Medium Events",
+  "largeEvents": "Large Events",
+  "eventsCountLabel": "{count} events",
+  "@eventsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyComparison": "Monthly Comparison",
+  "noDataAvailableForMonthlyComparison": "No data available for monthly comparison",
+  "customRange": "Custom Range",
+  "exportFunctionalityComingSoon": "Export functionality coming soon",
+  "shareFunctionalityComingSoon": "Share functionality coming soon",
+  "settingsFunctionalityComingSoon": "Settings functionality coming soon",
+  "loginScreenTitle": "Traiteur Management",
+  "welcomeBack": "Welcome Back!",
+  "signInToManage": "Sign in to manage your catering business",
+  "emailAddress": "Email Address",
+  "enterYourEmail": "Enter your email",
+  "passwordText": "Password",
+  "enterYourPassword": "Enter your password",
+  "rememberMe": "Remember me",
+  "forgotPasswordQuestion": "Forgot Password?",
+  "signIn": "Sign In",
+  "orText": "OR",
+  "dontHaveAccount": "Don't have an account?",
+  "signUp": "Sign Up",
+  "copyrightText": "© 2024 Traiteur Management System",
+  "versionText": "Version 1.0.0",
+  "loginFailedMessage": "Login failed",
+  "pleaseEnterEmailFirst": "Please enter your email address first",
+  "passwordResetEmailSent": "Password reset email sent successfully",
+  "failedToSendResetEmail": "Failed to send reset email",
+  "signingIn": "Signing in...",
+  "professionalCateringManagement": "Professional Catering Management",
+  "loadingMessage": "Loading...",
+  "totalReturns": "Total Returns",
+  "takeItemsForEvent": "Take items for event",
+  "quickReturn": "Quick Return",
+  "returnMultipleItems": "Return multiple items",
+  "noActiveCheckouts": "No active checkouts",
+  "allEquipmentReturned": "All equipment has been returned.",
+  "myActivity": "My Activity",
+  "noEquipmentToReturn": "No equipment to return",
+  "confirmReturn": "Confirm Return",
+  "confirmReturnEquipment": "Are you sure you want to return this equipment?",
+  "myEquipmentHistory": "My Equipment History",
+  "equipmentOverdue": "Equipment Overdue",
+  "equipmentCheckedOutAgo": "Equipment checked out {duration} ago",
+  "@equipmentCheckedOutAgo": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "noNewNotifications": "No new notifications",
+  "atText": "at",
+  "failedToLoadActivityData": "Failed to load activity data: {error}",
+  "@failedToLoadActivityData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownEquipment": "Unknown Equipment",
+  "duration": "Duration",
+  "occasionId": "Occasion ID",
+  "equipmentOverdueForReturn": "This equipment is overdue for return",
+  "filterByDateRange": "Filter by date range",
+  "clearDateFilter": "Clear date filter",
+  "searchEquipmentOrNotes": "Search equipment or notes...",
+  "showingDateRange": "Showing {startDate} - {endDate}",
+  "@showingDateRange": {
+    "placeholders": {
+      "startDate": {
+        "type": "String"
+      },
+      "endDate": {
+        "type": "String"
+      }
+    }
+  },
+  "noReturnedItems": "No returned items",
+  "noEquipmentReturnedYet": "No equipment has been returned yet.",
+  "noOverdueItems": "No overdue items",
+  "allEquipmentReturnedOnTime": "Great! All equipment is returned on time.",
+  "noActivityFound": "No activity found",
+  "noEquipmentActivityMatchesSearch": "No equipment activity matches your search.",
+  "out": "Out",
+  "inText": "In",
+  "ongoing": "ongoing",
+  "durationDaysHours": "{days}d {hours}h",
+  "@durationDaysHours": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHoursMinutes": "{hours}h {minutes}m",
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "durationMinutes": "{minutes}m",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "chairs": "Chairs",
+    "tables": "Tables",
+    "utensils": "Utensils",
+    "decorations": "Decorations",
+    "other": "Other",
+    "failedToLoadEquipment": "Failed to load equipment: {error}",
+    "@failedToLoadEquipment": {
+      "placeholders": {
+        "error": {
+          "type": "String"
+        }
+      }
+    },
+    "equipmentCheckoutTitle": "Equipment Checkout",
+    "notes": "Notes",
+    "checkout": "Checkout",
+    "totalItems": "Total Items",
+    "checkoutConfirmation": "Checkout Confirmation",
+    "confirmCheckoutMessage": "Are you sure you want to checkout the selected equipment?",
+    "confirm": "Confirm",
+    "checkoutSuccess": "Equipment checked out successfully!",
+    "checkoutFailed": "Failed to checkout equipment.",
+    "quantityUnavailable": "Selected quantity for {equipmentName} is not available. Available: {availableQuantity}",
+    "@quantityUnavailable": {
+      "placeholders": {
+        "equipmentName": {
+          "type": "String"
+        },
+        "availableQuantity": {
+          "type": "int"
+        }
+      }
+    },
+    "selectedQuantity": "Selected Quantity: {quantity}",
+    "@selectedQuantity": {
+      "placeholders": {
+        "quantity": {
+          "type": "int"
+        }
+      }
+    },
+
+    "chairs": "كراسي",
+      "tables": "طاولات",
+      "utensils": "أواني",
+      "decorations": "ديكورات",
+      "other": "أخرى",
+      "failedToLoadEquipment": "فشل تحميل المعدات: {error}",
+      "@failedToLoadEquipment": {
+        "placeholders": {
+          "error": {
+            "type": "String"
+          }
+        }
+      },
+      "equipmentCheckoutTitle": "استعارة المعدات",
+      "notes": "ملاحظات",
+      "checkout": "استعارة",
+      "totalItems": "إجمالي العناصر",
+      "checkoutConfirmation": "تأكيد الاستعارة",
+      "confirmCheckoutMessage": "هل أنت متأكد من رغبتك في استعارة المعدات المحددة؟",
+      "confirm": "تأكيد",
+      "checkoutSuccess": "تم استعارة المعدات بنجاح!",
+      "checkoutFailed": "فشل في استعارة المعدات.",
+      "quantityUnavailable": "الكمية المحددة لـ {equipmentName} غير متوفرة. المتاح: {availableQuantity}",
+      "@quantityUnavailable": {
+        "placeholders": {
+          "equipmentName": {
+            "type": "String"
+          },
+          "availableQuantity": {
+            "type": "int"
+          }
+        }
+      },
+      "selectedQuantity": "الكمية المحددة: {quantity}",
+      "@selectedQuantity": {
+        "placeholders": {
+          "quantity": {
+            "type": "int"
+          }
+        }
+      },
+
+      "pleaseSelectEquipmentToCheckout": "Please select equipment to checkout.",
+        "userNotAuthenticated": "User not authenticated.",
+        "requested": "Requested",
+        "checkoutSuccessful": "Checkout Successful",
+        "successfullyCheckedOut": "Successfully checked out!",
+        "equipmentTypesCount": "{count} types selected",
+        "@equipmentTypesCount": {
+          "placeholders": {
+            "count": {
+              "type": "int"
+            }
+          }
+        },
+      "typesSelected": "{equipmentTypesString} selected",
+      "@typesSelected": {
+        "description": "Indicates that a certain number of equipment types have been selected",
+        "placeholders": {
+          "equipmentTypesString": {
+            "type": "String"
+          }
+        }
+      },
+        "totalItemsCount": "{count} items",
+        "@totalItemsCount": {
+          "placeholders": {
+            "count": {
+              "type": "int"
+            }
+          }
+        },
+        "forText": "for",
+        "done": "Done",
+        "equipmentUnavailable": "Equipment Unavailable",
+        "equipmentNotAvailableInRequestedQuantity": "Some equipment is not available in the requested quantity.",
+        "adjustQuantitiesOrRemoveUnavailableItems": "Please adjust quantities or remove unavailable items.",
+        "ok": "OK",
+        "searchEquipment": "Search equipment...",
+        "tryAdjustingYourSearchTerms": "Try adjusting your search terms.",
+        "noEquipmentAvailableInCategory": "No equipment available in this category.",
+        "quantityToCheckout": "Quantity to checkout",
+        "processing": "Processing...",
+        "chairs": "Chairs",
+        "tables": "Tables",
+        "utensils": "Utensils",
+        "decorations": "Decorations",
+        "other": "Other",
+        "failedToLoadEquipment": "Failed to load equipment: {error}",
+        "@failedToLoadEquipment": {
+          "placeholders": {
+            "error": {
+              "type": "String"
+            }
+          }
+        },
+        "equipmentCheckoutTitle": "Equipment Checkout",
+        "notes": "Notes",
+        "checkout": "Checkout",
+        "totalItems": "Total Items",
+        "checkoutConfirmation": "Checkout Confirmation",
+        "confirmCheckoutMessage": "Are you sure you want to checkout the selected equipment?",
+        "confirm": "Confirm",
+        "checkoutSuccess": "Equipment checked out successfully!",
+        "checkoutFailed": "Failed to checkout equipment.",
+        "quantityUnavailable": "Selected quantity for {equipmentName} is not available. Available: {availableQuantity}",
+        "@quantityUnavailable": {
+          "placeholders": {
+            "equipmentName": {
+              "type": "String"
+            },
+            "availableQuantity": {
+              "type": "int"
+            }
+          }
+        },
+        "selectedQuantity": "Selected Quantity: {quantity}",
+        "@selectedQuantity": {
+          "placeholders": {
+            "quantity": {
+              "type": "int"
+            }
+          }
+        }
 }

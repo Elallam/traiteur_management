@@ -10,6 +10,7 @@ import '../../models/equipment_model.dart';
 import '../../providers/occasion_provider.dart';
 import '../../providers/equipment_booking_provider.dart';
 import '../../providers/auth_provider.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class EnhancedOccasionDetailsScreen extends StatefulWidget {
   final OccasionModel occasion;
@@ -42,6 +43,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.occasion.title),
@@ -53,39 +55,39 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
             IconButton(
               onPressed: _showEquipmentCheckoutDialog,
               icon: const Icon(Icons.inventory),
-              tooltip: 'Checkout Equipment',
+              tooltip: l10n.checkoutEquipment, // Localized
             ),
           if (widget.occasion.status == 'completed' && _hasCheckedOutEquipment())
             IconButton(
               onPressed: _showEquipmentReturnDialog,
               icon: const Icon(Icons.assignment_return),
-              tooltip: 'Return Equipment',
+              tooltip: l10n.returnEquipment, // Localized
             ),
           PopupMenuButton<String>(
             onSelected: _handleMenuAction,
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'edit',
                 child: ListTile(
-                  leading: Icon(Icons.edit),
-                  title: Text('Edit Event'),
+                  leading: const Icon(Icons.edit),
+                  title: Text(l10n.editEvent), // Localized
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'duplicate',
                 child: ListTile(
-                  leading: Icon(Icons.copy),
-                  title: Text('Duplicate Event'),
+                  leading: const Icon(Icons.copy),
+                  title: Text(l10n.duplicateEvent), // Localized
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
               if (widget.occasion.status != 'completed')
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'cancel',
                   child: ListTile(
-                    leading: Icon(Icons.cancel, color: AppColors.error),
-                    title: Text('Cancel Event'),
+                    leading: const Icon(Icons.cancel, color: AppColors.error),
+                    title: Text(l10n.cancelEvent), // Localized
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -97,11 +99,11 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           indicatorColor: Colors.white,
-          tabs: const [
-            Tab(text: 'Overview'),
-            Tab(text: 'Meals'),
-            Tab(text: 'Equipment'),
-            Tab(text: 'Timeline'),
+          tabs: [
+            Tab(text: l10n.overview), // Localized
+            Tab(text: l10n.meals), // Localized
+            Tab(text: l10n.equipment), // Localized
+            Tab(text: l10n.timeline), // Localized
           ],
         ),
       ),
@@ -148,6 +150,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildStatusCard() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     Color statusColor = _getStatusColor(widget.occasion.status);
     IconData statusIcon = _getStatusIcon(widget.occasion.status);
 
@@ -183,7 +186,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
                   ),
                   if (widget.occasion.isUpcoming)
                     Text(
-                      'In ${widget.occasion.daysUntil} day(s)',
+                      l10n.inDays(widget.occasion.daysUntil), // Localized
                       style: const TextStyle(
                         color: AppColors.warning,
                         fontWeight: FontWeight.w500,
@@ -201,30 +204,31 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildEventDetailsCard() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Event Details',
-              style: TextStyle(
+            Text(
+              l10n.eventDetails, // Localized
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
-            _buildDetailRow(Icons.event, 'Date & Time',
+            _buildDetailRow(Icons.event, l10n.dateTime, // Localized
                 DateFormat('MMM dd, yyyy • HH:mm').format(widget.occasion.date)),
-            _buildDetailRow(Icons.location_on, 'Address', widget.occasion.address),
-            _buildDetailRow(Icons.group, 'Expected Guests',
+            _buildDetailRow(Icons.location_on, l10n.address, widget.occasion.address), // Localized
+            _buildDetailRow(Icons.group, l10n.expectedGuests, // Localized
                 widget.occasion.expectedGuests.toString()),
-            _buildDetailRow(Icons.description, 'Description',
+            _buildDetailRow(Icons.description, l10n.description, // Localized
                 widget.occasion.description),
             if (widget.occasion.notes != null)
-              _buildDetailRow(Icons.note, 'Notes', widget.occasion.notes!),
+              _buildDetailRow(Icons.note, l10n.notes, widget.occasion.notes!), // Localized
           ],
         ),
       ),
@@ -232,24 +236,25 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildClientInfoCard() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Client Information',
-              style: TextStyle(
+            Text(
+              l10n.clientInformation, // Localized
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
-            _buildDetailRow(Icons.person, 'Name', widget.occasion.clientName),
-            _buildDetailRow(Icons.phone, 'Phone', widget.occasion.clientPhone),
-            _buildDetailRow(Icons.email, 'Email', widget.occasion.clientEmail),
+            _buildDetailRow(Icons.person, l10n.name, widget.occasion.clientName), // Localized
+            _buildDetailRow(Icons.phone, l10n.phone, widget.occasion.clientPhone), // Localized
+            _buildDetailRow(Icons.email, l10n.email, widget.occasion.clientEmail), // Localized
           ],
         ),
       ),
@@ -257,15 +262,16 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildFinancialSummaryCard() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Financial Summary',
-              style: TextStyle(
+            Text(
+              l10n.financialSummary, // Localized
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -276,21 +282,21 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
               children: [
                 Expanded(
                   child: _buildFinancialItem(
-                    'Total Cost',
+                    l10n.totalCost, // Localized
                     '\$${widget.occasion.totalCost.toStringAsFixed(2)}',
                     AppColors.error,
                   ),
                 ),
                 Expanded(
                   child: _buildFinancialItem(
-                    'Total Price',
+                    l10n.totalPrice, // Localized
                     '\$${widget.occasion.totalPrice.toStringAsFixed(2)}',
                     AppColors.info,
                   ),
                 ),
                 Expanded(
                   child: _buildFinancialItem(
-                    'Profit',
+                    l10n.profit, // Localized
                     '\$${widget.occasion.profit.toStringAsFixed(2)}',
                     AppColors.success,
                   ),
@@ -309,7 +315,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
             ),
             const SizedBox(height: 4),
             Text(
-              'Profit Margin: ${widget.occasion.profitPercentage.toStringAsFixed(1)}%',
+              l10n.profitMarginValue(widget.occasion.profitPercentage.toStringAsFixed(1)), // Localized
               style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
@@ -322,6 +328,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildEquipmentStatusCard() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     final totalItems = widget.occasion.equipment.fold(0, (sum, eq) => sum + eq.quantity);
     final checkedOutItems = widget.occasion.equipment
         .where((eq) => eq.status == 'checked_out')
@@ -336,9 +343,9 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Equipment Status',
-              style: TextStyle(
+            Text(
+              l10n.equipmentStatus, // Localized
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -349,7 +356,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
               children: [
                 Expanded(
                   child: _buildEquipmentStatusItem(
-                    'Total Items',
+                    l10n.totalItems, // Localized
                     totalItems.toString(),
                     AppColors.info,
                     Icons.inventory,
@@ -357,7 +364,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
                 ),
                 Expanded(
                   child: _buildEquipmentStatusItem(
-                    'Checked Out',
+                    l10n.checkedOut, // Localized
                     checkedOutItems.toString(),
                     AppColors.warning,
                     Icons.output,
@@ -365,7 +372,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
                 ),
                 Expanded(
                   child: _buildEquipmentStatusItem(
-                    'Returned',
+                    l10n.returned, // Localized
                     returnedItems.toString(),
                     AppColors.success,
                     Icons.assignment_return,
@@ -380,6 +387,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildMealsTab() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: widget.occasion.meals.length,
@@ -393,7 +401,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
               child: Icon(Icons.restaurant, color: Colors.white),
             ),
             title: Text(meal.mealName),
-            subtitle: Text('Quantity: ${meal.quantity}'),
+            subtitle: Text(l10n.quantityValue(meal.quantity)), // Localized
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -406,7 +414,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
                   ),
                 ),
                 Text(
-                  'Total: \$${meal.totalPrice.toStringAsFixed(2)}',
+                  l10n.totalPriceValue(meal.totalPrice.toStringAsFixed(2)), // Localized
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -421,6 +429,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildEquipmentTab() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: widget.occasion.equipment.length,
@@ -440,9 +449,9 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Quantity: ${equipment.quantity}'),
+                Text(l10n.quantityValue(equipment.quantity)), // Localized
                 Text(
-                  'Status: ${equipment.status.toUpperCase()}',
+                  l10n.statusValue(equipment.status.toUpperCase()), // Localized
                   style: TextStyle(
                     color: _getEquipmentStatusColor(equipment.status),
                     fontWeight: FontWeight.w500,
@@ -450,12 +459,12 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
                 ),
                 if (equipment.checkoutDate != null)
                   Text(
-                    'Checked out: ${DateFormat('MMM dd, HH:mm').format(equipment.checkoutDate!)}',
+                    l10n.checkedOutDate(DateFormat('MMM dd, HH:mm').format(equipment.checkoutDate!)), // Localized
                     style: const TextStyle(fontSize: 12),
                   ),
                 if (equipment.returnDate != null)
                   Text(
-                    'Returned: ${DateFormat('MMM dd, HH:mm').format(equipment.returnDate!)}',
+                    l10n.returnedDate(DateFormat('MMM dd, HH:mm').format(equipment.returnDate!)), // Localized
                     style: const TextStyle(fontSize: 12),
                   ),
               ],
@@ -464,7 +473,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
                 ? IconButton(
               onPressed: () => _returnSingleEquipment(equipment),
               icon: const Icon(Icons.assignment_return, color: AppColors.success),
-              tooltip: 'Return Equipment',
+              tooltip: l10n.returnEquipment, // Localized
             )
                 : null,
           ),
@@ -489,6 +498,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildTimelineItem(Map<String, dynamic> event, bool isLast) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -543,12 +553,13 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   List<Map<String, dynamic>> _buildTimelineEvents() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     List<Map<String, dynamic>> events = [];
 
     // Event created
     events.add({
-      'title': 'Event Created',
-      'description': 'Event was created in the system',
+      'title': l10n.eventCreated, // Localized
+      'description': l10n.eventCreatedSystem, // Localized
       'time': DateFormat('MMM dd, yyyy • HH:mm').format(widget.occasion.createdAt),
       'color': AppColors.info,
     });
@@ -556,8 +567,8 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
     // Equipment assignments
     if (widget.occasion.equipment.isNotEmpty) {
       events.add({
-        'title': 'Equipment Assigned',
-        'description': '${widget.occasion.equipment.length} equipment items assigned',
+        'title': l10n.equipmentAssigned, // Localized
+        'description': l10n.equipmentItemsAssigned(widget.occasion.equipment.length), // Localized
         'time': DateFormat('MMM dd, yyyy • HH:mm').format(widget.occasion.createdAt),
         'color': AppColors.warning,
       });
@@ -571,8 +582,8 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
     if (checkedOutEquipment.isNotEmpty) {
       final checkoutDate = checkedOutEquipment.first.checkoutDate!;
       events.add({
-        'title': 'Equipment Checked Out',
-        'description': '${checkedOutEquipment.length} items checked out',
+        'title': l10n.equipmentCheckedOut, // Localized
+        'description': l10n.itemsCheckedOut(checkedOutEquipment.length), // Localized
         'time': DateFormat('MMM dd, yyyy • HH:mm').format(checkoutDate),
         'color': AppColors.error,
       });
@@ -581,15 +592,15 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
     // Event scheduled
     if (widget.occasion.date.isAfter(DateTime.now())) {
       events.add({
-        'title': 'Event Scheduled',
-        'description': 'Event is scheduled to take place',
+        'title': l10n.eventScheduled, // Localized
+        'description': l10n.eventScheduledToTakePlace, // Localized
         'time': DateFormat('MMM dd, yyyy • HH:mm').format(widget.occasion.date),
         'color': AppColors.primary,
       });
     } else {
       events.add({
-        'title': 'Event Completed',
-        'description': 'Event took place',
+        'title': l10n.eventCompleted, // Localized
+        'description': l10n.eventTookPlace, // Localized
         'time': DateFormat('MMM dd, yyyy • HH:mm').format(widget.occasion.date),
         'color': widget.occasion.status == 'completed' ? AppColors.success : AppColors.primary,
       });
@@ -603,8 +614,8 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
     if (returnedEquipment.isNotEmpty) {
       final returnDate = returnedEquipment.first.returnDate!;
       events.add({
-        'title': 'Equipment Returned',
-        'description': '${returnedEquipment.length} items returned',
+        'title': l10n.equipmentReturned, // Localized
+        'description': l10n.itemsReturned(returnedEquipment.length), // Localized
         'time': DateFormat('MMM dd, yyyy • HH:mm').format(returnDate),
         'color': AppColors.success,
       });
@@ -698,6 +709,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildStatusChangeButton() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     String nextStatus = _getNextStatus(widget.occasion.status);
     if (nextStatus.isEmpty) return const SizedBox.shrink();
 
@@ -706,11 +718,12 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
       style: ElevatedButton.styleFrom(
         backgroundColor: _getStatusColor(nextStatus),
       ),
-      child: Text('Mark as ${nextStatus.toUpperCase()}'),
+      child: Text(l10n.markAsStatus(nextStatus.toUpperCase())), // Localized
     );
   }
 
   Widget _buildBottomActions() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     if (widget.occasion.status == 'cancelled' || widget.occasion.status == 'completed') {
       return const SizedBox.shrink();
     }
@@ -732,7 +745,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
           if (_canCheckoutEquipment())
             Expanded(
               child: CustomButton(
-                text: 'Checkout Equipment',
+                text: l10n.checkoutEquipment, // Localized
                 onPressed: _showEquipmentCheckoutDialog,
                 backgroundColor: AppColors.warning,
                 isLoading: _isLoading,
@@ -743,7 +756,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
           if (_hasCheckedOutEquipment())
             Expanded(
               child: CustomButton(
-                text: 'Return Equipment',
+                text: l10n.returnEquipment, // Localized
                 onPressed: _showEquipmentReturnDialog,
                 backgroundColor: AppColors.success,
                 isLoading: _isLoading,
@@ -790,19 +803,20 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   String _getStatusDescription(String status) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     switch (status.toLowerCase()) {
       case 'planned':
-        return 'Event is being planned';
+        return l10n.eventStatusPlanned; // Localized
       case 'confirmed':
-        return 'Event is confirmed and ready';
+        return l10n.eventStatusConfirmed; // Localized
       case 'in_progress':
-        return 'Event is currently happening';
+        return l10n.eventStatusInProgress; // Localized
       case 'completed':
-        return 'Event has been completed';
+        return l10n.eventStatusCompleted; // Localized
       case 'cancelled':
-        return 'Event has been cancelled';
+        return l10n.eventStatusCancelled; // Localized
       default:
-        return 'Unknown status';
+        return l10n.unknownStatus; // Localized
     }
   }
 
@@ -869,6 +883,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Future<void> _changeStatus(String newStatus) async {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     setState(() {
       _isLoading = true;
     });
@@ -880,7 +895,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Status updated to ${newStatus.toUpperCase()}'),
+            content: Text(l10n.statusUpdatedTo(newStatus.toUpperCase())), // Localized
             backgroundColor: AppColors.success,
           ),
         );
@@ -889,7 +904,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update status: $e'),
+          content: Text('${l10n.failedToUpdateStatus}: $e'), // Localized
           backgroundColor: AppColors.error,
         ),
       );
@@ -901,25 +916,25 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   void _showEquipmentCheckoutDialog() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Checkout Equipment'),
-        content: const Text(
-          'This will check out all assigned equipment for this event. '
-              'Make sure the equipment is ready for pickup.',
+        title: Text(l10n.checkoutEquipment), // Localized
+        content: Text(
+          l10n.checkoutEquipmentConfirmation, // Localized
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel), // Localized
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               await _checkoutEquipment();
             },
-            child: const Text('Checkout'),
+            child: Text(l10n.checkout), // Localized
           ),
         ],
       ),
@@ -927,6 +942,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Future<void> _checkoutEquipment() async {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     setState(() {
       _isLoading = true;
     });
@@ -943,8 +959,8 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
 
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Equipment checked out successfully'),
+          SnackBar(
+            content: Text(l10n.equipmentCheckedOutSuccessfully), // Localized
             backgroundColor: AppColors.success,
           ),
         );
@@ -953,7 +969,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to checkout equipment: $e'),
+          content: Text('${l10n.failedToCheckoutEquipment}: $e'), // Localized
           backgroundColor: AppColors.error,
         ),
       );
@@ -965,25 +981,25 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   void _showEquipmentReturnDialog() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Return Equipment'),
-        content: const Text(
-          'This will return all checked out equipment for this event. '
-              'Make sure all equipment has been collected and is in good condition.',
+        title: Text(l10n.returnEquipment), // Localized
+        content: Text(
+          l10n.returnEquipmentConfirmation, // Localized
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel), // Localized
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               await _returnEquipment();
             },
-            child: const Text('Return'),
+            child: Text(l10n.returnText), // Localized
           ),
         ],
       ),
@@ -991,6 +1007,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Future<void> _returnEquipment() async {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     setState(() {
       _isLoading = true;
     });
@@ -1002,8 +1019,8 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
 
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Equipment returned successfully'),
+          SnackBar(
+            content: Text(l10n.equipmentReturnedSuccessfully), // Localized
             backgroundColor: AppColors.success,
           ),
         );
@@ -1012,7 +1029,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to return equipment: $e'),
+          content: Text('${l10n.failedToReturnEquipment}: $e'), // Localized
           backgroundColor: AppColors.error,
         ),
       );

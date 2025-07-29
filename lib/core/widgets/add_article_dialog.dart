@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models/article_model.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class AddEditArticleDialog extends StatefulWidget {
   final ArticleModel? article;
@@ -51,8 +52,9 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: Text(widget.article == null ? 'Add Article' : 'Edit Article'),
+      title: Text(widget.article == null ? l10n.addArticle : l10n.editArticle), // Localized title
       content: SizedBox(
         width: MediaQuery
             .of(context)
@@ -67,15 +69,15 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                 // Name Field
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Article Name *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.articleNameRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value
                         .trim()
                         .isEmpty) {
-                      return 'Please enter article name';
+                      return l10n.validationEnterArticleName; // Localized validation
                     }
                     return null;
                   },
@@ -85,9 +87,9 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                 // Category Dropdown
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
-                  decoration: const InputDecoration(
-                    labelText: 'Category *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.categoryRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   items: _categories.map((category) {
                     return DropdownMenuItem(
@@ -109,9 +111,9 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _priceController,
-                        decoration: const InputDecoration(
-                          labelText: 'Price per Unit *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.pricePerUnitRequired, // Localized label
+                          border: const OutlineInputBorder(),
                           prefixText: '\$ ',
                         ),
                         keyboardType: TextInputType.number,
@@ -119,11 +121,11 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                           if (value == null || value
                               .trim()
                               .isEmpty) {
-                            return 'Enter price';
+                            return l10n.validationEnterPrice; // Localized validation
                           }
                           final price = double.tryParse(value);
                           if (price == null || price <= 0) {
-                            return 'Enter valid price';
+                            return l10n.validationEnterValidPrice; // Localized validation
                           }
                           return null;
                         },
@@ -133,20 +135,20 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _quantityController,
-                        decoration: const InputDecoration(
-                          labelText: 'Quantity *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.quantityRequired, // Localized label
+                          border: const OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value
                               .trim()
                               .isEmpty) {
-                            return 'Enter quantity';
+                            return l10n.validationEnterQuantity; // Localized validation
                           }
                           final quantity = int.tryParse(value);
                           if (quantity == null || quantity < 0) {
-                            return 'Enter valid quantity';
+                            return l10n.validationEnterValidQuantity; // Localized validation
                           }
                           return null;
                         },
@@ -159,9 +161,9 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                 // Unit Dropdown
                 DropdownButtonFormField<String>(
                   value: _selectedUnit,
-                  decoration: const InputDecoration(
-                    labelText: 'Unit *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.unitRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   items: _units.map((unit) {
                     return DropdownMenuItem(
@@ -180,9 +182,9 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                 // Description Field
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description (Optional)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.descriptionOptional, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   maxLines: 3,
                 ),
@@ -191,9 +193,9 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                 // Image URL Field
                 TextFormField(
                   controller: _imageUrlController,
-                  decoration: const InputDecoration(
-                    labelText: 'Image URL (Optional)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.imageUrlOptional, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ],
@@ -204,7 +206,7 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel), // Localized
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _saveArticle,
@@ -214,7 +216,7 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           )
-              : Text(widget.article == null ? 'Add' : 'Update'),
+              : Text(widget.article == null ? l10n.add : l10n.update), // Localized
         ),
       ],
     );
@@ -229,6 +231,7 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
 
     try {
       final stockProvider = Provider.of<StockProvider>(context, listen: false);
+      final l10n = AppLocalizations.of(context)!;
 
       final article = ArticleModel(
         id: widget.article?.id ?? '',
@@ -265,8 +268,8 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
           SnackBar(
             content: Text(
               widget.article == null
-                  ? 'Article added successfully'
-                  : 'Article updated successfully',
+                  ? l10n.articleAddedSuccessfully
+                  : l10n.articleUpdatedSuccessfully,
             ),
             backgroundColor: AppColors.success,
           ),
@@ -277,17 +280,18 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
             content: Text(
               stockProvider.errorMessage ??
                   (widget.article == null
-                      ? 'Failed to add article'
-                      : 'Failed to update article'),
+                      ? l10n.failedToAddArticle
+                      : l10n.failedToUpdateArticle),
             ),
             backgroundColor: AppColors.error,
           ),
         );
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text('${l10n.error}: $e'), // Localized error message
           backgroundColor: AppColors.error,
         ),
       );

@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/employee_provider.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/loading_widget.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class EmployeeManagementScreen extends StatefulWidget {
   const EmployeeManagementScreen({Key? key}) : super(key: key);
@@ -18,7 +19,6 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _filterStatus = 'all'; // all, active, inactive
-  bool _showActiveOnly = true;
 
   @override
   void initState() {
@@ -43,30 +43,32 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   PreferredSizeWidget _buildAppBar() {
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
-      title: const Text('Employee Management'),
+      title: Text(l10n.employeeManagement), // Localized title
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.white,
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: _loadEmployees,
-          tooltip: 'Refresh',
+          tooltip: l10n.refresh, // Localized tooltip
         ),
         IconButton(
           icon: const Icon(Icons.analytics),
           onPressed: _showEmployeeAnalytics,
-          tooltip: 'Analytics',
+          tooltip: l10n.analytics, // Localized tooltip
         ),
       ],
     );
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<EmployeeProvider>(
       builder: (context, employeeProvider, child) {
         if (employeeProvider.isLoading) {
-          return const LoadingWidget(message: 'Loading employees...');
+          return LoadingWidget(message: '${l10n.loading} ${l10n.employees}...'); // Localized loading message
         }
 
         return Column(
@@ -83,6 +85,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   Widget _buildSearchAndFilter() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -101,7 +104,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Search employees by name, email, or phone...',
+              hintText: l10n.searchEmployeeHint, // Localized hint text
               prefixIcon: const Icon(Icons.search, color: AppColors.primary),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
@@ -131,11 +134,11 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
           // Filter Chips
           Row(
             children: [
-              _buildFilterChip('All', 'all'),
+              _buildFilterChip(l10n.allGood.split(' ')[1], 'all'), // Localized "All"
               const SizedBox(width: 8),
-              _buildFilterChip('Active', 'active'),
+              _buildFilterChip(l10n.active, 'active'), // Localized "Active"
               const SizedBox(width: 8),
-              _buildFilterChip('Inactive', 'inactive'),
+              _buildFilterChip(l10n.inactive, 'inactive'), // Localized "Inactive"
               const Spacer(),
               // Sort options
               PopupMenuButton<String>(
@@ -144,9 +147,9 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
                   // TODO: Implement sorting
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'name', child: Text('Sort by Name')),
-                  const PopupMenuItem(value: 'date', child: Text('Sort by Date')),
-                  const PopupMenuItem(value: 'checkouts', child: Text('Sort by Checkouts')),
+                  PopupMenuItem(value: 'name', child: Text(l10n.sortByName)), // Localized
+                  PopupMenuItem(value: 'date', child: Text(l10n.sortByDate)), // Localized
+                  PopupMenuItem(value: 'checkouts', child: Text(l10n.sortByCheckouts)), // Localized
                 ],
               ),
             ],
@@ -176,6 +179,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   Widget _buildQuickStats(EmployeeProvider employeeProvider) {
+    final l10n = AppLocalizations.of(context)!;
     final stats = employeeProvider.getEmployeeStatistics();
 
     return Container(
@@ -184,7 +188,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
         children: [
           Expanded(
             child: _buildStatCard(
-              'Total Employees',
+              l10n.totalEmployees, // Localized "Total Employees"
               stats['totalEmployees'].toString(),
               Icons.people,
               AppColors.primary,
@@ -193,36 +197,19 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: _buildStatCard(
-              'Active',
+              l10n.active, // Localized "Active"
               stats['activeEmployees'].toString(),
               Icons.check_circle,
               AppColors.success,
             ),
           ),
-          // const SizedBox(width: 12),
-          // Expanded(
-          //   child: _buildStatCard(
-          //     'Active Checkouts',
-          //     stats['totalActiveCheckouts'].toString(),
-          //     Icons.inventory,
-          //     AppColors.info,
-          //   ),
-          // ),
-          // const SizedBox(width: 12),
-          // Expanded(
-          //   child: _buildStatCard(
-          //     'Overdue Items',
-          //     stats['totalOverdueCheckouts'].toString(),
-          //     Icons.warning,
-          //     AppColors.error,
-          //   ),
-          // ),
         ],
       ),
     );
   }
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -251,6 +238,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   Widget _buildEmployeeList(EmployeeProvider employeeProvider) {
+    final l10n = AppLocalizations.of(context)!;
     List<UserModel> employees = _getFilteredEmployees(employeeProvider);
 
     if (employees.isEmpty) {
@@ -294,6 +282,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   Widget _buildEmployeeCard(UserModel employee, EmployeeProvider employeeProvider) {
+    final l10n = AppLocalizations.of(context)!;
     final activeCheckouts = employeeProvider.getEmployeeActiveCheckouts(employee.id);
     final overdueCheckouts = employeeProvider.getEmployeeOverdueCheckouts(employee.id);
     final performance = employeeProvider.getEmployeePerformance(employee.id);
@@ -356,7 +345,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                employee.isActive ? 'Active' : 'Inactive',
+                                employee.isActive ? l10n.active : l10n.inactive, // Localized status
                                 style: TextStyle(
                                   color: employee.isActive
                                       ? AppColors.success
@@ -388,33 +377,33 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
                   PopupMenuButton<String>(
                     onSelected: (value) => _handleEmployeeAction(value, employee, employeeProvider),
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'view',
                         child: Row(
                           children: [
-                            Icon(Icons.visibility, size: 18),
-                            SizedBox(width: 8),
-                            Text('View Details'),
+                            const Icon(Icons.visibility, size: 18),
+                            const SizedBox(width: 8),
+                            Text(l10n.viewDetails), // Localized
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'edit',
                         child: Row(
                           children: [
-                            Icon(Icons.edit, size: 18),
-                            SizedBox(width: 8),
-                            Text('Edit'),
+                            const Icon(Icons.edit, size: 18),
+                            const SizedBox(width: 8),
+                            Text(l10n.edit), // Localized
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'checkouts',
                         child: Row(
                           children: [
-                            Icon(Icons.inventory, size: 18),
-                            SizedBox(width: 8),
-                            Text('View Checkouts'),
+                            const Icon(Icons.inventory, size: 18),
+                            const SizedBox(width: 8),
+                            Text(l10n.viewCheckouts), // Localized
                           ],
                         ),
                       ),
@@ -427,17 +416,17 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
                               size: 18,
                             ),
                             const SizedBox(width: 8),
-                            Text(employee.isActive ? 'Deactivate' : 'Activate'),
+                            Text(employee.isActive ? l10n.deactivate : l10n.activate), // Localized
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, size: 18, color: AppColors.error),
-                            SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: AppColors.error)),
+                            const Icon(Icons.delete, size: 18, color: AppColors.error),
+                            const SizedBox(width: 8),
+                            Text(l10n.delete, style: const TextStyle(color: AppColors.error)), // Localized
                           ],
                         ),
                       ),
@@ -450,19 +439,19 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
               Row(
                 children: [
                   _buildQuickStat(
-                    'Active Checkouts',
+                    l10n.activeCheckouts, // Localized
                     activeCheckouts.length.toString(),
                     activeCheckouts.isNotEmpty ? AppColors.info : AppColors.textSecondary,
                   ),
                   const SizedBox(width: 16),
                   _buildQuickStat(
-                    'Overdue',
+                    l10n.overdue, // Localized
                     overdueCheckouts.length.toString(),
                     overdueCheckouts.isNotEmpty ? AppColors.error : AppColors.textSecondary,
                   ),
                   const SizedBox(width: 16),
                   _buildQuickStat(
-                    'Total Checkouts',
+                    l10n.totalCheckouts, // Localized
                     performance['totalCheckouts'].toString(),
                     AppColors.textSecondary,
                   ),
@@ -474,14 +463,14 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
                         color: AppColors.error.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.warning, color: AppColors.error, size: 14),
-                          SizedBox(width: 4),
+                          const Icon(Icons.warning, color: AppColors.error, size: 14),
+                          const SizedBox(width: 4),
                           Text(
-                            'Needs Attention',
-                            style: TextStyle(
+                            l10n.needsAttention, // Localized
+                            style: const TextStyle(
                               color: AppColors.error,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -513,7 +502,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
         ),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textSecondary,
             fontSize: 12,
           ),
@@ -523,6 +512,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -535,8 +525,8 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
           const SizedBox(height: 16),
           Text(
             _searchQuery.isNotEmpty
-                ? 'No employees found matching "$_searchQuery"'
-                : 'No employees found',
+                ? l10n.noEmployeesFoundSearch(_searchQuery) // Localized with parameter
+                : l10n.noEmployeesFound, // Localized
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -544,8 +534,8 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
           const SizedBox(height: 8),
           Text(
             _searchQuery.isNotEmpty
-                ? 'Try adjusting your search or filters'
-                : 'Add your first employee to get started',
+                ? l10n.adjustSearchFilters // Localized
+                : l10n.addFirstEmployeeHint, // Localized
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -555,7 +545,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
             ElevatedButton.icon(
               onPressed: () => _showAddEmployeeDialog(),
               icon: const Icon(Icons.add),
-              label: const Text('Add Employee'),
+              label: Text(l10n.addEmployee), // Localized
             ),
         ],
       ),
@@ -563,10 +553,11 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   Widget _buildFloatingActionButton() {
+    final l10n = AppLocalizations.of(context)!;
     return FloatingActionButton(
       onPressed: _showAddEmployeeDialog,
       backgroundColor: AppColors.secondary,
-      child: const Icon(Icons.add, color: AppColors.white),
+      child: Icon(Icons.add, color: AppColors.white, semanticLabel: l10n.addEmployee), // Localized semantic label
     );
   }
 
@@ -592,6 +583,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   void _showAddEmployeeDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AddEditEmployeeDialog(),
@@ -603,6 +595,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   void _showEditEmployeeDialog(UserModel employee) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AddEditEmployeeDialog(employee: employee),
@@ -614,6 +607,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   void _showEmployeeDetails(UserModel employee, EmployeeProvider employeeProvider) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => EmployeeDetailsDialog(
@@ -624,15 +618,16 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   void _showEmployeeCheckouts(UserModel employee) {
-    // TODO: Navigate to employee checkouts screen
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Checkouts for ${employee.fullName} - Coming soon'),
+        content: Text(l10n.employeeCheckoutsComingSoon(employee.fullName)), // Localized
       ),
     );
   }
 
   void _toggleEmployeeStatus(UserModel employee, EmployeeProvider employeeProvider) async {
+    final l10n = AppLocalizations.of(context)!;
     final updatedEmployee = employee.copyWith(isActive: !employee.isActive);
     final success = await employeeProvider.updateEmployee(updatedEmployee);
 
@@ -640,7 +635,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Employee ${employee.isActive ? 'deactivated' : 'activated'} successfully',
+            employee.isActive ? l10n.employeeDeactivatedSuccess : l10n.employeeActivatedSuccess, // Localized
           ),
           backgroundColor: AppColors.success,
         ),
@@ -649,7 +644,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            employeeProvider.errorMessage ?? 'Failed to update employee status',
+            employeeProvider.errorMessage ?? l10n.failedToUpdateEmployeeStatus, // Localized fallback
           ),
           backgroundColor: AppColors.error,
         ),
@@ -658,17 +653,18 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   void _showDeleteConfirmation(UserModel employee, EmployeeProvider employeeProvider) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Employee'),
+        title: Text(l10n.deleteEmployee), // Localized
         content: Text(
-          'Are you sure you want to delete ${employee.fullName}? This action cannot be undone.',
+          l10n.deleteEmployeeConfirmation(employee.fullName), // Localized with parameter
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel), // Localized
           ),
           ElevatedButton(
             onPressed: () async {
@@ -677,8 +673,8 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
 
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Employee deleted successfully'),
+                  SnackBar(
+                    content: Text(l10n.employeeDeletedSuccess), // Localized
                     backgroundColor: AppColors.success,
                   ),
                 );
@@ -686,7 +682,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      employeeProvider.errorMessage ?? 'Failed to delete employee',
+                      employeeProvider.errorMessage ?? l10n.failedToDeleteEmployee, // Localized fallback
                     ),
                     backgroundColor: AppColors.error,
                   ),
@@ -697,7 +693,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.white,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete), // Localized
           ),
         ],
       ),
@@ -705,6 +701,7 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   }
 
   void _showEmployeeAnalytics() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => const EmployeeAnalyticsDialog(),
@@ -754,8 +751,9 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: Text(_isEditMode ? 'Edit Employee' : 'Add New Employee'),
+      title: Text(_isEditMode ? l10n.editEmployee : l10n.addEmployee), // Localized title
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.9,
         child: Form(
@@ -766,16 +764,16 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
               children: [
                 TextFormField(
                   controller: _fullNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Full Name',
-                    prefixIcon: Icon(Icons.person),
+                  decoration: InputDecoration(
+                    labelText: l10n.employeeName, // Localized label
+                    prefixIcon: const Icon(Icons.person),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Full name is required';
+                      return l10n.validationRequired; // Localized
                     }
                     if (value.trim().length < 2) {
-                      return 'Name must be at least 2 characters';
+                      return l10n.validationNameTooShort; // Localized
                     }
                     return null;
                   },
@@ -783,17 +781,17 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
+                  decoration: InputDecoration(
+                    labelText: l10n.email, // Localized label
+                    prefixIcon: const Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Email is required';
+                      return l10n.validationRequired; // Localized
                     }
                     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return 'Please enter a valid email';
+                      return l10n.validationInvalidEmail; // Localized
                     }
                     return null;
                   },
@@ -801,14 +799,14 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone Number',
-                    prefixIcon: Icon(Icons.phone),
+                  decoration: InputDecoration(
+                    labelText: l10n.employeePhone, // Localized label
+                    prefixIcon: const Icon(Icons.phone),
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Phone number is required';
+                      return l10n.validationRequired; // Localized
                     }
                     return null;
                   },
@@ -816,14 +814,14 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _addressController,
-                  decoration: const InputDecoration(
-                    labelText: 'Address',
-                    prefixIcon: Icon(Icons.location_on),
+                  decoration: InputDecoration(
+                    labelText: l10n.address, // Localized label
+                    prefixIcon: const Icon(Icons.location_on),
                   ),
                   maxLines: 2,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Address is required';
+                      return l10n.validationRequired; // Localized
                     }
                     return null;
                   },
@@ -832,17 +830,17 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock),
+                    decoration: InputDecoration(
+                      labelText: l10n.password, // Localized label
+                      prefixIcon: const Icon(Icons.lock),
                     ),
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Password is required';
+                        return l10n.validationRequired; // Localized
                       }
                       if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                        return l10n.validationPasswordTooShort; // Localized
                       }
                       return null;
                     },
@@ -856,7 +854,7 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel), // Localized
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _saveEmployee,
@@ -866,7 +864,7 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           )
-              : Text(_isEditMode ? 'Update' : 'Create'),
+              : Text(_isEditMode ? l10n.update : l10n.create), // Localized
         ),
       ],
     );
@@ -880,6 +878,7 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
     });
 
     final employeeProvider = Provider.of<EmployeeProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
     bool success = false;
 
     try {
@@ -909,8 +908,8 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
           SnackBar(
             content: Text(
               _isEditMode
-                  ? 'Employee updated successfully'
-                  : 'Employee created successfully',
+                  ? l10n.employeeUpdatedSuccess
+                  : l10n.employeeCreatedSuccess,
             ),
             backgroundColor: AppColors.success,
           ),
@@ -920,7 +919,7 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
           SnackBar(
             content: Text(
               employeeProvider.errorMessage ??
-                  (_isEditMode ? 'Failed to update employee' : 'Failed to create employee'),
+                  (_isEditMode ? l10n.failedToUpdateEmployee : l10n.failedToCreateEmployee),
             ),
             backgroundColor: AppColors.error,
           ),
@@ -929,7 +928,7 @@ class _AddEditEmployeeDialogState extends State<AddEditEmployeeDialog> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('An error occurred: $e'),
+          content: Text('${l10n.errorOccurred}: $e'), // Localized error message
           backgroundColor: AppColors.error,
         ),
       );
@@ -964,6 +963,7 @@ class EmployeeDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final performance = employeeProvider.getEmployeePerformance(employee.id);
     final activeCheckouts = employeeProvider.getEmployeeActiveCheckouts(employee.id);
     final overdueCheckouts = employeeProvider.getEmployeeOverdueCheckouts(employee.id);
@@ -978,34 +978,34 @@ class EmployeeDetailsDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Employee Info
-              _buildInfoSection('Employee Information', [
-                _buildInfoRow('Email', employee.email),
-                _buildInfoRow('Phone', employee.phone),
-                _buildInfoRow('Address', employee.address),
-                _buildInfoRow('Role', employee.role.toUpperCase()),
-                _buildInfoRow('Status', employee.isActive ? 'Active' : 'Inactive'),
-                _buildInfoRow('Joined', _formatDate(employee.createdAt)),
+              _buildInfoSection(l10n.employeeInformation, [ // Localized
+                _buildInfoRow(l10n.email, employee.email), // Localized
+                _buildInfoRow(l10n.employeePhone, employee.phone), // Localized
+                _buildInfoRow(l10n.address, employee.address), // Localized
+                _buildInfoRow(l10n.employeeRole, employee.role.toUpperCase()), // Localized
+                _buildInfoRow(l10n.employeeStatus, employee.isActive ? l10n.active : l10n.inactive), // Localized
+                _buildInfoRow(l10n.joined, _formatDate(employee.createdAt)), // Localized
               ]),
               const SizedBox(height: 16),
 
               // Performance Stats
-              _buildInfoSection('Performance Statistics', [
-                _buildInfoRow('Total Checkouts', performance['totalCheckouts'].toString()),
-                _buildInfoRow('Active Checkouts', performance['activeCheckouts'].toString()),
-                _buildInfoRow('Completed Checkouts', performance['completedCheckouts'].toString()),
-                _buildInfoRow('Overdue Items', performance['overdueCheckouts'].toString()),
-                _buildInfoRow('Reliability Score', '${performance['reliabilityScore'].toStringAsFixed(1)}%'),
+              _buildInfoSection(l10n.performanceStatistics, [ // Localized
+                _buildInfoRow(l10n.totalCheckouts, performance['totalCheckouts'].toString()), // Localized
+                _buildInfoRow(l10n.activeCheckouts, performance['activeCheckouts'].toString()), // Localized
+                _buildInfoRow(l10n.completedCheckouts, performance['completedCheckouts'].toString()), // Localized
+                _buildInfoRow(l10n.overdueItems, performance['overdueCheckouts'].toString()), // Localized
+                _buildInfoRow(l10n.reliabilityScore, '${performance['reliabilityScore'].toStringAsFixed(1)}%'), // Localized
               ]),
               const SizedBox(height: 16),
 
               // Current Checkouts
               if (activeCheckouts.isNotEmpty) ...[
-                _buildInfoSection('Current Checkouts', []),
+                _buildInfoSection(l10n.currentCheckouts, []), // Localized
                 ...activeCheckouts.map((checkout) => Card(
                   child: ListTile(
                     leading: const Icon(Icons.inventory, color: AppColors.info),
-                    title: Text('Equipment ID: ${checkout.equipmentId}'),
-                    subtitle: Text('Quantity: ${checkout.quantity} • Checked out: ${_formatDate(checkout.checkoutDate)}'),
+                    title: Text('${l10n.equipmentId}: ${checkout.equipmentId}'), // Localized
+                    subtitle: Text('${l10n.quantity}: ${checkout.quantity} • ${l10n.checkedOut}: ${_formatDate(checkout.checkoutDate)}'), // Localized
                     trailing: checkout.isOverdue
                         ? const Icon(Icons.warning, color: AppColors.error)
                         : null,
@@ -1016,14 +1016,14 @@ class EmployeeDetailsDialog extends StatelessWidget {
               // Overdue Items
               if (overdueCheckouts.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _buildInfoSection('⚠️ Overdue Items', []),
+                _buildInfoSection('⚠️ ${l10n.overdueItems}', []), // Localized
                 ...overdueCheckouts.map((checkout) => Card(
                   color: AppColors.error.withOpacity(0.1),
                   child: ListTile(
                     leading: const Icon(Icons.warning, color: AppColors.error),
-                    title: Text('Equipment ID: ${checkout.equipmentId}'),
+                    title: Text('${l10n.equipmentId}: ${checkout.equipmentId}'), // Localized
                     subtitle: Text(
-                        'Overdue by ${DateTime.now().difference(checkout.checkoutDate).inDays} days'
+                        l10n.overdueByDays(DateTime.now().difference(checkout.checkoutDate).inDays) // Localized
                     ),
                   ),
                 )),
@@ -1035,12 +1035,11 @@ class EmployeeDetailsDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
+          child: Text(l10n.close), // Localized
         ),
         ElevatedButton(
           onPressed: ()  {
             Navigator.pop(context);
-            // TODO: Navigate to employee edit screen
             showDialog(
               context: context,
               builder: (context) => AddEditEmployeeDialog(employee: employee),
@@ -1051,7 +1050,7 @@ class EmployeeDetailsDialog extends StatelessWidget {
               }
             });
           },
-          child: const Text('Edit Employee'),
+          child: Text(l10n.editEmployee), // Localized
         ),
       ],
     );
@@ -1113,6 +1112,7 @@ class EmployeeAnalyticsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<EmployeeProvider>(
       builder: (context, employeeProvider, child) {
         final stats = employeeProvider.getEmployeeStatistics();
@@ -1120,7 +1120,7 @@ class EmployeeAnalyticsDialog extends StatelessWidget {
         final alerts = employeeProvider.getEmployeesRequiringAttention();
 
         return AlertDialog(
-          title: const Text('Employee Analytics'),
+          title: Text(l10n.employeeAnalytics), // Localized
           content: SizedBox(
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height * 0.7,
@@ -1129,19 +1129,19 @@ class EmployeeAnalyticsDialog extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Overview Stats
-                  _buildAnalyticsSection('Overview', [
+                  _buildAnalyticsSection(l10n.overview, [ // Localized
                     _buildAnalyticsGrid([
-                      _buildAnalyticsCard('Total Employees', stats['totalEmployees'].toString(), Icons.people, AppColors.primary),
-                      _buildAnalyticsCard('Active Employees', stats['activeEmployees'].toString(), Icons.check_circle, AppColors.success),
-                      _buildAnalyticsCard('Active Checkouts', stats['totalActiveCheckouts'].toString(), Icons.inventory, AppColors.info),
-                      _buildAnalyticsCard('Overdue Items', stats['totalOverdueCheckouts'].toString(), Icons.warning, AppColors.error),
+                      _buildAnalyticsCard(l10n.totalEmployees, stats['totalEmployees'].toString(), Icons.people, AppColors.primary), // Localized
+                      _buildAnalyticsCard(l10n.activeEmployees, stats['activeEmployees'].toString(), Icons.check_circle, AppColors.success), // Localized
+                      _buildAnalyticsCard(l10n.activeCheckouts, stats['totalActiveCheckouts'].toString(), Icons.inventory, AppColors.info), // Localized
+                      _buildAnalyticsCard(l10n.overdueItems, stats['totalOverdueCheckouts'].toString(), Icons.warning, AppColors.error), // Localized
                     ]),
                   ]),
                   const SizedBox(height: 24),
 
                   // Top Performers
                   if (topPerformers.isNotEmpty) ...[
-                    _buildAnalyticsSection('Top Performing Employees', [
+                    _buildAnalyticsSection(l10n.topPerformingEmployees, [ // Localized
                       ...topPerformers.take(3).map((performer) {
                         final employee = performer['employee'] as UserModel;
                         return Card(
@@ -1154,8 +1154,8 @@ class EmployeeAnalyticsDialog extends StatelessWidget {
                               ),
                             ),
                             title: Text(employee.fullName),
-                            subtitle: Text('Reliability: ${performer['reliabilityScore'].toStringAsFixed(1)}%'),
-                            trailing: Text('${performer['totalCheckouts']} checkouts'),
+                            subtitle: Text('${l10n.reliability}: ${performer['reliabilityScore'].toStringAsFixed(1)}%'), // Localized
+                            trailing: Text(l10n.totalCheckoutsCount(performer['totalCheckouts'])), // Localized
                           ),
                         );
                       }),
@@ -1165,7 +1165,7 @@ class EmployeeAnalyticsDialog extends StatelessWidget {
 
                   // Alerts
                   if (alerts.isNotEmpty) ...[
-                    _buildAnalyticsSection('Employees Requiring Attention', [
+                    _buildAnalyticsSection(l10n.employeesRequiringAttention, [ // Localized
                       ...alerts.take(5).map((alert) {
                         final employee = alert['employee'] as UserModel;
                         return Card(
@@ -1215,18 +1215,17 @@ class EmployeeAnalyticsDialog extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(l10n.close), // Localized
             ),
             ElevatedButton(
               onPressed: () {
-                // TODO: Export or detailed analytics
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Detailed analytics export - Coming soon'),
+                  SnackBar(
+                    content: Text(l10n.detailedAnalyticsExportComingSoon), // Localized
                   ),
                 );
               },
-              child: const Text('Export Report'),
+              child: Text(l10n.exportReport), // Localized
             ),
           ],
         );

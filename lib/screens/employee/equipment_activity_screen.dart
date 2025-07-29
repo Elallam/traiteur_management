@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/loading_widget.dart';
 import '../../core/widgets/custom_text_field.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../models/equipment_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
@@ -14,10 +15,10 @@ class EquipmentActivityScreen extends StatefulWidget {
   final String? employeeName;
 
   const EquipmentActivityScreen({
-    Key? key,
+    super.key,
     this.employeeId,
     this.employeeName,
-  }) : super(key: key);
+  });
 
   @override
   State<EquipmentActivityScreen> createState() => _EquipmentActivityScreenState();
@@ -37,6 +38,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
   String _selectedFilter = 'All';
   DateTimeRange? _dateRange;
 
+  // These filter options will be localized in the TabBar builder
   final List<String> _filterOptions = ['All', 'Active', 'Returned', 'Overdue'];
 
   @override
@@ -68,7 +70,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
         _applyFilters();
       }
     } catch (e) {
-      _showErrorSnackBar('Failed to load activity data: $e');
+      _showErrorSnackBar(AppLocalizations.of(context)!.failedToLoadActivityData(e.toString())); // Localized error message
     }
 
     setState(() => _isLoading = false);
@@ -86,7 +88,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
           // Handle missing equipment gracefully
           _equipmentCache[equipmentId] = EquipmentModel(
             id: equipmentId,
-            name: 'Unknown Equipment',
+            name: AppLocalizations.of(context)!.unknownEquipment, // Localized
             totalQuantity: 0,
             availableQuantity: 0,
             category: 'unknown',
@@ -130,9 +132,9 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
         if (_searchController.text.isNotEmpty) {
           String query = _searchController.text.toLowerCase();
           EquipmentModel? equipment = _equipmentCache[checkout.equipmentId];
-          matchesSearch = equipment?.name.toLowerCase().contains(query) ?? false ||
+          matchesSearch = (equipment?.name.toLowerCase().contains(query) ?? false) ||
               checkout.employeeName.toLowerCase().contains(query) ||
-              checkout.notes!.toLowerCase().contains(query) ?? false;
+              (checkout.notes?.toLowerCase().contains(query) ?? false);
         }
 
         return matchesStatus && matchesDateRange && matchesSearch;
@@ -196,9 +198,9 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
 
       // Refresh data
       await _loadActivityData();
-      _showSuccessSnackBar('Equipment returned successfully');
+      _showSuccessSnackBar(AppLocalizations.of(context)!.equipmentReturnedSuccessfully); // Localized
     } catch (e) {
-      _showErrorSnackBar('Failed to return equipment: $e');
+      _showErrorSnackBar(AppLocalizations.of(context)!.failedToReturnEquipment); // Localized
     }
   }
 
@@ -208,12 +210,12 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Return'),
+        title: Text(AppLocalizations.of(context)!.confirmReturn), // Localized
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Are you sure you want to return this equipment?'),
+            Text(AppLocalizations.of(context)!.confirmReturnEquipment), // Localized
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
@@ -224,16 +226,20 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Equipment: ${equipment?.name ?? 'Unknown'}',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text('Quantity: ${checkout.quantity}'),
-                  Text('Checked out: ${_formatDateTime(checkout.checkoutDate)}'),
-                  Text('Duration: ${_formatDuration(checkout.checkoutDate)}'),
+                  Text(
+                    '${AppLocalizations.of(context)!.equipment}: ${equipment?.name ?? AppLocalizations.of(context)!.unkown}', // Localized
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text('${AppLocalizations.of(context)!.quantity}: ${checkout.quantity}'), // Localized
+                  Text('${AppLocalizations.of(context)!.checkedOut}: ${_formatDateTime(checkout.checkoutDate)}'), // Localized
+                  Text('${AppLocalizations.of(context)!.duration}: ${_formatDuration(checkout.checkoutDate)}'), // Localized
                   if (checkout.isOverdue)
-                    const Text('Status: OVERDUE',
-                        style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
+                    Text(
+                      '${AppLocalizations.of(context)!.status}: ${AppLocalizations.of(context)!.overdue.toUpperCase()}', // Localized
+                      style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
+                    ),
                   if (checkout.notes != null && checkout.notes!.isNotEmpty)
-                    Text('Notes: ${checkout.notes}'),
+                    Text('${AppLocalizations.of(context)!.notes}: ${checkout.notes}'), // Localized
                 ],
               ),
             ),
@@ -242,7 +248,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel), // Localized
           ),
           ElevatedButton(
             onPressed: () {
@@ -250,7 +256,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
               _returnEquipment(checkout);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-            child: const Text('Return'),
+            child: Text(AppLocalizations.of(context)!.returnText), // Localized
           ),
         ],
       ),
@@ -276,7 +282,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                equipment?.name ?? 'Unknown Equipment',
+                equipment?.name ?? AppLocalizations.of(context)!.unknownEquipment, // Localized
                 style: const TextStyle(fontSize: 18),
               ),
             ),
@@ -287,20 +293,21 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildDetailRow('Category', equipment?.category.toUpperCase() ?? 'UNKNOWN'),
-              _buildDetailRow('Quantity', '${checkout.quantity}'),
-              _buildDetailRow('Status', checkout.status.toUpperCase()),
-              _buildDetailRow('Checkout Date', _formatDateTime(checkout.checkoutDate)),
+              _buildDetailRow(AppLocalizations.of(context)!.category, equipment?.category.toUpperCase() ?? AppLocalizations.of(context)!.unkown), // Localized
+              _buildDetailRow(AppLocalizations.of(context)!.quantity, '${checkout.quantity}'), // Localized
+              _buildDetailRow(AppLocalizations.of(context)!.status, checkout.status.toUpperCase()), // Localized
+              _buildDetailRow(AppLocalizations.of(context)!.checkoutDate, _formatDateTime(checkout.checkoutDate)), // Localized
               if (checkout.returnDate != null)
-                _buildDetailRow('Return Date', _formatDateTime(checkout.returnDate!)),
-              _buildDetailRow('Duration',
+                _buildDetailRow(AppLocalizations.of(context)!.returnDate, _formatDateTime(checkout.returnDate!)), // Localized
+              _buildDetailRow(
+                  AppLocalizations.of(context)!.duration, // Localized
                   checkout.returnDate != null
                       ? _formatDurationBetween(checkout.checkoutDate, checkout.returnDate!)
                       : _formatDuration(checkout.checkoutDate)),
               if (checkout.occasionId != null)
-                _buildDetailRow('Occasion ID', checkout.occasionId!),
+                _buildDetailRow(AppLocalizations.of(context)!.occasionId, checkout.occasionId!), // Localized
               if (checkout.notes != null && checkout.notes!.isNotEmpty)
-                _buildDetailRow('Notes', checkout.notes!),
+                _buildDetailRow(AppLocalizations.of(context)!.notes, checkout.notes!), // Localized
               if (checkout.isOverdue && checkout.status == 'checked_out')
                 Container(
                   margin: const EdgeInsets.only(top: 12),
@@ -314,10 +321,10 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                     children: [
                       const Icon(Icons.warning, color: AppColors.error, size: 20),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'This equipment is overdue for return',
-                          style: TextStyle(
+                          AppLocalizations.of(context)!.equipmentOverdueForReturn, // Localized
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontWeight: FontWeight.w500,
                           ),
@@ -332,7 +339,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)!.close), // Localized
           ),
           if (checkout.status == 'checked_out')
             ElevatedButton(
@@ -341,7 +348,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                 _showReturnConfirmation(checkout);
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-              child: const Text('Return'),
+              child: Text(AppLocalizations.of(context)!.returnText), // Localized
             ),
         ],
       ),
@@ -391,7 +398,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _isLoading ? const LoadingWidget() : _buildBody(),
+      body: _isLoading ? LoadingWidget(message: AppLocalizations.of(context)!.loadingMessage) : _buildBody(), // Localized
     );
   }
 
@@ -400,7 +407,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Equipment Activity'),
+          Text(AppLocalizations.of(context)!.equipmentActivity), // Localized
           if (widget.employeeName != null)
             Text(
               widget.employeeName!,
@@ -431,18 +438,18 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
             ],
           ),
           onPressed: _selectDateRange,
-          tooltip: 'Filter by date range',
+          tooltip: AppLocalizations.of(context)!.filterByDateRange, // Localized
         ),
         if (_dateRange != null)
           IconButton(
             icon: const Icon(Icons.clear),
             onPressed: _clearDateRange,
-            tooltip: 'Clear date filter',
+            tooltip: AppLocalizations.of(context)!.clearDateFilter, // Localized
           ),
         IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: _loadActivityData,
-          tooltip: 'Refresh',
+          tooltip: AppLocalizations.of(context)!.refresh, // Localized
         ),
       ],
       bottom: TabBar(
@@ -459,7 +466,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(filter),
+                Text(_getFilterText(filter, context)), // Localized tab text
                 if (count > 0) ...[
                   const SizedBox(width: 4),
                   Container(
@@ -486,6 +493,22 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
     );
   }
 
+  // Helper function to get localized filter text
+  String _getFilterText(String filter, BuildContext context) {
+    switch (filter) {
+      case 'All':
+        return AppLocalizations.of(context)!.all;
+      case 'Active':
+        return AppLocalizations.of(context)!.active;
+      case 'Returned':
+        return AppLocalizations.of(context)!.returned;
+      case 'Overdue':
+        return AppLocalizations.of(context)!.overdue;
+      default:
+        return filter;
+    }
+  }
+
   Widget _buildBody() {
     return Column(
       children: [
@@ -496,7 +519,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
             children: [
               CustomTextField(
                 controller: _searchController,
-                label: 'Search equipment or notes...',
+                label: AppLocalizations.of(context)!.searchEquipmentOrNotes, // Localized
                 prefixIcon: Icons.search,
                 onChanged: (_) => _applyFilters(),
               ),
@@ -515,7 +538,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Showing ${_formatDate(_dateRange!.start)} - ${_formatDate(_dateRange!.end)}',
+                          AppLocalizations.of(context)!.showingDateRange(_formatDate(_dateRange!.start), _formatDate(_dateRange!.end)), // Localized
                           style: const TextStyle(
                             color: AppColors.info,
                             fontSize: 12,
@@ -555,23 +578,23 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
     switch (_selectedFilter) {
       case 'Active':
         icon = Icons.check_circle_outline;
-        title = 'No active checkouts';
-        subtitle = 'All equipment has been returned.';
+        title = AppLocalizations.of(context)!.noActiveCheckouts; // Localized
+        subtitle = AppLocalizations.of(context)!.allEquipmentReturned; // Localized
         break;
       case 'Returned':
         icon = Icons.assignment_return_outlined;
-        title = 'No returned items';
-        subtitle = 'No equipment has been returned yet.';
+        title = AppLocalizations.of(context)!.noReturnedItems; // Localized
+        subtitle = AppLocalizations.of(context)!.noEquipmentReturnedYet; // Localized
         break;
       case 'Overdue':
         icon = Icons.schedule;
-        title = 'No overdue items';
-        subtitle = 'Great! All equipment is returned on time.';
+        title = AppLocalizations.of(context)!.noOverdueItems; // Localized
+        subtitle = AppLocalizations.of(context)!.allEquipmentReturnedOnTime; // Localized
         break;
       default:
         icon = Icons.history;
-        title = 'No activity found';
-        subtitle = 'No equipment activity matches your search.';
+        title = AppLocalizations.of(context)!.noActivityFound; // Localized
+        subtitle = AppLocalizations.of(context)!.noEquipmentActivityMatchesSearch; // Localized
     }
 
     return Center(
@@ -652,7 +675,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          equipment?.name ?? 'Unknown Equipment',
+                          equipment?.name ?? AppLocalizations.of(context)!.unknownEquipment, // Localized
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -661,14 +684,14 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                         Row(
                           children: [
                             Text(
-                              '${equipment?.category.toUpperCase() ?? 'UNKNOWN'} • ',
+                              '${equipment?.category.toUpperCase() ?? AppLocalizations.of(context)!.unkown} • ', // Localized
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: _getCategoryColor(equipment?.category ?? 'other'),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                             Text(
-                              'Qty: ${checkout.quantity}',
+                              '${AppLocalizations.of(context)!.quantity}: ${checkout.quantity}', // Localized
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -692,7 +715,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                     ),
                     child: Text(
                       isOverdue
-                          ? 'OVERDUE'
+                          ? AppLocalizations.of(context)!.overdue.toUpperCase() // Localized
                           : checkout.status.toUpperCase(),
                       style: TextStyle(
                         color: isOverdue
@@ -722,7 +745,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                             const Icon(Icons.login, size: 14, color: AppColors.textSecondary),
                             const SizedBox(width: 4),
                             Text(
-                              'Out: ${_formatDate(checkout.checkoutDate)}',
+                              '${AppLocalizations.of(context)!.out}: ${_formatDate(checkout.checkoutDate)}', // Localized
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -736,7 +759,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                               const Icon(Icons.logout, size: 14, color: AppColors.textSecondary),
                               const SizedBox(width: 4),
                               Text(
-                                'In: ${_formatDate(checkout.returnDate!)}',
+                                '${AppLocalizations.of(context)!.inText}: ${_formatDate(checkout.returnDate!)}', // Localized
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
@@ -761,7 +784,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                       if (isActive) ...[
                         const SizedBox(height: 2),
                         Text(
-                          'ongoing',
+                          AppLocalizations.of(context)!.ongoing, // Localized
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
                             fontStyle: FontStyle.italic,
@@ -802,7 +825,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                     TextButton.icon(
                       onPressed: () => _showCheckoutDetails(checkout),
                       icon: const Icon(Icons.info_outline, size: 16),
-                      label: const Text('Details'),
+                      label: Text(AppLocalizations.of(context)!.details), // Localized
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.textSecondary,
                       ),
@@ -811,7 +834,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                     ElevatedButton.icon(
                       onPressed: () => _showReturnConfirmation(checkout),
                       icon: const Icon(Icons.assignment_return, size: 16),
-                      label: const Text('Return'),
+                      label: Text(AppLocalizations.of(context)!.returnText), // Localized
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         foregroundColor: Colors.white,
@@ -886,7 +909,8 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
   }
 
   String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    // Using AppLocalizations for "at"
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${AppLocalizations.of(context)!.atText} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
   String _formatDate(DateTime dateTime) {
@@ -905,11 +929,11 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
 
   String _formatDurationFromDuration(Duration duration) {
     if (duration.inDays > 0) {
-      return '${duration.inDays}d ${duration.inHours % 24}h';
+      return AppLocalizations.of(context)!.durationDaysHours(duration.inDays, duration.inHours % 24); // Localized
     } else if (duration.inHours > 0) {
-      return '${duration.inHours}h ${duration.inMinutes % 60}m';
+      return AppLocalizations.of(context)!.durationHoursMinutes(duration.inHours, duration.inMinutes % 60); // Localized
     } else {
-      return '${duration.inMinutes}m';
+      return AppLocalizations.of(context)!.durationMinutes(duration.inMinutes); // Localized
     }
   }
 }

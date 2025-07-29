@@ -8,6 +8,7 @@ import '../../core/widgets/custom_button.dart';
 import '../../models/occasion_model.dart';
 import '../../providers/occasion_provider.dart';
 import '../../providers/stock_provider.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class OccasionManagementScreen extends StatefulWidget {
   const OccasionManagementScreen({Key? key}) : super(key: key);
@@ -52,12 +53,13 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'Occasion Management',
-          style: TextStyle(
+        title: Text(
+          l10n.occasionManagement, // Localized
+          style: const TextStyle(
             color: AppColors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -71,10 +73,10 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
           labelColor: AppColors.white,
           unselectedLabelColor: AppColors.white.withOpacity(0.7),
           indicatorColor: AppColors.white,
-          tabs: const [
-            Tab(text: 'All Events'),
-            Tab(text: 'Dashboard'),
-            Tab(text: 'Analytics'),
+          tabs: [
+            Tab(text: l10n.allEvents), // Localized
+            Tab(text: l10n.dashboard), // Localized
+            Tab(text: l10n.analytics), // Localized
           ],
         ),
       ),
@@ -98,13 +100,13 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Error: ${occasionProvider.errorMessage}',
+                    '${l10n.error}: ${occasionProvider.errorMessage}', // Localized
                     style: const TextStyle(color: AppColors.error),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   CustomButton(
-                    text: 'Retry',
+                    text: l10n.retry, // Localized
                     onPressed: _loadData,
                     width: 120,
                   ),
@@ -127,9 +129,9 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
         onPressed: () => _showAddOccasionDialog(context),
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add, color: AppColors.white),
-        label: const Text(
-          'New Event',
-          style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+        label: Text(
+          l10n.newEvent, // Localized
+          style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -147,6 +149,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildSearchAndFilter(OccasionProvider occasionProvider) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -170,7 +173,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
               });
             },
             decoration: InputDecoration(
-              hintText: 'Search occasions...',
+              hintText: l10n.searchOccasions, // Localized
               prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
@@ -203,18 +206,18 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFilterChip('all', 'All', occasionProvider.occasions.length),
-                _buildFilterChip('planned', 'Planned',
+                _buildFilterChip('all', l10n.all, occasionProvider.occasions.length), // Localized
+                _buildFilterChip('planned', l10n.planned, // Localized
                     occasionProvider.getOccasionsByStatus('planned').length),
-                _buildFilterChip('confirmed', 'Confirmed',
+                _buildFilterChip('confirmed', l10n.confirmed, // Localized
                     occasionProvider.getOccasionsByStatus('confirmed').length),
-                _buildFilterChip('in_progress', 'In Progress',
+                _buildFilterChip('in_progress', l10n.inProgress, // Localized
                     occasionProvider.getOccasionsByStatus('in_progress').length),
-                _buildFilterChip('completed', 'Completed',
+                _buildFilterChip('completed', l10n.completed, // Localized
                     occasionProvider.getOccasionsByStatus('completed').length),
-                _buildFilterChip('upcoming', 'Upcoming',
+                _buildFilterChip('upcoming', l10n.upcoming, // Localized
                     occasionProvider.getUpcomingOccasions().length),
-                _buildFilterChip('today', 'Today',
+                _buildFilterChip('today', l10n.today, // Localized
                     occasionProvider.getTodaysOccasions().length),
               ],
             ),
@@ -253,6 +256,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildOccasionsList(OccasionProvider occasionProvider) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     List<OccasionModel> filteredOccasions = _getFilteredOccasions(occasionProvider);
 
     if (filteredOccasions.isEmpty) {
@@ -260,7 +264,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.event_busy,
               size: 64,
               color: AppColors.textSecondary,
@@ -268,8 +272,8 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
             const SizedBox(height: 16),
             Text(
               _searchQuery.isNotEmpty
-                  ? 'No occasions found for "$_searchQuery"'
-                  : 'No occasions found',
+                  ? l10n.noOccasionsFoundSearch(_searchQuery) // Localized
+                  : l10n.noOccasionsFound, // Localized
               style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 16,
@@ -277,7 +281,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
             ),
             const SizedBox(height: 16),
             CustomButton(
-              text: 'Add First Event',
+              text: l10n.addFirstEvent, // Localized
               onPressed: () => _showAddOccasionDialog(context),
               width: 160,
             ),
@@ -321,6 +325,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildOccasionCard(OccasionModel occasion, OccasionProvider occasionProvider) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -350,11 +355,11 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
                   PopupMenuButton<String>(
                     onSelected: (value) => _handleOccasionAction(value, occasion, occasionProvider),
                     itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'view', child: Text('View Details')),
-                      const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                      const PopupMenuItem(value: 'duplicate', child: Text('Duplicate')),
+                      PopupMenuItem(value: 'view', child: Text(l10n.viewDetails)), // Localized
+                      PopupMenuItem(value: 'edit', child: Text(l10n.edit)), // Localized
+                      PopupMenuItem(value: 'duplicate', child: Text(l10n.duplicate)), // Localized
                       const PopupMenuDivider(),
-                      const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                      PopupMenuItem(value: 'delete', child: Text(l10n.delete)), // Localized
                     ],
                   ),
                 ],
@@ -363,14 +368,14 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
               // Date and Client
               Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     DateFormat('MMM dd, yyyy - HH:mm').format(occasion.date),
                     style: const TextStyle(color: AppColors.textSecondary),
                   ),
                   const SizedBox(width: 16),
-                  Icon(Icons.person, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.person, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
@@ -385,7 +390,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
               // Location and Guests
               Row(
                 children: [
-                  Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.location_on, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
@@ -395,10 +400,10 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Icon(Icons.group, size: 16, color: AppColors.textSecondary),
+                  const Icon(Icons.group, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
-                    '${occasion.expectedGuests} guests',
+                    l10n.guestsCount(occasion.expectedGuests), // Localized
                     style: const TextStyle(color: AppColors.textSecondary),
                   ),
                 ],
@@ -409,21 +414,21 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
                 children: [
                   Expanded(
                     child: _buildMetricItem(
-                      'Total Price',
+                      l10n.totalPrice, // Localized
                       '\$${occasion.totalPrice.toStringAsFixed(2)}',
                       AppColors.success,
                     ),
                   ),
                   Expanded(
                     child: _buildMetricItem(
-                      'Profit',
+                      l10n.profit, // Localized
                       '\$${occasion.profit.toStringAsFixed(2)}',
                       occasion.profit >= 0 ? AppColors.success : AppColors.error,
                     ),
                   ),
                   Expanded(
                     child: _buildMetricItem(
-                      'Margin',
+                      l10n.margin, // Localized
                       '${occasion.profitPercentage.toStringAsFixed(1)}%',
                       occasion.profitPercentage >= 0 ? AppColors.success : AppColors.error,
                     ),
@@ -442,29 +447,30 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildStatusChip(String status) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     Color color;
     String label;
 
     switch (status) {
       case 'planned':
         color = AppColors.warning;
-        label = 'Planned';
+        label = l10n.planned; // Localized
         break;
       case 'confirmed':
         color = AppColors.info;
-        label = 'Confirmed';
+        label = l10n.confirmed; // Localized
         break;
       case 'in_progress':
         color = AppColors.primary;
-        label = 'In Progress';
+        label = l10n.inProgress; // Localized
         break;
       case 'completed':
         color = AppColors.success;
-        label = 'Completed';
+        label = l10n.completed; // Localized
         break;
       case 'cancelled':
         color = AppColors.error;
-        label = 'Cancelled';
+        label = l10n.cancelled; // Localized
         break;
       default:
         color = AppColors.textSecondary;
@@ -513,21 +519,22 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildAlertBanner(OccasionModel occasion) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     Color color;
     String message;
     IconData icon;
 
     if (occasion.isToday) {
       color = AppColors.info;
-      message = 'Event is today!';
+      message = l10n.eventIsToday; // Localized
       icon = Icons.today;
     } else if (occasion.isOverdue) {
       color = AppColors.error;
-      message = 'Overdue by ${occasion.daysUntil.abs()} days';
+      message = l10n.overdueByDays(occasion.daysUntil.abs()); // Localized
       icon = Icons.warning;
     } else if (occasion.isUpcoming) {
       color = AppColors.warning;
-      message = 'In ${occasion.daysUntil} days';
+      message = l10n.inDays(occasion.daysUntil); // Localized
       icon = Icons.schedule;
     } else {
       return const SizedBox.shrink();
@@ -558,6 +565,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildDashboardTab(OccasionProvider occasionProvider) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     final stats = occasionProvider.getOccasionStatistics();
     final alerts = occasionProvider.getOccasionsRequiringAttention();
 
@@ -571,13 +579,13 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
           const SizedBox(height: 24),
           // Alerts
           if (alerts.isNotEmpty) ...[
-            _buildSectionHeader('Requires Attention', alerts.length),
+            _buildSectionHeader(l10n.requiresAttention, alerts.length), // Localized
             const SizedBox(height: 12),
             ...alerts.map((alert) => _buildAlertCard(alert)),
             const SizedBox(height: 24),
           ],
           // Quick Actions
-          _buildSectionHeader('Quick Actions', null),
+          _buildSectionHeader(l10n.quickActions, null), // Localized
           const SizedBox(height: 12),
           _buildQuickActions(occasionProvider),
         ],
@@ -586,6 +594,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildStatsGrid(Map<String, dynamic> stats) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -593,17 +602,17 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
       crossAxisSpacing: 12,
       mainAxisSpacing: 12,
       children: [
-        _buildStatCard('Total Events', stats['totalOccasions'].toString(),
+        _buildStatCard(l10n.totalEvents, stats['totalOccasions'].toString(), // Localized
             Icons.event, AppColors.primary),
-        _buildStatCard('Upcoming', stats['upcomingOccasions'].toString(),
+        _buildStatCard(l10n.upcoming, stats['upcomingOccasions'].toString(), // Localized
             Icons.schedule, AppColors.warning),
-        _buildStatCard('Today', stats['todaysOccasions'].toString(),
+        _buildStatCard(l10n.today, stats['todaysOccasions'].toString(), // Localized
             Icons.today, AppColors.info),
-        _buildStatCard('Completed', stats['completedOccasions'].toString(),
+        _buildStatCard(l10n.completed, stats['completedOccasions'].toString(), // Localized
             Icons.check_circle, AppColors.success),
-        _buildStatCard('Total Revenue', '\$${stats['totalRevenue'].toStringAsFixed(0)}',
+        _buildStatCard(l10n.totalRevenue, '\$${stats['totalRevenue'].toStringAsFixed(0)}', // Localized
             Icons.attach_money, AppColors.success),
-        _buildStatCard('Total Profit', '\$${stats['totalProfit'].toStringAsFixed(0)}',
+        _buildStatCard(l10n.totalProfit, '\$${stats['totalProfit'].toStringAsFixed(0)}', // Localized
             Icons.trending_up, AppColors.success),
       ],
     );
@@ -676,6 +685,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildAlertCard(Map<String, dynamic> alert) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     Color color;
     switch (alert['priority']) {
       case 'urgent':
@@ -722,7 +732,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textSecondary),
+              const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textSecondary),
             ],
           ),
         ),
@@ -731,13 +741,14 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildQuickActions(OccasionProvider occasionProvider) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Column(
       children: [
         Row(
           children: [
             Expanded(
               child: _buildQuickActionCard(
-                'New Event',
+                l10n.newEvent, // Localized
                 Icons.add_circle,
                 AppColors.primary,
                     () => _showAddOccasionDialog(context),
@@ -746,7 +757,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
             const SizedBox(width: 12),
             Expanded(
               child: _buildQuickActionCard(
-                'View Calendar',
+                l10n.viewCalendar, // Localized
                 Icons.calendar_view_month,
                 AppColors.info,
                     () {
@@ -761,7 +772,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
           children: [
             Expanded(
               child: _buildQuickActionCard(
-                'Export Report',
+                l10n.exportReport, // Localized
                 Icons.file_download,
                 AppColors.success,
                     () {
@@ -769,10 +780,10 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
                 },
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(height: 12),
             Expanded(
               child: _buildQuickActionCard(
-                'Settings',
+                l10n.settings, // Localized
                 Icons.settings,
                 AppColors.textSecondary,
                     () {
@@ -816,24 +827,25 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildAnalyticsTab(OccasionProvider occasionProvider) {
-    return const Center(
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.analytics, size: 64, color: AppColors.textSecondary),
-          SizedBox(height: 16),
+          const Icon(Icons.analytics, size: 64, color: AppColors.textSecondary),
+          const SizedBox(height: 16),
           Text(
-            'Analytics Dashboard',
-            style: TextStyle(
+            l10n.analyticsDashboard, // Localized
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            'Coming Soon',
-            style: TextStyle(color: AppColors.textSecondary),
+            l10n.comingSoon, // Localized
+            style: const TextStyle(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -841,6 +853,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   void _handleOccasionAction(String action, OccasionModel occasion, OccasionProvider occasionProvider) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     switch (action) {
       case 'view':
         _showOccasionDetails(occasion);
@@ -865,7 +878,7 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   void _showAddOccasionDialog(BuildContext context, {OccasionModel? occasion}) {
     showDialog(
       context: context,
-      builder: (context) => AddOccasionDialog(),
+      builder: (context) => AddOccasionDialog(occasion: occasion), // Pass occasion to dialog
     ).then((result) {
       if (result == true) {
         _loadData();
@@ -874,25 +887,27 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   void _duplicateOccasion(OccasionModel occasion) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     // TODO: Implement duplication logic
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Duplicating ${occasion.title}'),
+        content: Text(l10n.duplicatingEvent(occasion.title)), // Localized
         backgroundColor: AppColors.success,
       ),
     );
   }
 
   void _showDeleteConfirmation(OccasionModel occasion, OccasionProvider occasionProvider) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Event'),
-        content: Text('Are you sure you want to delete "${occasion.title}"? This action cannot be undone.'),
+        title: Text(l10n.deleteEvent), // Localized
+        content: Text(l10n.deleteEventConfirmation(occasion.title)), // Localized
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel), // Localized
           ),
           TextButton(
             onPressed: () async {
@@ -900,15 +915,15 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
               final success = await occasionProvider.deleteOccasion(occasion.id);
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Event deleted successfully'),
+                  SnackBar(
+                    content: Text(l10n.eventDeletedSuccessfully), // Localized
                     backgroundColor: AppColors.success,
                   ),
                 );
               }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete'),
+            child: Text(l10n.delete), // Localized
           ),
         ],
       ),

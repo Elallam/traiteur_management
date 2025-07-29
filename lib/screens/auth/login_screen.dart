@@ -5,7 +5,9 @@ import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/custom_text_field.dart';
 import '../../core/widgets/loading_widget.dart';
 import '../../core/utils/validators.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
+import 'package:traiteur_management/core/widgets/language_selector.dart'; // Import the language selector widget
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -28,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    final appLocalizations = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -39,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authProvider.errorMessage ?? 'Login failed'),
+            content: Text(authProvider.errorMessage ?? appLocalizations.loginFailedMessage),
             backgroundColor: AppColors.error,
           ),
         );
@@ -48,10 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleForgotPassword() async {
+    final appLocalizations = AppLocalizations.of(context)!;
     if (_emailController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your email address first'),
+        SnackBar(
+          content: Text(appLocalizations.pleaseEnterEmailFirst),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -66,8 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(
           content: Text(
             success
-                ? 'Password reset email sent successfully'
-                : authProvider.errorMessage ?? 'Failed to send reset email',
+                ? appLocalizations.passwordResetEmailSent
+                : authProvider.errorMessage ?? appLocalizations.failedToSendResetEmail,
           ),
           backgroundColor: success ? AppColors.success : AppColors.error,
         ),
@@ -82,6 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -89,75 +95,88 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (context, authProvider, child) {
             return LoadingOverlay(
               isLoading: authProvider.isLoading,
-              loadingMessage: 'Signing in...',
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 60),
+              loadingMessage: appLocalizations.signingIn,
+              child: Stack( // Use Stack to position the language selector
+                children: [
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 60),
 
-                      // Logo Section
-                      _buildLogoSection(),
+                          // Logo Section
+                          _buildLogoSection(appLocalizations),
 
-                      const SizedBox(height: 48),
+                          const SizedBox(height: 48),
 
-                      // Welcome Text
-                      _buildWelcomeText(),
+                          // Welcome Text
+                          _buildWelcomeText(appLocalizations),
 
-                      const SizedBox(height: 32),
+                          const SizedBox(height: 32),
 
-                      // Email Field
-                      CustomTextField(
-                        label: 'Email Address',
-                        hint: 'Enter your email',
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        prefixIcon: Icons.email_outlined,
-                        validator: Validators.email,
+                          // Email Field
+                          CustomTextField(
+                            label: appLocalizations.emailAddress,
+                            hint: appLocalizations.enterYourEmail,
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            prefixIcon: Icons.email_outlined,
+                            validator: Validators.email,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Password Field
+                          CustomTextField(
+                            label: appLocalizations.passwordText,
+                            hint: appLocalizations.enterYourPassword,
+                            controller: _passwordController,
+                            obscureText: true,
+                            prefixIcon: Icons.lock_outline,
+                            validator: Validators.password,
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Remember Me and Forgot Password
+                          _buildRememberAndForgot(appLocalizations),
+
+                          const SizedBox(height: 32),
+
+                          // Login Button
+                          CustomButton(
+                            text: appLocalizations.signIn,
+                            onPressed: _handleLogin,
+                            isLoading: authProvider.isLoading,
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Error Message
+                          if (authProvider.errorMessage != null)
+                            _buildErrorMessage(authProvider.errorMessage!),
+
+                          const SizedBox(height: 48),
+
+                          // Footer
+                          _buildFooter(appLocalizations),
+                        ],
                       ),
-
-                      const SizedBox(height: 20),
-
-                      // Password Field
-                      CustomTextField(
-                        label: 'Password',
-                        hint: 'Enter your password',
-                        controller: _passwordController,
-                        obscureText: true,
-                        prefixIcon: Icons.lock_outline,
-                        validator: Validators.password,
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Remember Me and Forgot Password
-                      _buildRememberAndForgot(),
-
-                      const SizedBox(height: 32),
-
-                      // Login Button
-                      CustomButton(
-                        text: 'Sign In',
-                        onPressed: _handleLogin,
-                        isLoading: authProvider.isLoading,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Error Message
-                      if (authProvider.errorMessage != null)
-                        _buildErrorMessage(authProvider.errorMessage!),
-
-                      const SizedBox(height: 48),
-
-                      // Footer
-                      _buildFooter(),
-                    ],
+                    ),
                   ),
-                ),
+                  Positioned( // Position the language selector
+                    top: 16,
+                    right: 16,
+                    child: LanguageSelector(
+                      showAsDialog: true, // You can choose how you want it to display
+                      iconColor: AppColors.primary,
+                      iconSize: 28,
+                    ),
+                  ),
+                ],
               ),
             );
           },
@@ -166,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLogoSection() {
+  Widget _buildLogoSection(AppLocalizations appLocalizations) {
     return Column(
       children: [
         Container(
@@ -191,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Traiteur Management',
+          appLocalizations.loginScreenTitle,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,
@@ -201,11 +220,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildWelcomeText() {
+  Widget _buildWelcomeText(AppLocalizations appLocalizations) {
     return Column(
       children: [
         Text(
-          'Welcome Back!',
+          appLocalizations.welcomeBack,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
@@ -213,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Sign in to manage your catering business',
+          appLocalizations.signInToManage,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: AppColors.textSecondary,
           ),
@@ -223,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildRememberAndForgot() {
+  Widget _buildRememberAndForgot(AppLocalizations appLocalizations) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -247,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(width: 8),
             Text(
-              'Remember me',
+              appLocalizations.rememberMe,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 fontSize: 14,
@@ -265,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            'Forgot Password?',
+            appLocalizations.forgotPasswordQuestion,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.primary,
               fontSize: 14,
@@ -310,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(AppLocalizations appLocalizations) {
     return Column(
       children: [
         // Divider with OR text
@@ -325,7 +344,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'OR',
+                appLocalizations.orText,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                   fontSize: 12,
@@ -349,7 +368,7 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Don't have an account? ",
+              appLocalizations.dontHaveAccount,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 fontSize: 14,
@@ -363,7 +382,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: Text(
-                'Sign Up',
+                appLocalizations.signUp,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.primary,
                   fontSize: 14,
@@ -378,7 +397,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // App Version or Company Info
         Text(
-          '© 2024 Traiteur Management System',
+          appLocalizations.copyrightText,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: AppColors.textSecondary,
             fontSize: 12,
@@ -389,7 +408,7 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 8),
 
         Text(
-          'Version 1.0.0',
+          appLocalizations.versionText,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: AppColors.textSecondary,
             fontSize: 10,

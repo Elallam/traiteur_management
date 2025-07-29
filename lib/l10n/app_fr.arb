@@ -53,6 +53,7 @@
   "mealPrice": "Prix",
   "mealCategory": "Catégorie",
   "mealIngredients": "Ingrédients",
+  "ingredients": "ingrédients",
 
   "equipment": "Équipement",
   "equipmentBooking": "Réservation d'équipement",
@@ -128,5 +129,983 @@
   "back": "Retour",
   "next": "Suivant",
   "previous": "Précédent",
-  "close": "Fermer"
+  "close": "Fermer",
+
+  "keyMetrics": "Métriques Clés",
+  "totalRevenue": "Chiffre d'Affaires Total",
+  "thisMonth": "Ce Mois",
+  "thisWeek": "Cette Semaine",
+  "thisYear": "Cette Année",
+  "activeEvents": "Événements Actifs",
+  "upcoming": "À Venir",
+  "stockValue": "Valeur du Stock",
+  "lowStock": "Stock Faible",
+  "todaysEvents": "Événements d'Aujourd'hui",
+  "noEventsToday": "Aucun Événement Aujourd'hui",
+  "enjoyFreeDay": "Profitez de votre journée libre !",
+  "recentActivities": "Activités Récentes",
+  "noRecentActivities": "Aucune activité récente",
+  "updatedAgo": "Mis à jour il y a {time}",
+  "@updatedAgo": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "quickStats": "Stats Rapides",
+  "equipmentUtilization": "Utilisation de l'Équipement",
+  "averageOrderValue": "Valeur Moyenne des Commandes",
+  "monthlyRevenue": "Chiffre d'Affaires Mensuel",
+  "average": "Moyenne",
+  "fullyBooked": "Entièrement Réservé",
+  "mostUtilizedEquipment": "Équipement le Plus Utilisé",
+  "reportFilters": "Filtres de Rapport",
+  "financialReport": "Rapport Financier",
+  "totalCost": "Coût Total",
+  "netProfit": "Bénéfice Net",
+  "profitMargin": "Marge Bénéficiaire",
+  "completedEvents": "Événements Terminés",
+  "equipmentStatusReport": "Rapport d'État de l'Équipement",
+  "totalEquipment": "Équipement Total",
+  "checkedOut": "Retiré",
+  "lowStockAlerts": "Alertes Stock Faible",
+  "exportReports": "Exporter les Rapports",
+  "exportPdf": "Exporter PDF",
+  "exportExcel": "Exporter Excel",
+  "quickActions": "Actions Rapides",
+  "createNewEvent": "Créer un Nouvel Événement",
+  "allGood": "Tout Va Bien !",
+  "all": "Tout",
+  "noAlertsMessage": "Aucune alerte ou notification pour le moment",
+  "viewAll": "Voir Tout",
+  "generatingReport": "Génération du rapport {period}...",
+  "@generatingReport": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "exportingToPdf": "Export vers PDF en cours...",
+  "exportingToExcel": "Export vers Excel en cours...",
+  "utilizationReport": "Rapport d'Utilisation",
+  "basedOnEvents": "Basé sur {count} événements terminés",
+  "@basedOnEvents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "guestsCount": "{count} invités",
+  "@guestsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "itemsCount": "{count} Articles",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "january": "Janv",
+  "february": "Févr",
+  "march": "Mars",
+  "april": "Avril",
+  "may": "Mai",
+  "june": "Juin",
+  "july": "Juil",
+  "august": "Août",
+  "september": "Sept",
+  "october": "Oct",
+  "november": "Nov",
+  "december": "Déc",
+  "dayAbbreviation": "j",
+  "hourAbbreviation": "h",
+  "minuteAbbreviation": "min",
+  "justNow": "À l'instant",
+  "popular": "Populaire",
+  "searchEmployeeHint": "Rechercher des employés par nom, email ou téléphone...",
+  "sortByName": "Trier par Nom",
+  "sortByDate": "Trier par Date",
+  "sortByCheckouts": "Trier par Retraits",
+  "totalEmployees": "Total Employés",
+  "activeCheckouts": "Retraits Actifs",
+  "overdue": "En Retard",
+  "totalCheckouts": "Total Retraits",
+  "needsAttention": "Nécessite Attention",
+  "noEmployeesFoundSearch": "Aucun employé trouvé correspondant à \"{query}\"",
+  "@noEmployeesFoundSearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noEmployeesFound": "Aucun employé trouvé",
+  "adjustSearchFilters": "Essayez d'ajuster votre recherche ou vos filtres",
+  "addFirstEmployeeHint": "Ajoutez votre premier employé pour commencer",
+  "deactivate": "Désactiver",
+  "activate": "Activer",
+  "viewDetails": "Voir les Détails",
+  "viewCheckouts": "Voir les Retraits",
+  "employeeCheckoutsComingSoon": "Retraits pour {employeeName} - Bientôt disponible",
+  "@employeeCheckoutsComingSoon": {
+    "placeholders": {
+      "employeeName": {
+        "type": "String"
+      }
+    }
+  },
+  "employeeDeactivatedSuccess": "Employé désactivé avec succès",
+  "employeeActivatedSuccess": "Employé activé avec succès",
+  "failedToUpdateEmployeeStatus": "Échec de la mise à jour du statut de l'employé",
+  "deleteEmployee": "Supprimer l'Employé",
+  "deleteEmployeeConfirmation": "Êtes-vous sûr de vouloir supprimer {employeeName} ? Cette action est irréversible.",
+  "@deleteEmployeeConfirmation": {
+    "placeholders": {
+      "employeeName": {
+        "type": "String"
+      }
+    }
+  },
+  "employeeDeletedSuccess": "Employé supprimé avec succès",
+  "failedToDeleteEmployee": "Échec de la suppression de l'employé",
+  "validationNameTooShort": "Le nom doit contenir au moins 2 caractères",
+  "address": "Adresse",
+  "update": "Mettre à jour",
+  "create": "Créer",
+  "employeeUpdatedSuccess": "Employé mis à jour avec succès",
+  "employeeCreatedSuccess": "Employé créé avec succès",
+  "failedToUpdateEmployee": "Échec de la mise à jour de l'employé",
+  "failedToCreateEmployee": "Échec de la création de l'employé",
+  "errorOccurred": "Une erreur est survenue",
+  "employeeInformation": "Informations Employé",
+  "joined": "Rejoint",
+  "performanceStatistics": "Statistiques de Performance",
+  "completedCheckouts": "Retraits Terminés",
+  "overdueItems": "Articles en Retard",
+  "reliabilityScore": "Score de Fiabilité",
+  "currentCheckouts": "Retraits Actuels",
+  "equipmentId": "ID Équipement",
+  "quantity": "Quantité",
+  "overdueByDays": "En retard de {days} jours",
+  "@overdueByDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "employeeAnalytics": "Analyses des Employés",
+  "overview": "Aperçu",
+  "activeEmployees": "Employés Actifs",
+  "topPerformingEmployees": "Employés les Plus Performants",
+  "reliability": "Fiabilité",
+  "totalCheckoutsCount": "{count} retraits",
+  "@totalCheckoutsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "employeesRequiringAttention": "Employés Nécessitant Attention",
+  "detailedAnalyticsExportComingSoon": "Exportation détaillée des analyses - Bientôt disponible",
+  "exportReport": "Exporter le Rapport",
+  "articles": "Articles",
+  "searchStockItems": "Rechercher des articles en stock...",
+  "addItem": "Ajouter un élément",
+  "stockData": "données de stock",
+  "totalArticles": "Total Articles",
+  "totalValue": "Valeur Totale",
+  "updateQuantity": "Mettre à jour la quantité",
+  "newQuantity": "Nouvelle quantité",
+  "quantityUpdatedSuccess": "Quantité mise à jour avec succès",
+  "failedToUpdateQuantity": "Échec de la mise à jour de la quantité",
+  "deleteArticle": "Supprimer l'article",
+  "deleteArticleConfirmation": "Êtes-vous sûr de vouloir supprimer \"{articleName}\" ?",
+  "@deleteArticleConfirmation": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "articleDeletedSuccess": "Article supprimé avec succès",
+  "failedToDeleteArticle": "Échec de la suppression de l'article",
+  "noArticlesFound": "Aucun article trouvé",
+  "addFirstArticleHint": "Ajoutez votre premier article pour commencer",
+  "allCheckedOut": "Tout est retiré",
+  "checkout": "Retrait",
+  "equipmentCheckoutComingSoon": "Retrait d'équipement - Bientôt disponible",
+  "equipmentCheckoutHistoryComingSoon": "Historique des retraits d'équipement - Bientôt disponible",
+  "deleteEquipment": "Supprimer l'équipement",
+  "deleteEquipmentConfirmation": "Êtes-vous sûr de vouloir supprimer \"{equipmentName}\" ?",
+  "@deleteEquipmentConfirmation": {
+    "placeholders": {
+      "equipmentName": {
+        "type": "String"
+      }
+    }
+  },
+  "equipmentDeletedSuccess": "Équipement supprimé avec succès",
+  "failedToDeleteEquipment": "Échec de la suppression de l'équipement",
+  "allOut": "Tout épuisé",
+  "noEquipmentFound": "Aucun équipement trouvé",
+  "addFirstEquipmentHint": "Ajoutez votre premier équipement pour commencer",
+  "disabled": "Désactivé",
+  "outOfStock": "En rupture de stock",
+  "disable": "Désactiver",
+  "enable": "Activer",
+  "cost": "Coût",
+  "profit": "Profit",
+  "servings": "Portions",
+  "ingredientsLow": "Ingrédients faibles",
+  "minutes": "{count} minutes",
+  "@minutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ingredientsCount": "{count} ingrédients",
+  "@ingredientsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mealDisabledSuccess": "Repas désactivé avec succès",
+  "mealEnabledSuccess": "Repas activé avec succès",
+  "failedToUpdateMealAvailability": "Échec de la mise à jour de la disponibilité du repas",
+  "deleteMeal": "Supprimer le repas",
+  "deleteMealConfirmation": "Êtes-vous sûr de vouloir supprimer \"{mealName}\" ?",
+  "@deleteMealConfirmation": {
+    "placeholders": {
+      "mealName": {
+        "type": "String"
+      }
+    }
+  },
+  "mealDeletedSuccess": "Repas supprimé avec succès",
+  "failedToDeleteMeal": "Échec de la suppression du repas",
+  "noMealsFound": "Aucun repas trouvé",
+  "addFirstMealHint": "Ajoutez votre premier repas pour commencer",
+  "stockAnalyticsComingSoon": "Analyses de stock - Bientôt disponible",
+  "price": "Prix",
+  "articleNameRequired": "Nom de l'article *",
+  "validationEnterArticleName": "Veuillez saisir le nom de l'article",
+  "categoryRequired": "Catégorie *",
+  "pricePerUnitRequired": "Prix par unité *",
+  "validationEnterPrice": "Saisir le prix",
+  "validationEnterValidPrice": "Saisir un prix valide",
+  "quantityRequired": "Quantité *",
+  "validationEnterQuantity": "Saisir la quantité",
+  "validationEnterValidQuantity": "Saisir une quantité valide",
+  "unitRequired": "Unité *",
+  "descriptionOptional": "Description (Facultatif)",
+  "imageUrlOptional": "URL de l'image (Facultatif)",
+  "articleAddedSuccessfully": "Article ajouté avec succès",
+  "articleUpdatedSuccessfully": "Article mis à jour avec succès",
+  "failedToAddArticle": "Échec de l'ajout de l'article",
+  "failedToUpdateArticle": "Échec de la mise à jour de l'article",
+  "equipmentNameRequired": "Nom de l'équipement *",
+  "validationEnterEquipmentName": "Veuillez saisir le nom de l'équipement",
+  "totalQuantityRequired": "Quantité totale *",
+  "validationEnterTotalQuantity": "Saisir la quantité totale",
+  "availableQuantityRequired": "Quantité disponible *",
+  "validationEnterAvailableQuantity": "Saisir la quantité disponible",
+  "validationCannotExceedTotalQuantity": "Ne peut pas dépasser la quantité totale",
+  "equipmentAddedSuccessfully": "Équipement ajouté avec succès",
+  "equipmentUpdatedSuccessfully": "Équipement mis à jour avec succès",
+  "failedToAddEquipment": "Échec de l'ajout de l'équipement",
+  "failedToUpdateEquipment": "Échec de la mise à jour de l'équipement",
+  "mealNameRequired": "Nom du repas *",
+  "validationEnterMealName": "Veuillez saisir le nom du repas",
+  "descriptionRequired": "Description *",
+  "validationEnterDescription": "Veuillez saisir une description",
+  "sellingPriceRequired": "Prix de vente *",
+  "servingsRequired": "Portions *",
+  "validationEnterServings": "Saisir les portions",
+  "validationEnterValidServings": "Saisir des portions valides",
+  "preparationTimeMinutesRequired": "Temps de préparation (minutes) *",
+  "validationEnterPreparationTime": "Saisir le temps de préparation",
+  "validationEnterValidTime": "Saisir un temps valide",
+  "addIngredient": "Ajouter un ingrédient",
+  "sellingPrice": "Prix de vente",
+  "selectArticle": "Sélectionner un article",
+  "searchArticles": "Rechercher des articles",
+  "addArticleName": "Ajouter {articleName}",
+  "@addArticleName": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "quantityUnit": "Quantité ({unit})",
+  "@quantityUnit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "availableQuantityUnit": "Disponible : {quantity} {unit}",
+  "@availableQuantityUnit": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "mealAddedSuccessfully": "Repas ajouté avec succès",
+  "mealUpdatedSuccessfully": "Repas mis à jour avec succès",
+  "failedToAddMeal": "Échec de l'ajout du repas",
+  "failedToUpdateMeal": "Échec de la mise à jour du repas",
+  "inStock": "En stock",
+  "pricePerUnit": "Prix par unité",
+  "unit": "Unité",
+  "category": "Catégorie",
+  "created": "Créé",
+  "lastUpdated": "Dernière mise à jour",
+  "updateArticleQuantityTitle": "Mettre à jour la quantité de {articleName}",
+  "@updateArticleQuantityTitle": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      }
+    }
+  },
+  "newQuantityUnit": "Nouvelle quantité ({unit})",
+  "@newQuantityUnit": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "availability": "Disponibilité",
+  "totalQuantity": "Quantité totale",
+  "prepTime": "Temps de préparation",
+  "equipmentCheckoutFunctionalityComingSoon": "Fonctionnalité de retrait d'équipement - Bientôt disponible",
+  "ingredientDetails": "{articleName} ({quantity} {unit})",
+  "@ingredientDetails": {
+    "placeholders": {
+      "articleName": {
+        "type": "String"
+      },
+      "quantity": {
+        "type": "double"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "basicInfo": "Infos de base",
+  "createEvent": "Créer un événement",
+  "updateEvent": "Mettre à jour l'événement",
+  "eventTitle": "Titre de l'événement",
+  "enterEventTitle": "Saisir le titre de l'événement",
+  "describeEvent": "Décrire l'événement",
+  "eventDate": "Date de l'événement",
+  "eventTime": "Heure de l'événement",
+  "eventAddress": "Adresse de l'événement",
+  "enterCompleteAddress": "Saisir l'adresse complète",
+  "expectedGuests": "Invités attendus",
+  "numberOfGuests": "Nombre d'invités",
+  "clientInformation": "Informations client",
+  "clientName": "Nom du client",
+  "enterClientName": "Saisir le nom du client",
+  "clientPhone": "Téléphone du client",
+  "enterPhoneNumber": "Saisir le numéro de téléphone",
+  "clientEmail": "Email du client",
+  "enterEmailAddress": "Saisir l'adresse email",
+  "notesOptional": "Notes (Facultatif)",
+  "additionalNotes": "Notes supplémentaires",
+  "selectedMeals": "Repas sélectionnés",
+  "mealsSelected": "{count} repas sélectionné(s)",
+  "@mealsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pricePerServing": "{price} par portion",
+  "@pricePerServing": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedEquipment": "Équipement sélectionné",
+  "itemsSelected": "{count} élément(s) sélectionné(s)",
+  "@itemsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "availableQuantityTotal": "Disponible : {available}/{total}",
+  "@availableQuantityTotal": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAtLeastOneMeal": "Veuillez sélectionner au moins un repas",
+  "equipmentAvailabilityConflicts": "Conflits de disponibilité de l'équipement détectés. Veuillez les résoudre d'abord.",
+  "eventCreatedSuccessWithBooking": "Événement créé avec succès et réservation d'équipement confirmée",
+  "failedToSaveEvent": "Échec de l'enregistrement de l'événement",
+  "checkoutEquipment": "Retirer l'équipement",
+  "returnEquipment": "Retourner l'équipement",
+  "editEvent": "Modifier l'événement",
+  "duplicateEvent": "Dupliquer l'événement",
+  "duplicate": "Dupliquer",
+  "notes": "Notes",
+  "cancelEvent": "Annuler l'événement",
+  "timeline": "Chronologie",
+  "inDays": "Dans {days} jour(s)",
+  "@inDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "eventDetails": "Détails de l'événement",
+  "dateTime": "Date et Heure",
+  "name": "Nom",
+  "phone": "Téléphone",
+  "financialSummary": "Résumé financier",
+  "totalPrice": "Prix Total",
+  "profitMarginValue": "Marge Bénéficiaire : {value}%",
+  "@profitMarginValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "totalPriceValue": "Valeur Totale : {value}%",
+  "@totalPriceValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "totalItems": "Total Articles",
+  "returned": "Retourné",
+  "quantityValue": "Quantité : {value}",
+  "@quantityValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "statusValue": "Statut : {value}",
+  "@statusValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "checkedOutDate": "Retiré : {date}",
+  "@checkedOutDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "returnedDate": "Retourné : {date}",
+  "@returnedDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "eventCreated": "Événement créé",
+  "eventCreatedSystem": "L'événement a été créé dans le système",
+  "equipmentAssigned": "Équipement attribué",
+  "equipmentItemsAssigned": "{count} éléments d'équipement attribués",
+  "@equipmentItemsAssigned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "equipmentCheckedOut": "Équipement retiré",
+  "itemsCheckedOut": "{count} éléments retirés",
+  "@itemsCheckedOut": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eventScheduled": "Événement programmé",
+  "eventScheduledToTakePlace": "L'événement est programmé",
+  "eventCompleted": "Événement terminé",
+  "eventTookPlace": "L'événement a eu lieu",
+  "equipmentReturned": "Équipement retourné",
+  "itemsReturned": "{count} éléments retournés",
+  "@itemsReturned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAsStatus": "Marquer comme {status}",
+  "@markAsStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "eventStatusPlanned": "L'événement est en cours de planification",
+  "eventStatusConfirmed": "L'événement est confirmé et prêt",
+  "eventStatusInProgress": "L'événement est en cours",
+  "eventStatusCompleted": "L'événement est terminé",
+  "eventStatusCancelled": "L'événement a été annulé",
+  "unknownStatus": "Statut inconnu",
+  "status": "Status",
+  "unkown": "Inconnue",
+  "checkoutDate": "Date d'Expédition",
+  "returnDate": "Date de Retour",
+  "statusUpdatedTo": "Statut mis à jour à {status}",
+  "@statusUpdatedTo": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateStatus": "Échec de la mise à jour du statut",
+  "checkoutEquipmentConfirmation": "Cela retirera tout l'équipement attribué à cet événement. Assurez-vous que l'équipement est prêt à être récupéré.",
+  "equipmentCheckedOutSuccessfully": "Équipement retiré avec succès",
+  "failedToCheckoutEquipment": "Échec du retrait de l'équipement",
+  "returnEquipmentConfirmation": "Cela retournera tout l'équipement retiré pour cet événement. Assurez-vous que tout l'équipement a été collecté et est en bon état.",
+  "returnText": "Retourner",
+  "equipmentReturnedSuccessfully": "Équipement retourné avec succès",
+  "failedToReturnEquipment": "Échec du retour de l'équipement",
+  "occasionManagement": "Gestion des occasions",
+  "allEvents": "Tous les événements",
+  "newEvent": "Nouvel événement",
+  "searchOccasions": "Rechercher des occasions...",
+  "noOccasionsFoundSearch": "Aucune occasion trouvée pour \"{query}\"",
+  "@noOccasionsFoundSearch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noOccasionsFound": "Aucune occasion trouvée",
+  "addFirstEvent": "Ajouter le premier événement",
+  "planned": "Planifié",
+  "confirmed": "Confirmé",
+  "inProgress": "En cours",
+  "today": "Aujourd'hui",
+  "eventIsToday": "L'événement est aujourd'hui !",
+  "margin": "Marge",
+  "requiresAttention": "Nécessite une attention",
+  "totalEvents": "Total des événements",
+  "totalProfit": "Bénéfice total",
+  "viewCalendar": "Voir le calendrier",
+  "analyticsDashboard": "Tableau de bord d'analyse",
+  "comingSoon": "Bientôt disponible",
+  "duplicatingEvent": "Duplication de {eventName}",
+  "@duplicatingEvent": {
+    "placeholders": {
+      "eventName": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteEvent": "Supprimer l'événement",
+  "deleteEventConfirmation": "Êtes-vous sûr de vouloir supprimer \"{eventName}\" ? Cette action est irréversible.",
+  "@deleteEventConfirmation": {
+    "placeholders": {
+      "eventName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventDeletedSuccessfully": "Événement supprimé avec succès",
+  "eventUpdatedSuccessfully": "Événement mis à jour avec succès",
+  "isRunningLow": "est faible",
+  "remaining": "restant",
+  "equipmentFullyBooked": "Équipement entièrement réservé",
+  "isFullyCheckedOut": "est entièrement retiré",
+  "refreshAlerts": "Actualiser les alertes",
+  "markAllAsRead": "Marquer tout comme lu",
+  "notificationSettings": "Paramètres de notification",
+  "noUrgentAlerts": "Aucune alerte urgente",
+  "noEventAlerts": "Aucune alerte d'événement",
+  "noEquipmentAlerts": "Aucune alerte d'équipement",
+  "allCaughtUp": "Tout est à jour !",
+  "alertDismissed": "Alerte ignorée",
+  "undo": "Annuler",
+  "inHours": "dans {hours} heure(s)",
+  "@inHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "soon": "Bientôt",
+  "tomorrow": "Demain",
+  "restock": "Réapprovisionner",
+  "action": "Action",
+  "allAlertsMarkedAsRead": "Toutes les alertes ont été marquées comme lues",
+  "checkoutEquipmentForEvent": "Retirer l'équipement pour cet événement",
+  "event": "Événement",
+  "equipmentItems": "Articles d'équipement",
+  "restockItem": "Réapprovisionner l'article",
+  "item": "Article",
+  "currentStock": "Stock actuel",
+  "addQuantity": "Ajouter la quantité",
+  "addStock": "Ajouter au stock",
+  "eventReminders": "Rappels d'événements",
+  "getNotifiedAboutUpcomingEvents": "Être notifié des événements à venir",
+  "equipmentAlerts": "Alertes d'équipement",
+  "equipmentCheckoutAndAvailabilityAlerts": "Alertes de retrait et de disponibilité de l'équipement",
+  "stockAlerts": "Alertes de stock",
+  "lowStockAndInventoryAlerts": "Alertes de stock faible et d'inventaire",
+  "pushNotifications": "Notifications push",
+  "receivePushNotifications": "Recevoir des notifications push",
+  "settingsSaved": "Paramètres enregistrés",
+  "addedQuantityToItem": "Quantité {quantity} {unit} ajoutée à {itemName}",
+  "@addedQuantityToItem": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      },
+      "unit": {
+        "type": "String"
+      },
+      "itemName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRestock": "Échec du réapprovisionnement",
+  "shareAnalytics": "Partager les analyses",
+  "trends": "Tendances",
+  "performance": "Performance",
+  "changePeriod": "Changer la période",
+  "quickInsights": "Aperçus rapides",
+  "excellent": "Excellent",
+  "good": "Bon",
+  "needsImprovement": "Nécessite une amélioration",
+  "highestRevenueMonth": "Mois avec le plus haut revenu",
+  "eventSuccessRate": "Taux de réussite des événements",
+  "eventsCompletedSuccessfully": "Événements terminés avec succès",
+  "topPerformingEvents": "Événements les plus performants",
+  "noCompletedEventsInPeriod": "Aucun événement terminé pendant cette période",
+  "revenueTrend": "Tendance des revenus",
+  "description": "description",
+  "urgent": "Urgent",
+  "events": "Événements",
+  "bestMonth": "Meilleur Mois",
+  "eventsCount": "Nombre d'événements",
+  "profitMarginTrend": "Tendance de la marge bénéficiaire",
+  "revenueChart": "Graphique des revenus",
+  "eventsCountChart": "Graphique du nombre d'événements",
+  "profitMarginChart": "Graphique de la marge bénéficiaire",
+  "noDataAvailableForPeriod": "Aucune donnée disponible pour cette période",
+  "performanceSummary": "Résumé de la performance",
+  "successRate": "Taux de réussite",
+  "avgProfitMargin": "Marge bénéficiaire moyenne",
+  "growthRate": "Taux de croissance",
+  "performanceByEventSize": "Performance par taille d'événement",
+  "smallEvents": "Petits événements",
+  "mediumEvents": "Événements moyens",
+  "largeEvents": "Grands événements",
+  "eventsCountLabel": "{count} événements",
+  "@eventsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyComparison": "Comparaison mensuelle",
+  "noDataAvailableForMonthlyComparison": "Aucune donnée disponible pour la comparaison mensuelle",
+  "customRange": "Plage personnalisée",
+  "exportFunctionalityComingSoon": "Fonctionnalité d'exportation bientôt disponible",
+  "shareFunctionalityComingSoon": "Fonctionnalité de partage bientôt disponible",
+  "settingsFunctionalityComingSoon": "Fonctionnalité des paramètres bientôt disponible",
+  "loginScreenTitle": "Gestion Traiteur",
+  "welcomeBack": "Bienvenue de retour !",
+  "signInToManage": "Connectez-vous pour gérer votre entreprise de traiteur",
+  "emailAddress": "Adresse e-mail",
+  "enterYourEmail": "Entrez votre e-mail",
+  "passwordText": "Mot de passe",
+  "enterYourPassword": "Entrez votre mot de passe",
+  "rememberMe": "Se souvenir de moi",
+  "forgotPasswordQuestion": "Mot de passe oublié ?",
+  "signIn": "Se connecter",
+  "orText": "OU",
+  "dontHaveAccount": "Vous n'avez pas de compte ?",
+  "signUp": "S'inscrire",
+  "copyrightText": "© 2024 Système de Gestion Traiteur",
+  "versionText": "Version 1.0.0",
+  "loginFailedMessage": "Échec de la connexion",
+  "pleaseEnterEmailFirst": "Veuillez d'abord saisir votre adresse e-mail",
+  "passwordResetEmailSent": "E-mail de réinitialisation du mot de passe envoyé avec succès",
+  "failedToSendResetEmail": "Échec de l'envoi de l'e-mail de réinitialisation",
+  "signingIn": "Connexion en cours...",
+  "professionalCateringManagement": "Gestion Professionnelle de Traiteur",
+  "loadingMessage": "Chargement...",
+  "totalReturns": "Retours Totaux",
+  "takeItemsForEvent": "Prendre des articles pour l'événement",
+  "quickReturn": "Retour rapide",
+  "returnMultipleItems": "Retourner plusieurs articles",
+  "noActiveCheckouts": "Aucun retrait actif",
+  "allEquipmentReturned": "Tout l'équipement a été retourné.",
+  "myActivity": "Mon activité",
+  "noEquipmentToReturn": "Aucun équipement à retourner",
+  "confirmReturn": "Confirmer le retour",
+  "confirmReturnEquipment": "Êtes-vous sûr de vouloir retourner cet équipement ?",
+  "myEquipmentHistory": "Historique de mon équipement",
+  "equipmentOverdue": "Équipement en retard",
+  "equipmentCheckedOutAgo": "Équipement retiré il y a {duration}",
+  "@equipmentCheckedOutAgo": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "noNewNotifications": "Aucune nouvelle notification",
+  "atText": "à",
+  "failedToLoadActivityData": "Échec du chargement des données d'activité : {error}",
+  "@failedToLoadActivityData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownEquipment": "Équipement inconnu",
+  "duration": "Durée",
+  "occasionId": "ID de l'occasion",
+  "equipmentOverdueForReturn": "Cet équipement est en retard pour le retour",
+  "filterByDateRange": "Filtrer par plage de dates",
+  "clearDateFilter": "Effacer le filtre de date",
+  "searchEquipmentOrNotes": "Rechercher équipement ou notes...",
+  "showingDateRange": "Affichage {startDate} - {endDate}",
+  "@showingDateRange": {
+    "placeholders": {
+      "startDate": {
+        "type": "String"
+      },
+      "endDate": {
+        "type": "String"
+      }
+    }
+  },
+  "noReturnedItems": "Aucun article retourné",
+  "noEquipmentReturnedYet": "Aucun équipement n'a encore été retourné.",
+  "noOverdueItems": "Aucun article en retard",
+  "allEquipmentReturnedOnTime": "Super ! Tout l'équipement est retourné à temps.",
+  "noActivityFound": "Aucune activité trouvée",
+  "noEquipmentActivityMatchesSearch": "Aucune activité d'équipement ne correspond à votre recherche.",
+  "out": "Sorti",
+  "inText": "Entré",
+  "ongoing": "en cours",
+  "durationDaysHours": "{days}j {hours}h",
+  "@durationDaysHours": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHoursMinutes": "{hours}h {minutes}min",
+  "@durationHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "durationMinutes": "{minutes}min",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "chairs": "Chaises",
+    "tables": "Tables",
+    "utensils": "Ustensiles",
+    "decorations": "Décorations",
+    "other": "Autre",
+    "failedToLoadEquipment": "Échec du chargement de l'équipement : {error}",
+    "@failedToLoadEquipment": {
+      "placeholders": {
+        "error": {
+          "type": "String"
+        }
+      }
+    },
+    "equipmentCheckoutTitle": "Retrait d'équipement",
+    "notes": "Notes",
+    "checkout": "Retrait",
+    "totalItems": "Total des articles",
+    "checkoutConfirmation": "Confirmation de retrait",
+    "confirmCheckoutMessage": "Êtes-vous sûr de vouloir retirer l'équipement sélectionné ?",
+    "confirm": "Confirmer",
+    "checkoutSuccess": "Équipement retiré avec succès !",
+    "checkoutFailed": "Échec du retrait de l'équipement.",
+    "quantityUnavailable": "La quantité sélectionnée pour {equipmentName} n'est pas disponible. Disponible : {availableQuantity}",
+    "@quantityUnavailable": {
+      "placeholders": {
+        "equipmentName": {
+          "type": "String"
+        },
+        "availableQuantity": {
+          "type": "int"
+        }
+      }
+    },
+    "selectedQuantity": "Quantité sélectionnée : {quantity}",
+    "@selectedQuantity": {
+      "placeholders": {
+        "quantity": {
+          "type": "int"
+        }
+      }
+    },
+
+    "pleaseSelectEquipmentToCheckout": "Veuillez sélectionner l'équipement à retirer.",
+      "userNotAuthenticated": "Utilisateur non authentifié.",
+      "requested": "Demandé",
+      "checkoutSuccessful": "Retrait réussi",
+      "successfullyCheckedOut": "Retiré avec succès !",
+      "equipmentTypesCount": "{count} types sélectionnés",
+      "@equipmentTypesCount": {
+        "placeholders": {
+          "count": {
+            "type": "int"
+          }
+        }
+      },
+      "equipmentTypesCount": "{count} types",
+        "@equipmentTypesCount": {
+          "description": "Nombre de types d'équipement",
+          "placeholders": {
+            "count": {
+              "type": "int"
+            }
+          }
+        },
+        "typesSelected": "{equipmentTypesString} sélectionnés",
+        "@typesSelected": {
+          "description": "Indique qu'un certain nombre de types d'équipement ont été sélectionnés",
+          "placeholders": {
+            "equipmentTypesString": {
+              "type": "String"
+            }
+          }
+        },
+      "totalItemsCount": "{count} articles",
+      "@totalItemsCount": {
+        "placeholders": {
+          "count": {
+            "type": "int"
+          }
+        }
+      },
+      "forText": "pour",
+      "done": "Terminé",
+      "equipmentUnavailable": "Équipement indisponible",
+      "equipmentNotAvailableInRequestedQuantity": "Certains équipements ne sont pas disponibles dans la quantité demandée.",
+      "adjustQuantitiesOrRemoveUnavailableItems": "Veuillez ajuster les quantités ou supprimer les articles indisponibles.",
+      "ok": "OK",
+      "searchEquipment": "Rechercher équipement...",
+      "tryAdjustingYourSearchTerms": "Essayez d'ajuster vos termes de recherche.",
+      "noEquipmentAvailableInCategory": "Aucun équipement disponible dans cette catégorie.",
+      "quantityToCheckout": "Quantité à retirer",
+      "processing": "Traitement...",
+      "chairs": "Chaises",
+      "tables": "Tables",
+      "utensils": "Ustensiles",
+      "decorations": "Décorations",
+      "other": "Autre",
+      "failedToLoadEquipment": "Échec du chargement de l'équipement : {error}",
+      "@failedToLoadEquipment": {
+        "placeholders": {
+          "error": {
+            "type": "String"
+          }
+        }
+      },
+      "equipmentCheckoutTitle": "Retrait d'équipement",
+      "notes": "Notes",
+      "checkout": "Retrait",
+      "totalItems": "Total des articles",
+      "checkoutConfirmation": "Confirmation de retrait",
+      "confirmCheckoutMessage": "Êtes-vous sûr de vouloir retirer l'équipement sélectionné ?",
+      "confirm": "Confirmer",
+      "checkoutSuccess": "Équipement retiré avec succès !",
+      "checkoutFailed": "Échec du retrait de l'équipement.",
+      "quantityUnavailable": "La quantité sélectionnée pour {equipmentName} n'est pas disponible. Disponible : {availableQuantity}",
+      "@quantityUnavailable": {
+        "placeholders": {
+          "equipmentName": {
+            "type": "String"
+          },
+          "availableQuantity": {
+            "type": "int"
+          }
+        }
+      },
+      "selectedQuantity": "Quantité sélectionnée : {quantity}",
+      "@selectedQuantity": {
+        "placeholders": {
+          "quantity": {
+            "type": "int"
+          }
+        }
+      }
 }

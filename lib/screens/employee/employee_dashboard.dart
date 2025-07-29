@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
+import '../../core/widgets/language_selector.dart';
 import '../../core/widgets/loading_widget.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../models/equipment_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
@@ -46,7 +48,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         ]);
       }
     } catch (e) {
-      _showErrorSnackBar('Failed to load dashboard data: $e');
+      _showErrorSnackBar(AppLocalizations.of(context)!.errorOccurred); // Localized error message
     }
 
     setState(() => _isLoading = false);
@@ -66,7 +68,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     _recentActivity = allCheckouts.take(10).map((checkout) {
       return {
         'type': checkout.status == 'returned' ? 'return' : 'checkout',
-        'equipmentName': 'Loading...', // Will be loaded separately
+        'equipmentName': AppLocalizations.of(context)!.loadingMessage, // Localized loading message
         'equipmentId': checkout.equipmentId,
         'quantity': checkout.quantity,
         'date': checkout.status == 'returned' ? checkout.returnDate ?? checkout.checkoutDate : checkout.checkoutDate,
@@ -80,7 +82,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         EquipmentModel equipment = await _firestoreService.getEquipmentById(activity['equipmentId']);
         activity['equipmentName'] = equipment.name;
       } catch (e) {
-        activity['equipmentName'] = 'Unknown Equipment';
+        activity['equipmentName'] = AppLocalizations.of(context)!.unknownStatus; // Using unknownStatus for unknown equipment
       }
     }
 
@@ -114,9 +116,9 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
       // Refresh dashboard data
       await _loadDashboardData();
 
-      _showSuccessSnackBar('Equipment returned successfully');
+      _showSuccessSnackBar(AppLocalizations.of(context)!.equipmentReturnedSuccessfully); // Localized success message
     } catch (e) {
-      _showErrorSnackBar('Failed to return equipment: $e');
+      _showErrorSnackBar(AppLocalizations.of(context)!.failedToReturnEquipment); // Localized error message
     }
   }
 
@@ -136,7 +138,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: _isLoading ? const LoadingWidget() : _buildBody(),
+      body: _isLoading ? LoadingWidget(message: AppLocalizations.of(context)!.loadingMessage) : _buildBody(), // Localized loading message
       floatingActionButton: _buildFloatingActionButton(),
       drawer: _buildDrawer(),
     );
@@ -144,7 +146,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      title: const Text('Employee Dashboard'),
+      title: Text(AppLocalizations.of(context)!.employeeDashboard), // Localized title
       actions: [
         IconButton(
           icon: Stack(
@@ -175,7 +177,10 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: _loadDashboardData,
+          tooltip: AppLocalizations.of(context)!.refresh, // Localized tooltip
         ),
+
+        const LanguageSelector(showAsDialog: true),
       ],
     );
   }
@@ -233,19 +238,19 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome back,',
+                    AppLocalizations.of(context)!.welcomeBack, // Localized
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
                   ),
                   Text(
-                    authProvider.currentUser?.fullName ?? 'Employee',
+                    authProvider.currentUser?.fullName ?? AppLocalizations.of(context)!.employee, // Localized
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    'Ready to manage equipment',
+                    AppLocalizations.of(context)!.signInToManage, // Localized
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w500,
@@ -263,7 +268,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                   border: Border.all(color: AppColors.error.withOpacity(0.3)),
                 ),
                 child: Text(
-                  '${_stats['overdueItems']} overdue',
+                  AppLocalizations.of(context)!.overdueByDays(_stats['overdueItems']), // Localized
                   style: const TextStyle(
                     color: AppColors.error,
                     fontWeight: FontWeight.bold,
@@ -282,7 +287,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
       children: [
         Expanded(
           child: _buildStatCard(
-            title: 'Active Checkouts',
+            title: AppLocalizations.of(context)!.activeCheckouts, // Localized
             value: '${_stats['activeCheckouts'] ?? 0}',
             icon: Icons.shopping_cart,
             color: AppColors.warning,
@@ -291,7 +296,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
-            title: 'Total Returns',
+            title: AppLocalizations.of(context)!.totalReturns, // Localized
             value: '${_stats['returnedItems'] ?? 0}',
             icon: Icons.assignment_return,
             color: AppColors.success,
@@ -300,7 +305,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
-            title: 'Total Checkouts',
+            title: AppLocalizations.of(context)!.totalCheckouts, // Localized
             value: '${_stats['totalCheckouts'] ?? 0}',
             icon: Icons.history,
             color: AppColors.info,
@@ -356,7 +361,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Actions',
+          AppLocalizations.of(context)!.quickActions, // Localized
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -366,8 +371,8 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           children: [
             Expanded(
               child: _buildActionCard(
-                title: 'Checkout Equipment',
-                subtitle: 'Take items for event',
+                title: AppLocalizations.of(context)!.checkoutEquipment, // Localized
+                subtitle: AppLocalizations.of(context)!.takeItemsForEvent, // Localized
                 icon: Icons.add_shopping_cart,
                 color: AppColors.primary,
                 onTap: _navigateToCheckout,
@@ -376,8 +381,8 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
             const SizedBox(width: 12),
             Expanded(
               child: _buildActionCard(
-                title: 'Quick Return',
-                subtitle: 'Return multiple items',
+                title: AppLocalizations.of(context)!.quickReturn, // Localized
+                subtitle: AppLocalizations.of(context)!.returnMultipleItems, // Localized
                 icon: Icons.assignment_return,
                 color: AppColors.success,
                 onTap: _showQuickReturnDialog,
@@ -448,7 +453,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Active Checkouts',
+              AppLocalizations.of(context)!.activeCheckouts, // Localized
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -456,7 +461,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
             if (_myCheckouts.isNotEmpty)
               TextButton(
                 onPressed: _showAllCheckouts,
-                child: const Text('View All'),
+                child: Text(AppLocalizations.of(context)!.viewAll), // Localized
               ),
           ],
         ),
@@ -482,14 +487,14 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No active checkouts',
+              AppLocalizations.of(context)!.noActiveCheckouts, // Localized
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'All equipment has been returned.',
+              AppLocalizations.of(context)!.allEquipmentReturned, // Localized
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -513,7 +518,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           return FutureBuilder<EquipmentModel>(
             future: _firestoreService.getEquipmentById(checkout.equipmentId),
             builder: (context, snapshot) {
-              String equipmentName = snapshot.data?.name ?? 'Loading...';
+              String equipmentName = snapshot.data?.name ?? AppLocalizations.of(context)!.loadingMessage; // Localized
 
               return ListTile(
                 leading: CircleAvatar(
@@ -530,9 +535,9 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Quantity: ${checkout.quantity}'),
+                    Text('${AppLocalizations.of(context)!.quantity}: ${checkout.quantity}'), // Localized
                     Text(
-                      'Checked out ${_formatDuration(checkout.checkoutDate)}',
+                      '${AppLocalizations.of(context)!.checkedOut} ${_formatDuration(checkout.checkoutDate)}', // Localized
                       style: TextStyle(
                         color: checkout.isOverdue ? AppColors.error : AppColors.textSecondary,
                         fontWeight: checkout.isOverdue ? FontWeight.w500 : null,
@@ -550,9 +555,9 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                           color: AppColors.error.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          'OVERDUE',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)!.overdue.toUpperCase(), // Localized
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -563,7 +568,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                     IconButton(
                       icon: const Icon(Icons.assignment_return),
                       onPressed: () => _showReturnConfirmation(checkout),
-                      tooltip: 'Return equipment',
+                      tooltip: AppLocalizations.of(context)!.returnEquipment, // Localized
                     ),
                   ],
                 ),
@@ -581,7 +586,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Recent Activity',
+          AppLocalizations.of(context)!.recentActivities, // Localized
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -600,7 +605,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No recent activity',
+                    AppLocalizations.of(context)!.noRecentActivities, // Localized
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -632,9 +637,9 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                     ),
                   ),
                   title: Text(
-                    '${isReturn ? 'Returned' : 'Checked out'} ${activity['equipmentName']}',
+                    '${isReturn ? AppLocalizations.of(context)!.returned : AppLocalizations.of(context)!.checkedOut} ${activity['equipmentName']}', // Localized
                   ),
-                  subtitle: Text('Quantity: ${activity['quantity']}'),
+                  subtitle: Text('${AppLocalizations.of(context)!.quantity}: ${activity['quantity']}'), // Localized
                   trailing: Text(
                     _formatDuration(activity['date']),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -653,7 +658,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     return FloatingActionButton.extended(
       onPressed: _navigateToCheckout,
       icon: const Icon(Icons.add_shopping_cart),
-      label: const Text('Checkout'),
+      label: Text(AppLocalizations.of(context)!.checkout), // Localized
       backgroundColor: AppColors.primary,
     );
   }
@@ -690,7 +695,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      authProvider.currentUser?.fullName ?? 'Employee',
+                      authProvider.currentUser?.fullName ?? AppLocalizations.of(context)!.employee, // Localized
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -709,13 +714,13 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               ),
               ListTile(
                 leading: const Icon(Icons.dashboard),
-                title: const Text('Dashboard'),
+                title: Text(AppLocalizations.of(context)!.dashboard), // Localized
                 selected: true,
                 onTap: () => Navigator.pop(context),
               ),
               ListTile(
                 leading: const Icon(Icons.add_shopping_cart),
-                title: const Text('Checkout Equipment'),
+                title: Text(AppLocalizations.of(context)!.checkoutEquipment), // Localized
                 onTap: () {
                   Navigator.pop(context);
                   _navigateToCheckout();
@@ -723,7 +728,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               ),
               ListTile(
                 leading: const Icon(Icons.assignment_return),
-                title: const Text('Return Equipment'),
+                title: Text(AppLocalizations.of(context)!.returnEquipment), // Localized
                 onTap: () {
                   Navigator.pop(context);
                   _showQuickReturnDialog();
@@ -732,7 +737,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               ),
               ListTile(
                 leading: const Icon(Icons.history),
-                title: const Text('My Activity'),
+                title: Text(AppLocalizations.of(context)!.myActivity), // Localized
                 onTap: () {
                   Navigator.pop(context);
                   _showAllCheckouts();
@@ -741,7 +746,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.person),
-                title: const Text('Profile'),
+                title: Text(AppLocalizations.of(context)!.profile), // Localized
                 onTap: () {
                   Navigator.pop(context);
                   // TODO: Navigate to profile
@@ -749,7 +754,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               ),
               ListTile(
                 leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
+                title: Text(AppLocalizations.of(context)!.settings), // Localized
                 onTap: () {
                   Navigator.pop(context);
                   // TODO: Navigate to settings
@@ -758,7 +763,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.logout, color: AppColors.error),
-                title: const Text('Sign Out', style: TextStyle(color: AppColors.error)),
+                title: Text(AppLocalizations.of(context)!.logout, style: const TextStyle(color: AppColors.error)), // Localized
                 onTap: () async {
                   Navigator.pop(context);
                   await authProvider.signOut();
@@ -787,14 +792,14 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
 
   void _showQuickReturnDialog() {
     if (_myCheckouts.isEmpty) {
-      _showErrorSnackBar('No equipment to return');
+      _showErrorSnackBar(AppLocalizations.of(context)!.noEquipmentToReturn); // Localized
       return;
     }
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Quick Return'),
+        title: Text(AppLocalizations.of(context)!.quickReturn), // Localized
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -805,13 +810,13 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               return FutureBuilder<EquipmentModel>(
                 future: _firestoreService.getEquipmentById(checkout.equipmentId),
                 builder: (context, snapshot) {
-                  String equipmentName = snapshot.data?.name ?? 'Loading...';
+                  String equipmentName = snapshot.data?.name ?? AppLocalizations.of(context)!.loadingMessage; // Localized
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
                       title: Text(equipmentName),
-                      subtitle: Text('Quantity: ${checkout.quantity}'),
+                      subtitle: Text('${AppLocalizations.of(context)!.quantity}: ${checkout.quantity}'), // Localized
                       trailing: checkout.isOverdue
                           ? const Icon(Icons.warning, color: AppColors.error)
                           : null,
@@ -829,7 +834,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel), // Localized
           ),
         ],
       ),
@@ -840,17 +845,17 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Return'),
+        title: Text(AppLocalizations.of(context)!.confirmReturn), // Localized
         content: FutureBuilder<EquipmentModel>(
           future: _firestoreService.getEquipmentById(checkout.equipmentId),
           builder: (context, snapshot) {
-            String equipmentName = snapshot.data?.name ?? 'Loading...';
+            String equipmentName = snapshot.data?.name ?? AppLocalizations.of(context)!.loadingMessage; // Localized
 
             return Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Are you sure you want to return this equipment?'),
+                Text(AppLocalizations.of(context)!.confirmReturnEquipment), // Localized
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -861,11 +866,11 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Equipment: $equipmentName', style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text('Quantity: ${checkout.quantity}'),
-                      Text('Checked out: ${_formatDuration(checkout.checkoutDate)}'),
+                      Text('${AppLocalizations.of(context)!.equipment}: $equipmentName', style: const TextStyle(fontWeight: FontWeight.bold)), // Localized
+                      Text('${AppLocalizations.of(context)!.quantity}: ${checkout.quantity}'), // Localized
+                      Text('${AppLocalizations.of(context)!.checkedOut}: ${_formatDuration(checkout.checkoutDate)}'), // Localized
                       if (checkout.isOverdue)
-                        const Text('Status: OVERDUE', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
+                        Text('${AppLocalizations.of(context)!.status}: ${AppLocalizations.of(context)!.overdue.toUpperCase()}', style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)), // Localized
                     ],
                   ),
                 ),
@@ -876,7 +881,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel), // Localized
           ),
           ElevatedButton(
             onPressed: () {
@@ -884,7 +889,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
               _returnEquipment(checkout);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-            child: const Text('Return'),
+            child: Text(AppLocalizations.of(context)!.returnText), // Localized
           ),
         ],
       ),
@@ -896,7 +901,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
       context,
       MaterialPageRoute(
         builder: (context) => Scaffold(
-          appBar: AppBar(title: const Text('My Equipment History')),
+          appBar: AppBar(title: Text(AppLocalizations.of(context)!.myEquipmentHistory)), // Localized
           body: ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: _recentActivity.length,
@@ -921,7 +926,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${isReturn ? 'Returned' : 'Checked out'} • Quantity: ${activity['quantity']}'),
+                      Text('${isReturn ? AppLocalizations.of(context)!.returned : AppLocalizations.of(context)!.checkedOut} • ${AppLocalizations.of(context)!.quantity}: ${activity['quantity']}'), // Localized
                       Text(_formatDateTime(activity['date'])),
                     ],
                   ),
@@ -942,8 +947,8 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     for (var checkout in _myCheckouts.where((c) => c.isOverdue)) {
       notifications.add({
         'type': 'overdue',
-        'title': 'Equipment Overdue',
-        'message': 'Equipment checked out ${_formatDuration(checkout.checkoutDate)} ago',
+        'title': AppLocalizations.of(context)!.equipmentOverdue, // Localized
+        'message': AppLocalizations.of(context)!.equipmentCheckedOutAgo(_formatDuration(checkout.checkoutDate)), // Localized
         'checkout': checkout,
       });
     }
@@ -951,9 +956,9 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Notifications'),
+        title: Text(AppLocalizations.of(context)!.notifications), // Localized
         content: notifications.isEmpty
-            ? const Text('No new notifications')
+            ? Text(AppLocalizations.of(context)!.noNewNotifications) // Localized
             : SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -981,7 +986,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)!.close), // Localized
           ),
         ],
       ),
@@ -991,15 +996,16 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
   String _formatDuration(DateTime dateTime) {
     final duration = DateTime.now().difference(dateTime);
     if (duration.inDays > 0) {
-      return '${duration.inDays}d ago';
+      return AppLocalizations.of(context)!.inDays(duration.inDays); // Localized
     } else if (duration.inHours > 0) {
-      return '${duration.inHours}h ago';
+      return AppLocalizations.of(context)!.inHours(duration.inHours); // Localized
     } else {
-      return '${duration.inMinutes}m ago';
+      return AppLocalizations.of(context)!.minutes(duration.inMinutes); // Localized
     }
   }
 
   String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    // You might want to use intl package's DateFormat for more robust localization
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${AppLocalizations.of(context)!.atText} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}'; // Localized
   }
 }

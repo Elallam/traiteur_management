@@ -4,6 +4,7 @@ import '../../models/article_model.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
 import 'add_article_dialog.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class ArticleDetailsDialog extends StatelessWidget {
   final ArticleModel article;
@@ -12,6 +13,7 @@ class ArticleDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
@@ -46,7 +48,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                         article.imageUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return Icon(
+                          return const Icon(
                             Icons.inventory_2,
                             color: AppColors.white,
                             size: 30,
@@ -54,7 +56,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                         },
                       ),
                     )
-                        : Icon(
+                        : const Icon(
                       Icons.inventory_2,
                       color: AppColors.white,
                       size: 30,
@@ -119,7 +121,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            article.isLowStock ? 'Low Stock' : 'In Stock',
+                            article.isLowStock ? l10n.lowStock : l10n.inStock, // Localized
                             style: TextStyle(
                               color: article.isLowStock ? AppColors.error : AppColors.success,
                               fontWeight: FontWeight.w600,
@@ -140,25 +142,25 @@ class ArticleDetailsDialog extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Details section
-                    const Text(
-                      'Details',
-                      style: TextStyle(
+                    Text(
+                      l10n.details, // Localized
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _buildDetailRow('Price per unit', '\$${article.price.toStringAsFixed(2)}'),
-                    _buildDetailRow('Total value', '\$${article.totalValue.toStringAsFixed(2)}'),
-                    _buildDetailRow('Unit', article.unit),
-                    _buildDetailRow('Category', article.category),
+                    _buildDetailRow(l10n.pricePerUnit, '\$${article.price.toStringAsFixed(2)}'), // Localized
+                    _buildDetailRow(l10n.totalValue, '\$${article.totalValue.toStringAsFixed(2)}'), // Localized
+                    _buildDetailRow(l10n.unit, article.unit), // Localized
+                    _buildDetailRow(l10n.category, article.category), // Localized
 
                     // Description if available
                     if (article.description != null && article.description!.isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      const Text(
-                        'Description',
-                        style: TextStyle(
+                      Text(
+                        l10n.description, // Localized
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -182,8 +184,8 @@ class ArticleDetailsDialog extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          _buildDetailRow('Created', _formatDate(article.createdAt)),
-                          _buildDetailRow('Last updated', _formatDate(article.updatedAt)),
+                          _buildDetailRow(l10n.created, _formatDate(article.createdAt)), // Localized
+                          _buildDetailRow(l10n.lastUpdated, _formatDate(article.updatedAt)), // Localized
                         ],
                       ),
                     ),
@@ -199,7 +201,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.edit),
-                      label: const Text('Edit'),
+                      label: Text(l10n.edit), // Localized
                       onPressed: () {
                         Navigator.pop(context);
                         _showEditDialog(context);
@@ -210,7 +212,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.add_circle),
-                      label: const Text('Update Qty'),
+                      label: Text(l10n.updateQuantity), // Localized
                       onPressed: () {
                         Navigator.pop(context);
                         _showUpdateQuantityDialog(context);
@@ -268,23 +270,24 @@ class ArticleDetailsDialog extends StatelessWidget {
   void _showUpdateQuantityDialog(BuildContext context) {
     final stockProvider = Provider.of<StockProvider>(context, listen: false);
     final quantityController = TextEditingController(text: article.quantity.toString());
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Update ${article.name} quantity'),
+        title: Text(l10n.updateArticleQuantityTitle(article.name)), // Localized title
         content: TextField(
           controller: quantityController,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            labelText: 'New quantity (${article.unit})',
+            labelText: l10n.newQuantityUnit(article.unit), // Localized label
             border: const OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel), // Localized
           ),
           ElevatedButton(
             onPressed: () async {
@@ -298,8 +301,8 @@ class ArticleDetailsDialog extends StatelessWidget {
 
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Quantity updated successfully'),
+                    SnackBar(
+                      content: Text(l10n.quantityUpdatedSuccess), // Localized
                       backgroundColor: AppColors.success,
                     ),
                   );
@@ -307,7 +310,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        stockProvider.errorMessage ?? 'Failed to update quantity',
+                        stockProvider.errorMessage ?? l10n.failedToUpdateQuantity, // Localized fallback
                       ),
                       backgroundColor: AppColors.error,
                     ),
@@ -315,7 +318,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                 }
               }
             },
-            child: const Text('Update'),
+            child: Text(l10n.update), // Localized
           ),
         ],
       ),

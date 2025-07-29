@@ -9,6 +9,7 @@ import '../../models/occasion_model.dart';
 import '../../providers/occasion_provider.dart';
 import '../../providers/equipment_booking_provider.dart';
 import '../../providers/stock_provider.dart';
+import '../../generated/l10n/app_localizations.dart'; // Import AppLocalizations
 
 class DashboardNotificationsScreen extends StatefulWidget {
   const DashboardNotificationsScreen({Key? key}) : super(key: key);
@@ -62,7 +63,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error loading alerts: $e'),
+          content: Text('${AppLocalizations.of(context).error}: $e'), // Localized error message
           backgroundColor: AppColors.error,
         ),
       );
@@ -71,14 +72,15 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
 
   List<Map<String, dynamic>> _generateStockAlerts(StockProvider stockProvider) {
     List<Map<String, dynamic>> alerts = [];
+    final l10n = AppLocalizations.of(context);
 
     // Low stock alerts
     final lowStockArticles = stockProvider.getLowStockArticles();
     for (var article in lowStockArticles) {
       alerts.add({
         'type': 'low_stock',
-        'title': 'Low Stock Alert',
-        'message': '${article.name} is running low (${article.quantity} ${article.unit} remaining)',
+        'title': l10n.lowStockAlerts, // Localized
+        'message': '${article.name} ${l10n.isRunningLow} (${article.quantity} ${article.unit} ${l10n.remaining})', // Localized
         'priority': 'medium',
         'data': article,
         'category': 'inventory',
@@ -90,8 +92,8 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
     for (var equipment in fullyCheckedOut) {
       alerts.add({
         'type': 'equipment_unavailable',
-        'title': 'Equipment Fully Booked',
-        'message': '${equipment.name} is fully checked out',
+        'title': l10n.equipmentFullyBooked, // Localized
+        'message': '${equipment.name} ${l10n.isFullyCheckedOut}', // Localized
         'priority': 'low',
         'data': equipment,
         'category': 'equipment',
@@ -116,33 +118,35 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications & Alerts'),
+        title: Text(l10n.notifications), // Localized
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
             onPressed: _loadAlerts,
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh Alerts',
+            tooltip: l10n.refreshAlerts, // Localized
           ),
           PopupMenuButton<String>(
             onSelected: _handleMenuAction,
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'mark_all_read',
                 child: ListTile(
-                  leading: Icon(Icons.done_all),
-                  title: Text('Mark All as Read'),
+                  leading: const Icon(Icons.done_all),
+                  title: Text(l10n.markAllAsRead), // Localized
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'settings',
                 child: ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('Notification Settings'),
+                  leading: const Icon(Icons.settings),
+                  title: Text(l10n.notificationSettings), // Localized
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -155,10 +159,10 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
           unselectedLabelColor: Colors.white70,
           indicatorColor: Colors.white,
           tabs: [
-            Tab(text: 'All (${_allAlerts.length})'),
-            Tab(text: 'Urgent (${_getAlertsByPriority('urgent').length})'),
-            Tab(text: 'Events (${_getAlertsByCategory('events').length})'),
-            Tab(text: 'Equipment (${_getAlertsByCategory('equipment').length})'),
+            Tab(text: '${l10n.all} (${_allAlerts.length})'), // Localized
+            Tab(text: '${l10n.urgent} (${_getAlertsByPriority('urgent').length})'), // Localized
+            Tab(text: '${l10n.events} (${_getAlertsByCategory('events').length})'), // Localized
+            Tab(text: '${l10n.equipment} (${_getAlertsByCategory('equipment').length})'), // Localized
           ],
         ),
       ),
@@ -195,9 +199,10 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
 
   Widget _buildUrgentAlertsTab() {
     final urgentAlerts = _getAlertsByPriority('urgent');
+    final l10n = AppLocalizations.of(context);
 
     if (urgentAlerts.isEmpty) {
-      return _buildNoAlertsView(message: 'No urgent alerts at the moment');
+      return _buildNoAlertsView(message: l10n.noUrgentAlerts); // Localized
     }
 
     return ListView.builder(
@@ -211,9 +216,10 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
 
   Widget _buildEventsAlertsTab() {
     final eventAlerts = _getAlertsByCategory('events');
+    final l10n = AppLocalizations.of(context);
 
     if (eventAlerts.isEmpty) {
-      return _buildNoAlertsView(message: 'No event alerts');
+      return _buildNoAlertsView(message: l10n.noEventAlerts); // Localized
     }
 
     return ListView.builder(
@@ -227,9 +233,10 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
 
   Widget _buildEquipmentAlertsTab() {
     final equipmentAlerts = _getAlertsByCategory('equipment');
+    final l10n = AppLocalizations.of(context);
 
     if (equipmentAlerts.isEmpty) {
-      return _buildNoAlertsView(message: 'No equipment alerts');
+      return _buildNoAlertsView(message: l10n.noEquipmentAlerts); // Localized
     }
 
     return ListView.builder(
@@ -242,6 +249,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
   }
 
   Widget _buildNoAlertsView({String? message}) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -253,16 +261,16 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
           ),
           const SizedBox(height: 16),
           Text(
-            message ?? 'No alerts at the moment',
+            message ?? l10n.noAlertsMessage, // Localized
             style: TextStyle(
               fontSize: 18,
               color: AppColors.textSecondary.withOpacity(0.7),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'You\'re all caught up!',
-            style: TextStyle(
+          Text(
+            l10n.allCaughtUp, // Localized
+            style: const TextStyle(
               color: AppColors.textSecondary,
             ),
           ),
@@ -274,6 +282,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
   Widget _buildAlertCard(Map<String, dynamic> alert, int index) {
     Color alertColor = _getAlertColor(alert['priority']);
     IconData alertIcon = _getAlertIcon(alert['type']);
+    final l10n = AppLocalizations.of(context);
 
     return Dismissible(
       key: Key('alert_$index'),
@@ -293,9 +302,9 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Alert dismissed'),
+            content: Text(l10n.alertDismissed), // Localized
             action: SnackBarAction(
-              label: 'Undo',
+              label: l10n.undo, // Localized
               onPressed: () {
                 setState(() {
                   _allAlerts.insert(index, alert);
@@ -381,7 +390,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.access_time,
                             size: 12,
                             color: AppColors.textSecondary,
@@ -483,28 +492,29 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
   }
 
   String _getAlertTimeText(Map<String, dynamic> alert) {
+    final l10n = AppLocalizations.of(context);
     switch (alert['type']) {
       case 'today':
-        return 'Today';
+        return l10n.today;
       case 'overdue':
-        return 'Overdue';
+        return l10n.overdue;
       case 'upcoming':
         if (alert['data'] != null && alert['data'] is Map) {
           final occasion = alert['data']['occasion'] as OccasionModel?;
           if (occasion != null) {
-            return 'In ${occasion.daysUntil} day(s)';
+            return l10n.inDays(occasion.daysUntil); // Localized
           }
         }
-        return 'Upcoming';
+        return l10n.upcoming;
       case 'urgent_checkout':
         if (alert['data'] != null && alert['data']['hoursUntil'] != null) {
-          return 'In ${alert['data']['hoursUntil']} hour(s)';
+          return l10n.inHours(alert['data']['hoursUntil']); // Localized
         }
-        return 'Soon';
+        return l10n.soon;
       case 'upcoming_checkout':
-        return 'Tomorrow';
+        return l10n.tomorrow;
       default:
-        return 'Now';
+        return l10n.justNow; // Localized
     }
   }
 
@@ -513,27 +523,29 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
   }
 
   String _getQuickActionText(String type) {
+    final l10n = AppLocalizations.of(context);
     switch (type) {
       case 'urgent_checkout':
       case 'upcoming_checkout':
-        return 'Checkout';
+        return l10n.checkout; // Localized
       case 'low_stock':
-        return 'Restock';
+        return l10n.restock; // Localized
       default:
-        return 'Action';
+        return l10n.action; // Localized
     }
   }
 
   // Action handlers
   void _handleMenuAction(String action) {
+    final l10n = AppLocalizations.of(context);
     switch (action) {
       case 'mark_all_read':
         setState(() {
           _allAlerts.clear();
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('All alerts marked as read'),
+          SnackBar(
+            content: Text(l10n.allAlertsMarkedAsRead), // Localized
             backgroundColor: AppColors.success,
           ),
         );
@@ -589,37 +601,38 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
   }
 
   void _showEquipmentCheckoutDialog(Map<String, dynamic> alert) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Equipment Checkout'),
+        title: Text(l10n.equipmentCheckout), // Localized
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Checkout equipment for this event?'),
+            Text(l10n.checkoutEquipmentForEvent), // Localized
             const SizedBox(height: 8),
             if (alert['data'] != null && alert['data']['occasion'] != null) ...[
               Text(
-                'Event: ${alert['data']['occasion'].title}',
+                '${l10n.event}: ${alert['data']['occasion'].title}', // Localized
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text('Equipment Items: ${alert['data']['equipmentCount']}'),
-              Text('Total Quantity: ${alert['data']['totalItems']}'),
+              Text('${l10n.equipmentItems}: ${alert['data']['equipmentCount']}'), // Localized
+              Text('${l10n.totalQuantity}: ${alert['data']['totalItems']}'), // Localized
             ],
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel), // Localized
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               await _performEquipmentCheckout(alert);
             },
-            child: const Text('Checkout'),
+            child: Text(l10n.checkout), // Localized
           ),
         ],
       ),
@@ -628,25 +641,26 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
 
   void _showRestockDialog(Map<String, dynamic> alert) {
     final TextEditingController quantityController = TextEditingController();
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Restock Item'),
+        title: Text(l10n.restockItem), // Localized
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (alert['data'] != null) ...[
-              Text('Item: ${alert['data'].name}'),
-              Text('Current Stock: ${alert['data'].quantity} ${alert['data'].unit}'),
+              Text('${l10n.item}: ${alert['data'].name}'), // Localized
+              Text('${l10n.currentStock}: ${alert['data'].quantity} ${alert['data'].unit}'), // Localized
               const SizedBox(height: 16),
             ],
             TextField(
               controller: quantityController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Add Quantity',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.addQuantity, // Localized
+                border: const OutlineInputBorder(),
               ),
             ),
           ],
@@ -654,7 +668,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel), // Localized
           ),
           ElevatedButton(
             onPressed: () async {
@@ -663,7 +677,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
                 await _performRestock(alert, int.parse(quantityController.text));
               }
             },
-            child: const Text('Add Stock'),
+            child: Text(l10n.addStock), // Localized
           ),
         ],
       ),
@@ -671,34 +685,35 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
   }
 
   void _showNotificationSettings() {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Notification Settings'),
+        title: Text(l10n.notificationSettings), // Localized
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             SwitchListTile(
-              title: const Text('Event Reminders'),
-              subtitle: const Text('Get notified about upcoming events'),
+              title: Text(l10n.eventReminders), // Localized
+              subtitle: Text(l10n.getNotifiedAboutUpcomingEvents), // Localized
               value: true,
               onChanged: (value) {},
             ),
             SwitchListTile(
-              title: const Text('Equipment Alerts'),
-              subtitle: const Text('Equipment checkout and availability alerts'),
+              title: Text(l10n.equipmentAlerts), // Localized
+              subtitle: Text(l10n.equipmentCheckoutAndAvailabilityAlerts), // Localized
               value: true,
               onChanged: (value) {},
             ),
             SwitchListTile(
-              title: const Text('Stock Alerts'),
-              subtitle: const Text('Low stock and inventory alerts'),
+              title: Text(l10n.stockAlerts), // Localized
+              subtitle: Text(l10n.lowStockAndInventoryAlerts), // Localized
               value: true,
               onChanged: (value) {},
             ),
             SwitchListTile(
-              title: const Text('Push Notifications'),
-              subtitle: const Text('Receive push notifications'),
+              title: Text(l10n.pushNotifications), // Localized
+              subtitle: Text(l10n.receivePushNotifications), // Localized
               value: false,
               onChanged: (value) {},
             ),
@@ -707,19 +722,19 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.close), // Localized
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Settings saved'),
+                SnackBar(
+                  content: Text(l10n.settingsSaved), // Localized
                   backgroundColor: AppColors.success,
                 ),
               );
             },
-            child: const Text('Save'),
+            child: Text(l10n.save), // Localized
           ),
         ],
       ),
@@ -761,6 +776,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
 
   // Action performers
   Future<void> _performEquipmentCheckout(Map<String, dynamic> alert) async {
+    final l10n = AppLocalizations.of(context);
     try {
       final bookingProvider = Provider.of<EquipmentBookingProvider>(context, listen: false);
 
@@ -768,8 +784,8 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
       await Future.delayed(const Duration(seconds: 1));
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Equipment checked out successfully'),
+        SnackBar(
+          content: Text(l10n.equipmentCheckedOutSuccessfully), // Localized
           backgroundColor: AppColors.success,
         ),
       );
@@ -781,7 +797,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to checkout equipment: $e'),
+          content: Text('${l10n.failedToCheckoutEquipment}: $e'), // Localized
           backgroundColor: AppColors.error,
         ),
       );
@@ -789,6 +805,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
   }
 
   Future<void> _performRestock(Map<String, dynamic> alert, int quantity) async {
+    final l10n = AppLocalizations.of(context);
     try {
       final stockProvider = Provider.of<StockProvider>(context, listen: false);
 
@@ -804,13 +821,13 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Added $quantity ${article.unit} to ${article.name}'),
+              content: Text(l10n.addedQuantityToItem(quantity, article.unit, article.name)), // Localized
               backgroundColor: AppColors.success,
             ),
           );
 
           // Remove alert if stock is no longer low
-          if (newQuantity >= 10) {
+          if (newQuantity >= 10) { // Assuming 10 is the low stock threshold
             setState(() {
               _allAlerts.removeWhere((a) => a == alert);
             });
@@ -820,7 +837,7 @@ class _DashboardNotificationsScreenState extends State<DashboardNotificationsScr
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to restock: $e'),
+          content: Text('${l10n.failedToRestock}: $e'), // Localized
           backgroundColor: AppColors.error,
         ),
       );

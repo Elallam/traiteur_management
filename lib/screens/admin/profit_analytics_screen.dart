@@ -7,6 +7,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../models/occasion_model.dart';
 import '../../providers/occasion_provider.dart';
+import '../../generated/l10n/app_localizations.dart'; // Import AppLocalizations
 
 class ProfitAnalyticsScreen extends StatefulWidget {
   const ProfitAnalyticsScreen({super.key});
@@ -44,12 +45,14 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
-          'Profit Analytics',
-          style: TextStyle(
+        title: Text(
+          l10n.profitAnalytics, // Localized
+          style: const TextStyle(
             color: AppColors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -67,9 +70,9 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             icon: const Icon(Icons.more_vert, color: AppColors.white),
             onSelected: _handleMenuAction,
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'export', child: Text('Export Report')),
-              const PopupMenuItem(value: 'share', child: Text('Share Analytics')),
-              const PopupMenuItem(value: 'settings', child: Text('Settings')),
+              PopupMenuItem(value: 'export', child: Text(l10n.exportReport)), // Localized
+              PopupMenuItem(value: 'share', child: Text(l10n.shareAnalytics)), // Localized
+              PopupMenuItem(value: 'settings', child: Text(l10n.settings)), // Localized
             ],
           ),
         ],
@@ -78,10 +81,10 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
           labelColor: AppColors.white,
           unselectedLabelColor: AppColors.white.withOpacity(0.7),
           indicatorColor: AppColors.white,
-          tabs: const [
-            Tab(text: 'Overview'),
-            Tab(text: 'Trends'),
-            Tab(text: 'Performance'),
+          tabs: [
+            Tab(text: l10n.overview), // Localized
+            Tab(text: l10n.trends), // Localized
+            Tab(text: l10n.performance), // Localized
           ],
         ),
       ),
@@ -98,20 +101,20 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.error_outline,
                     size: 64,
                     color: AppColors.error,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Error: ${occasionProvider.errorMessage}',
+                    '${l10n.error}: ${occasionProvider.errorMessage}', // Localized
                     style: const TextStyle(color: AppColors.error),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   CustomButton(
-                    text: 'Retry',
+                    text: l10n.retry, // Localized
                     onPressed: _loadAnalyticsData,
                     width: 120,
                   ),
@@ -141,6 +144,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildDateRangeHeader() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -155,7 +159,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
       ),
       child: Row(
         children: [
-          Icon(Icons.calendar_today, color: AppColors.primary, size: 20),
+          const Icon(Icons.calendar_today, color: AppColors.primary, size: 20),
           const SizedBox(width: 8),
           Text(
             _selectedPeriod,
@@ -175,7 +179,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
           ),
           const Spacer(),
           CustomButton(
-            text: 'Change Period',
+            text: l10n.changePeriod, // Localized
             onPressed: _showDateRangePicker,
             outlined: true,
             width: 120,
@@ -189,6 +193,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   Widget _buildOverviewTab(OccasionProvider occasionProvider) {
     final filteredOccasions = _getFilteredOccasions(occasionProvider);
     final stats = _calculateStats(filteredOccasions);
+    final l10n = AppLocalizations.of(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -211,12 +216,13 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildKeyMetrics(Map<String, dynamic> stats) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Key Metrics',
-          style: TextStyle(
+        Text(
+          l10n.keyMetrics, // Localized
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -232,28 +238,28 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
           childAspectRatio: 1.5,
           children: [
             _buildMetricCard(
-              'Total Revenue',
+              l10n.totalRevenue, // Localized
               '\$${stats['totalRevenue'].toStringAsFixed(0)}',
               Icons.attach_money,
               AppColors.success,
               '+${stats['revenueGrowth'].toStringAsFixed(1)}%',
             ),
             _buildMetricCard(
-              'Total Profit',
+              l10n.totalProfit, // Localized
               '\$${stats['totalProfit'].toStringAsFixed(0)}',
               Icons.trending_up,
               AppColors.primary,
               '+${stats['profitGrowth'].toStringAsFixed(1)}%',
             ),
             _buildMetricCard(
-              'Events Completed',
+              l10n.completedEvents, // Localized
               stats['completedEvents'].toString(),
               Icons.event_available,
               AppColors.info,
               '+${stats['eventGrowth'].toStringAsFixed(1)}%',
             ),
             _buildMetricCard(
-              'Avg Order Value',
+              l10n.averageOrderValue, // Localized
               '\$${stats['averageOrderValue'].toStringAsFixed(0)}',
               Icons.shopping_cart,
               AppColors.warning,
@@ -320,6 +326,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildQuickInsights(Map<String, dynamic> stats, List<OccasionModel> occasions) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -330,9 +337,9 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
               children: [
                 const Icon(Icons.lightbulb, color: AppColors.warning, size: 20),
                 const SizedBox(width: 8),
-                const Text(
-                  'Quick Insights',
-                  style: TextStyle(
+                Text(
+                  l10n.quickInsights, // Localized
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -342,23 +349,23 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             ),
             const SizedBox(height: 16),
             _buildInsightItem(
-              'Profit Margin',
+              l10n.profitMargin, // Localized
               '${stats['profitMargin'].toStringAsFixed(1)}%',
-              stats['profitMargin'] >= 30 ? 'Excellent' : stats['profitMargin'] >= 20 ? 'Good' : 'Needs Improvement',
+              stats['profitMargin'] >= 30 ? l10n.excellent : stats['profitMargin'] >= 20 ? l10n.good : l10n.needsImprovement, // Localized
               stats['profitMargin'] >= 30 ? AppColors.success : stats['profitMargin'] >= 20 ? AppColors.warning : AppColors.error,
             ),
             const Divider(),
             _buildInsightItem(
-              'Best Month',
+              l10n.bestMonth, // Localized
               _getBestMonth(occasions),
-              'Highest revenue month',
+              l10n.highestRevenueMonth, // Localized
               AppColors.info,
             ),
             const Divider(),
             _buildInsightItem(
-              'Event Success Rate',
+              l10n.eventSuccessRate, // Localized
               '${(stats['completedEvents'] / stats['totalEvents'] * 100).toStringAsFixed(1)}%',
-              'Events completed successfully',
+              l10n.eventsCompletedSuccessfully, // Localized
               AppColors.success,
             ),
           ],
@@ -408,6 +415,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildTopPerformingEvents(List<OccasionModel> occasions) {
+    final l10n = AppLocalizations.of(context);
     final topEvents = occasions
         .where((o) => o.status == 'completed')
         .toList()
@@ -418,9 +426,9 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Top Performing Events',
-          style: TextStyle(
+        Text(
+          l10n.topPerformingEvents, // Localized
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -439,15 +447,15 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
               child: Center(
                 child: Column(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.event_busy,
                       size: 48,
                       color: AppColors.textSecondary,
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'No completed events in this period',
-                      style: TextStyle(
+                    Text(
+                      l10n.noCompletedEventsInPeriod, // Localized
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 16,
                       ),
@@ -463,6 +471,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildTopEventCard(OccasionModel occasion, int rank) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -507,7 +516,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
                     ),
                   ),
                   Text(
-                    '${occasion.expectedGuests} guests',
+                    l10n.guestsCount(occasion.expectedGuests), // Localized
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
@@ -528,7 +537,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
                   ),
                 ),
                 Text(
-                  'Profit: \$${occasion.profit.toStringAsFixed(0)}',
+                  '${l10n.profit}: \$${occasion.profit.toStringAsFixed(0)}', // Localized
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -553,6 +562,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   Widget _buildTrendsTab(OccasionProvider occasionProvider) {
     final filteredOccasions = _getFilteredOccasions(occasionProvider);
     final monthlyData = _getMonthlyData(filteredOccasions);
+    final l10n = AppLocalizations.of(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -561,7 +571,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
         children: [
           // Revenue Trend Chart
           _buildChartCard(
-            'Revenue Trend',
+            l10n.revenueTrend, // Localized
             Icons.trending_up,
             _buildRevenueChart(monthlyData),
           ),
@@ -569,7 +579,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
 
           // Events Count Chart
           _buildChartCard(
-            'Events Count',
+            l10n.eventsCount, // Localized
             Icons.event,
             _buildEventsChart(monthlyData),
           ),
@@ -577,7 +587,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
 
           // Profit Margin Trend
           _buildChartCard(
-            'Profit Margin Trend',
+            l10n.profitMarginTrend, // Localized
             Icons.percent,
             _buildProfitMarginChart(monthlyData),
           ),
@@ -619,8 +629,9 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildRevenueChart(Map<String, Map<String, double>> monthlyData) {
+    final l10n = AppLocalizations.of(context);
     if (monthlyData.isEmpty) {
-      return _buildEmptyChart('Revenue Chart');
+      return _buildEmptyChart(l10n.revenueChart); // Localized
     }
 
     final spots = monthlyData.entries.map((entry) {
@@ -636,8 +647,8 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                final months = [l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june,
+                  l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december]; // Localized months
                 if (value.toInt() >= 1 && value.toInt() <= 12) {
                   return Text(months[value.toInt() - 1]);
                 }
@@ -675,8 +686,9 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildEventsChart(Map<String, Map<String, double>> monthlyData) {
+    final l10n = AppLocalizations.of(context);
     if (monthlyData.isEmpty) {
-      return _buildEmptyChart('Events Count Chart');
+      return _buildEmptyChart(l10n.eventsCountChart); // Localized
     }
 
     final barGroups = monthlyData.entries.map((entry) {
@@ -705,8 +717,8 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                final months = [l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june,
+                  l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december]; // Localized months
                 if (value.toInt() >= 1 && value.toInt() <= 12) {
                   return Text(months[value.toInt() - 1]);
                 }
@@ -732,8 +744,9 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildProfitMarginChart(Map<String, Map<String, double>> monthlyData) {
+    final l10n = AppLocalizations.of(context);
     if (monthlyData.isEmpty) {
-      return _buildEmptyChart('Profit Margin Chart');
+      return _buildEmptyChart(l10n.profitMarginChart); // Localized
     }
 
     final spots = monthlyData.entries.map((entry) {
@@ -749,8 +762,8 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                final months = [l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june,
+                  l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december]; // Localized months
                 if (value.toInt() >= 1 && value.toInt() <= 12) {
                   return Text(months[value.toInt() - 1]);
                 }
@@ -788,6 +801,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildEmptyChart(String title) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -808,9 +822,9 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'No data available for selected period',
-            style: TextStyle(
+          Text(
+            l10n.noDataAvailableForPeriod, // Localized
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
             ),
@@ -823,6 +837,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   Widget _buildPerformanceTab(OccasionProvider occasionProvider) {
     final filteredOccasions = _getFilteredOccasions(occasionProvider);
     final performanceMetrics = _calculatePerformanceMetrics(filteredOccasions);
+    final l10n = AppLocalizations.of(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -845,15 +860,16 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildPerformanceSummary(Map<String, dynamic> metrics) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Performance Summary',
-              style: TextStyle(
+            Text(
+              l10n.performanceSummary, // Localized
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -864,14 +880,14 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
               children: [
                 Expanded(
                   child: _buildPerformanceMetric(
-                    'Success Rate',
+                    l10n.successRate, // Localized
                     '${metrics['successRate'].toStringAsFixed(1)}%',
                     AppColors.success,
                   ),
                 ),
                 Expanded(
                   child: _buildPerformanceMetric(
-                    'Avg Profit Margin',
+                    l10n.avgProfitMargin, // Localized
                     '${metrics['avgProfitMargin'].toStringAsFixed(1)}%',
                     AppColors.primary,
                   ),
@@ -883,14 +899,14 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
               children: [
                 Expanded(
                   child: _buildPerformanceMetric(
-                    'Best Month',
+                    l10n.bestMonth, // Localized
                     metrics['bestMonth'],
                     AppColors.info,
                   ),
                 ),
                 Expanded(
                   child: _buildPerformanceMetric(
-                    'Growth Rate',
+                    l10n.growthRate, // Localized
                     '+${metrics['growthRate'].toStringAsFixed(1)}%',
                     AppColors.warning,
                   ),
@@ -927,28 +943,29 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildCategoryPerformance(List<OccasionModel> occasions) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Performance by Event Size',
-              style: TextStyle(
+            Text(
+              l10n.performanceByEventSize, // Localized
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
-            _buildSizeCategory('Small Events (< 50 guests)',
+            _buildSizeCategory(l10n.smallEvents, // Localized
                 occasions.where((o) => o.expectedGuests < 50).toList()),
             const SizedBox(height: 8),
-            _buildSizeCategory('Medium Events (50-150 guests)',
+            _buildSizeCategory(l10n.mediumEvents, // Localized
                 occasions.where((o) => o.expectedGuests >= 50 && o.expectedGuests <= 150).toList()),
             const SizedBox(height: 8),
-            _buildSizeCategory('Large Events (> 150 guests)',
+            _buildSizeCategory(l10n.largeEvents, // Localized
                 occasions.where((o) => o.expectedGuests > 150).toList()),
           ],
         ),
@@ -957,6 +974,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildSizeCategory(String title, List<OccasionModel> events) {
+    final l10n = AppLocalizations.of(context);
     final completedEvents = events.where((e) => e.status == 'completed').toList();
     final totalRevenue = completedEvents.fold(0.0, (sum, e) => sum + e.totalPrice);
     final avgProfit = completedEvents.isNotEmpty
@@ -980,7 +998,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
           ),
           Expanded(
             child: Text(
-              '${completedEvents.length} events',
+              l10n.eventsCountLabel(completedEvents.length), // Localized
               style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
@@ -989,7 +1007,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
           ),
           Expanded(
             child: Text(
-              '\${totalRevenue.toStringAsFixed(0)}',
+              '\$${totalRevenue.toStringAsFixed(0)}',
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -1014,6 +1032,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
 
   Widget _buildMonthlyComparison(List<OccasionModel> occasions) {
     final monthlyData = _getMonthlyData(occasions);
+    final l10n = AppLocalizations.of(context);
 
     return Card(
       child: Padding(
@@ -1021,9 +1040,9 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Monthly Comparison',
-              style: TextStyle(
+            Text(
+              l10n.monthlyComparison, // Localized
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -1036,18 +1055,18 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
                 child: _buildMonthlyComparisonChart(monthlyData),
               ),
             ] else ...[
-              const Center(
+              Center(
                 child: Column(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.timeline,
                       size: 64,
                       color: AppColors.textSecondary,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
-                      'No data available for monthly comparison',
-                      style: TextStyle(
+                      l10n.noDataAvailableForMonthlyComparison, // Localized
+                      style: const TextStyle(
                         fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
@@ -1063,6 +1082,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Widget _buildMonthlyComparisonChart(Map<String, Map<String, double>> monthlyData) {
+    final l10n = AppLocalizations.of(context);
     final barGroups = monthlyData.entries.map((entry) {
       final monthIndex = DateTime.parse('${entry.key}-01').month;
       return BarChartGroupData(
@@ -1095,8 +1115,8 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                final months = [l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june,
+                  l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december]; // Localized months
                 if (value.toInt() >= 1 && value.toInt() <= 12) {
                   return Text(months[value.toInt() - 1]);
                 }
@@ -1108,7 +1128,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                return Text('\${(value / 1000).toStringAsFixed(0)}k');
+                return Text('\$${(value / 1000).toStringAsFixed(0)}k');
               },
             ),
           ),
@@ -1166,6 +1186,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
 
   String _getBestMonth(List<OccasionModel> occasions) {
     if (occasions.isEmpty) return 'N/A';
+    final l10n = AppLocalizations.of(context);
 
     final monthlyRevenue = <int, double>{};
 
@@ -1180,8 +1201,8 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
         .reduce((a, b) => a.value > b.value ? a : b)
         .key;
 
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june,
+      l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december]; // Localized months
 
     return months[bestMonth - 1];
   }
@@ -1217,6 +1238,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   Future<void> _showDateRangePicker() async {
+    final l10n = AppLocalizations.of(context);
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2020),
@@ -1238,7 +1260,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
       setState(() {
         _startDate = picked.start;
         _endDate = picked.end;
-        _selectedPeriod = 'Custom Range';
+        _selectedPeriod = l10n.customRange; // Localized
       });
       await _loadAnalyticsData();
     }
@@ -1259,27 +1281,30 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
   }
 
   void _exportReport() {
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Export functionality coming soon'),
+      SnackBar(
+        content: Text(l10n.exportFunctionalityComingSoon), // Localized
         backgroundColor: AppColors.info,
       ),
     );
   }
 
   void _shareAnalytics() {
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Share functionality coming soon'),
+      SnackBar(
+        content: Text(l10n.shareFunctionalityComingSoon), // Localized
         backgroundColor: AppColors.info,
       ),
     );
   }
 
   void _openSettings() {
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Settings functionality coming soon'),
+      SnackBar(
+        content: Text(l10n.settingsFunctionalityComingSoon), // Localized
         backgroundColor: AppColors.info,
       ),
     );

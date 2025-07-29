@@ -5,6 +5,7 @@ import '../../models/meal_model.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
 import 'add_edit_meal_dialog.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class MealDetailsDialog extends StatelessWidget {
   final MealModel meal;
@@ -15,6 +16,7 @@ class MealDetailsDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final stockProvider = Provider.of<StockProvider>(context);
     final canBePrepared = stockProvider.canMealBePrepared(meal);
+    final l10n = AppLocalizations.of(context)!;
 
     return Dialog(
       child: Container(
@@ -136,10 +138,10 @@ class MealDetailsDialog extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             (meal.isAvailable && canBePrepared)
-                                ? 'Available'
+                                ? l10n.available
                                 : !meal.isAvailable
-                                ? 'Disabled'
-                                : 'Ingredients Low',
+                                ? l10n.disabled
+                                : l10n.ingredientsLow, // Localized
                             style: TextStyle(
                               color: (meal.isAvailable && canBePrepared)
                                   ? AppColors.success
@@ -157,11 +159,11 @@ class MealDetailsDialog extends StatelessWidget {
                     // Pricing info
                     Row(
                       children: [
-                        _buildInfoChip('Cost', '${meal.calculatedPrice.toStringAsFixed(2)}'),
+                        _buildInfoChip(l10n.cost, '\$${meal.calculatedPrice.toStringAsFixed(2)}'), // Localized
                         const SizedBox(width: 8),
-                        _buildInfoChip('Price', '${meal.sellingPrice.toStringAsFixed(2)}'),
+                        _buildInfoChip(l10n.price, '\$${meal.sellingPrice.toStringAsFixed(2)}'), // Localized
                         const SizedBox(width: 8),
-                        _buildInfoChip('Profit', '${meal.profitMargin.toStringAsFixed(2)}'),
+                        _buildInfoChip(l10n.profit, '\$${meal.profitMargin.toStringAsFixed(2)}'), // Localized
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -169,17 +171,17 @@ class MealDetailsDialog extends StatelessWidget {
                     // Servings and prep time
                     Row(
                       children: [
-                        _buildInfoChip('Servings', meal.servings.toString()),
+                        _buildInfoChip(l10n.servings, meal.servings.toString()), // Localized
                         const SizedBox(width: 8),
-                        _buildInfoChip('Prep Time', '${meal.preparationTime} min'),
+                        _buildInfoChip(l10n.prepTime, l10n.minutes(meal.preparationTime)), // Localized
                       ],
                     ),
                     const SizedBox(height: 20),
 
                     // Ingredients section
-                    const Text(
-                      'Ingredients',
-                      style: TextStyle(
+                    Text(
+                      l10n.ingredients, // Localized
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -215,7 +217,7 @@ class MealDetailsDialog extends StatelessWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                '${ingredient.articleName} (${ingredient.quantity} ${ingredient.unit})',
+                                l10n.ingredientDetails(ingredient.articleName, ingredient.quantity, ingredient.unit), // Localized
                                 style: TextStyle(
                                   color: hasEnough ? AppColors.textPrimary : AppColors.error,
                                 ),
@@ -223,7 +225,7 @@ class MealDetailsDialog extends StatelessWidget {
                             ),
                             if (article.id.isNotEmpty)
                               Text(
-                                '${article.quantity} ${article.unit} available',
+                                l10n.availableQuantityUnit(article.quantity, article.unit), // Localized
                                 style: TextStyle(
                                   color: hasEnough ? AppColors.textSecondary : AppColors.error,
                                   fontSize: 12,
@@ -236,9 +238,9 @@ class MealDetailsDialog extends StatelessWidget {
 
                     // Description
                     const SizedBox(height: 20),
-                    const Text(
-                      'Description',
-                      style: TextStyle(
+                    Text(
+                      l10n.description, // Localized
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -261,8 +263,8 @@ class MealDetailsDialog extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          _buildDetailRow('Created', _formatDate(meal.createdAt)),
-                          _buildDetailRow('Last updated', _formatDate(meal.updatedAt)),
+                          _buildDetailRow(l10n.created, _formatDate(meal.createdAt)), // Localized
+                          _buildDetailRow(l10n.lastUpdated, _formatDate(meal.updatedAt)), // Localized
                         ],
                       ),
                     ),
@@ -278,7 +280,7 @@ class MealDetailsDialog extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.edit),
-                      label: const Text('Edit'),
+                      label: Text(l10n.edit), // Localized
                       onPressed: () {
                         Navigator.pop(context);
                         _showEditDialog(context);
@@ -303,7 +305,7 @@ class MealDetailsDialog extends StatelessWidget {
                             size: 20,
                           ),
                           const SizedBox(width: 8),
-                          Text(meal.isAvailable ? 'Disable' : 'Enable'),
+                          Text(meal.isAvailable ? l10n.disable : l10n.enable), // Localized
                         ],
                       ),
                     ),
@@ -325,7 +327,7 @@ class MealDetailsDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        '$label: $value',
+        '${label}: ${value}',
         style: const TextStyle(
           fontSize: 14,
         ),
@@ -374,6 +376,7 @@ class MealDetailsDialog extends StatelessWidget {
 
   void _toggleAvailability(BuildContext context) async {
     final stockProvider = Provider.of<StockProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
     final success = await stockProvider.updateMealAvailability(
         meal.id,
         !meal.isAvailable
@@ -383,7 +386,7 @@ class MealDetailsDialog extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Meal ${meal.isAvailable ? 'disabled' : 'enabled'} successfully',
+            meal.isAvailable ? l10n.mealDisabledSuccess : l10n.mealEnabledSuccess, // Localized
           ),
           backgroundColor: AppColors.success,
         ),
@@ -392,7 +395,7 @@ class MealDetailsDialog extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            stockProvider.errorMessage ?? 'Failed to update meal availability',
+            stockProvider.errorMessage ?? l10n.failedToUpdateMealAvailability, // Localized fallback
           ),
           backgroundColor: AppColors.error,
         ),

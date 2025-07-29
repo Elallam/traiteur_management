@@ -8,6 +8,8 @@ import 'package:traiteur_management/screens/admin/stock_management.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/equipment_booking_calendar_widget.dart';
+import '../../core/widgets/language_selector.dart';
+import '../../generated/l10n/app_localizations.dart'; // Ensure this import is correct
 import '../../models/occasion_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/occasion_provider.dart';
@@ -29,10 +31,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   late TabController _tabController;
   bool _isLoading = true;
 
-
   @override
   void initState() {
     super.initState();
+    // Initialize TabController with 4 tabs for Dashboard, Analytics, Calendar, Reports
     _tabController = TabController(length: 4, vsync: this);
     _loadDashboardData();
   }
@@ -43,31 +45,35 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     super.dispose();
   }
 
+  // Asynchronously loads all necessary dashboard data from providers
   Future<void> _loadDashboardData() async {
     setState(() {
-      _isLoading = true;
+      _isLoading = true; // Set loading state to true
     });
 
     try {
+      // Wait for all data loading operations to complete
       await Future.wait([
         Provider.of<OccasionProvider>(context, listen: false).loadOccasions(),
         Provider.of<StockProvider>(context, listen: false).loadAllStockData(),
         Provider.of<EmployeeProvider>(context, listen: false).loadEmployees(),
       ]);
     } catch (e) {
+      // Handle any errors during data loading and show a SnackBar
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error loading dashboard: $e'),
+          content: Text('${l10n!.error}: $e'), // Localized error message
           backgroundColor: AppColors.error,
         ),
       );
     } finally {
       setState(() {
-        _isLoading = false;
+        _isLoading = false; // Set loading state to false once data is loaded or error occurs
       });
     }
 
-    // Load equipment booking calendar for current month
+    // Load equipment booking calendar for the current month
     final bookingProvider = Provider.of<EquipmentBookingProvider>(
         context, listen: false);
     final now = DateTime.now();
@@ -79,22 +85,26 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context); // Access localized strings
     final Size screenSize = MediaQuery.of(context).size;
     Offset fabOffset = Offset(
       MediaQuery.of(context).size.width - 150, // Default FAB position (right)
       MediaQuery.of(context).size.height - 200, // Default FAB position (bottom)
     );
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
+        title: Text(l10n!.adminDashboard), // Localized app bar title
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
+          // Refresh button
           IconButton(
             onPressed: _loadDashboardData,
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh Dashboard',
+            tooltip: l10n.refresh, // Localized tooltip
           ),
+          // Notifications button with badge
           IconButton(
             onPressed: _showNotifications,
             icon: Badge(
@@ -106,79 +116,48 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
               ),
               child: const Icon(Icons.notifications),
             ),
-            tooltip: 'Notifications',
+            tooltip: l10n.notifications, // Localized tooltip
           ),
+          // Language selector button
+          const LanguageSelector(showAsDialog: true),
         ],
         bottom: TabBar(
           controller: _tabController,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           indicatorColor: Colors.white,
-          tabs: const [
-            Tab(text: 'Overview'),
-            Tab(text: 'Analytics'),
-            Tab(text: 'Calendar'),
-            Tab(text: 'Reports'),
+          tabs: [
+            Tab(text: l10n.dashboard), // Localized tab title
+            Tab(text: l10n.analytics), // Localized tab title
+            Tab(text: l10n.equipmentBooking), // Localized tab title for Calendar
+            Tab(text: l10n.exportReports), // Localized tab title for Reports
           ],
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Stack(
+          ? Center(child: Text(l10n.loading)) // Localized loading message
+          : TabBarView(
+            controller: _tabController,
             children: [
-              TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildOverviewTab(),
-                  _buildAnalyticsTab(),
-                  _buildCalendarTab(),
-                  _buildReportsTab(),
-                ],
-              ),
-
-              Positioned(
-                left: fabOffset.dx,
-                top: fabOffset.dy,
-                child: Draggable(
-                  // The data payload for the draggable (can be anything)
-                  data: 'draggable-fab',
-                  // What the user sees while dragging
-                  feedback: FloatingActionButton.extended(
-                    onPressed: () {}, // onPressed is typically disabled in feedback
-                    backgroundColor: AppColors.primary.withOpacity(0.7), // Slightly transparent
-                    icon: const Icon(Icons.add),
-                    label: const Text('Quick Actions'),
-                  ),
-                  // What remains in place of the original when dragging
-                  childWhenDragging: Container(), // Hides the original during drag
-                  // The actual widget that is being dragged
-                  child: FloatingActionButton.extended(
-                    onPressed: _showQuickActions,
-                    backgroundColor: AppColors.primary,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Quick Actions'),
-                  ),
-                  onDragEnd: (details) {
-                    setState(() {
-                      double fabWidth = 160.0; // Approximate width of FAB.extended
-                      double fabHeight = 56.0; // Approximate height of FAB.extended
-                      double newDx = details.offset.dx;
-                      double newDy = details.offset.dy - AppBar().preferredSize.height; // Subtract app bar height if Stack is under app bar
-                      // Ensure the FAB stays within screen bounds (optional, but good UX)
-                      newDx = newDx.clamp(0.0, screenSize.width - fabWidth);
-                      newDy = newDy.clamp(0.0, screenSize.height - fabHeight - AppBar().preferredSize.height);
-                      fabOffset = Offset(newDx, newDy);
-                    });
-                  },
-                ),
-              ),
+              _buildOverviewTab(),
+              _buildAnalyticsTab(),
+              _buildCalendarTab(),
+              _buildReportsTab(),
             ],
           ),
       drawer: _buildDrawer(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showQuickActions,
+        backgroundColor: AppColors.primary,
+        child: Icon(Icons.add),
+      ),
     );
   }
 
+  // Builds the navigation drawer for the dashboard
   Widget _buildDrawer() {
+    final l10n = AppLocalizations.of(context);
+
     return Drawer(
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
@@ -204,7 +183,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      authProvider.currentUser?.fullName ?? 'Admin',
+                      authProvider.currentUser?.fullName ?? l10n!.admin, // Localized default name
                       style: const TextStyle(
                         color: AppColors.white,
                         fontSize: 16,
@@ -225,28 +204,29 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                   ],
                 ),
               ),
-              _buildDrawerItem(Icons.dashboard, 'Dashboard', () => Navigator.pop(context)),
-              _buildDrawerItem(Icons.people, 'Employees', () {
+              // Drawer items with localized titles and navigation
+              _buildDrawerItem(Icons.dashboard, l10n!.dashboard, () => Navigator.pop(context)),
+              _buildDrawerItem(Icons.people, l10n.employees, () {
                 Navigator.pop(context);
-                _navigateToSection(0);
+                _navigateToSection(0); // Navigate to Employee Management
               }),
-              _buildDrawerItem(Icons.inventory, 'Stock', () {
+              _buildDrawerItem(Icons.inventory, l10n.stock, () {
                 Navigator.pop(context);
-                _navigateToSection(1);
+                _navigateToSection(1); // Navigate to Stock Management
               }),
-              _buildDrawerItem(Icons.event, 'Occasions', () {
+              _buildDrawerItem(Icons.event, l10n.occasions, () {
                 Navigator.pop(context);
-                _navigateToSection(2);
+                _navigateToSection(2); // Navigate to Occasion Management
               }),
-              _buildDrawerItem(Icons.analytics, 'Analytics', () {
+              _buildDrawerItem(Icons.analytics, l10n.analytics, () {
                 Navigator.pop(context);
-                _navigateToSection(3);
+                _navigateToSection(3); // Navigate to Profit Analytics
               }),
               const Divider(),
-              _buildDrawerItem(Icons.settings, 'Settings', () => Navigator.pop(context)),
-              _buildDrawerItem(Icons.logout, 'Sign Out', () async {
+              _buildDrawerItem(Icons.settings, l10n.settings, () => Navigator.pop(context)),
+              _buildDrawerItem(Icons.logout, l10n.logout, () async {
                 Navigator.pop(context);
-                await authProvider.signOut();
+                await authProvider.signOut(); // Sign out the user
               }),
             ],
           );
@@ -255,6 +235,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Helper method to build a single drawer item
   Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -264,6 +245,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Navigates to different sections of the app based on index
   void _navigateToSection(int index) {
     switch (index) {
       case 0:
@@ -281,9 +263,12 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     }
   }
 
+  // Builds the Overview tab content
   Widget _buildOverviewTab() {
+    final l10n = AppLocalizations.of(context);
+
     return RefreshIndicator(
-      onRefresh: _loadDashboardData,
+      onRefresh: _loadDashboardData, // Allow refreshing data
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -313,19 +298,21 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Key Metrics section with localized titles and subtitles
   Widget _buildKeyMetricsSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer3<OccasionProvider, StockProvider, EmployeeProvider>(
-      builder: (context, occasionProvider, stockProvider, employeeProvider,
-          child) {
+      builder: (context, occasionProvider, stockProvider, employeeProvider, child) {
         final occasionStats = occasionProvider.getOccasionStatistics();
         final stockSummary = stockProvider.getStockSummary();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Key Metrics',
-              style: TextStyle(
+            Text(
+              l10n!.keyMetrics, // Localized "Key Metrics"
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -336,21 +323,21 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
               children: [
                 Expanded(
                   child: _buildMetricCard(
-                    'Total Revenue',
+                    l10n.totalRevenue, // Localized "Total Revenue"
                     '\$${occasionStats['totalRevenue'].toStringAsFixed(0)}',
                     Icons.attach_money,
                     AppColors.success,
-                    'This Month',
+                    l10n.thisMonth, // Localized "This Month"
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildMetricCard(
-                    'Active Events',
+                    l10n.activeEvents, // Localized "Active Events"
                     occasionStats['upcomingOccasions'].toString(),
                     Icons.event,
                     AppColors.primary,
-                    'Upcoming',
+                    l10n.upcoming, // Localized "Upcoming"
                   ),
                 ),
               ],
@@ -360,21 +347,21 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
               children: [
                 Expanded(
                   child: _buildMetricCard(
-                    'Equipment Items',
+                    '${l10n.equipment} ${l10n.itemsCount(0).split(' ')[1]}', // Localized "Equipment Items"
                     stockSummary['totalEquipment'].toString(),
                     Icons.inventory,
                     AppColors.info,
-                    '${stockSummary['availableEquipment']} Available',
+                    '${stockSummary['availableEquipment']} ${l10n.available}', // Localized "Available"
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _buildMetricCard(
-                    'Stock Value',
+                    l10n.stockValue, // Localized "Stock Value"
                     '\$${stockSummary['totalStockValue'].toStringAsFixed(0)}',
                     Icons.assessment,
                     AppColors.warning,
-                    '${stockSummary['lowStockArticles']} Low Stock',
+                    '${stockSummary['lowStockArticles']} ${l10n.lowStock}', // Localized "Low Stock"
                   ),
                 ),
               ],
@@ -385,6 +372,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Helper method to build a single metric card
   Widget _buildMetricCard(String title, String value, IconData icon,
       Color color, String subtitle) {
     return Card(
@@ -437,7 +425,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Alerts and Notifications section
   Widget _buildAlertsSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer2<OccasionProvider, EquipmentBookingProvider>(
       builder: (context, occasionProvider, bookingProvider, child) {
         return FutureBuilder<List<Map<String, dynamic>>>(
@@ -447,7 +438,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
           ]).then((results) => [...results[0], ...results[1]]),
           builder: (context, snapshot) {
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return _buildNoAlertsCard();
+              return _buildNoAlertsCard(); // Show card for no alerts
             }
 
             final alerts = snapshot.data!;
@@ -456,9 +447,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
               children: [
                 Row(
                   children: [
-                    const Text(
-                      'Alerts & Notifications',
-                      style: TextStyle(
+                    Text(
+                      '${l10n!.notifications} & ${l10n.lowStockAlerts.split(' ')[0]}', // Localized "Notifications & Alerts"
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -467,12 +458,12 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                     const Spacer(),
                     TextButton(
                       onPressed: _showAllAlerts,
-                      child: const Text('View All'),
+                      child: Text('${l10n.view} ${l10n.viewAll.split(' ')[1]}'), // Localized "View All"
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                ...alerts.take(3).map((alert) => _buildAlertCard(alert)),
+                ...alerts.take(3).map((alert) => _buildAlertCard(alert)), // Display top 3 alerts
               ],
             );
           },
@@ -481,7 +472,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the card displayed when there are no alerts
   Widget _buildNoAlertsCard() {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -496,20 +490,20 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
               child: const Icon(Icons.check_circle, color: AppColors.success),
             ),
             const SizedBox(width: 16),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'All Good!',
-                    style: TextStyle(
+                    l10n!.allGood, // Localized "All Good!"
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.success,
                     ),
                   ),
                   Text(
-                    'No alerts or notifications at the moment',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    l10n.noAlertsMessage, // Localized "No alerts or notifications at the moment"
+                    style: const TextStyle(color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -520,6 +514,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds a single alert card
   Widget _buildAlertCard(Map<String, dynamic> alert) {
     Color alertColor = _getAlertColor(alert['priority']);
     IconData alertIcon = _getAlertIcon(alert['type']);
@@ -549,7 +544,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Today's Events section
   Widget _buildTodaysEventsSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer<OccasionProvider>(
       builder: (context, provider, child) {
         final todaysEvents = provider.getTodaysOccasions();
@@ -559,9 +557,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
           children: [
             Row(
               children: [
-                const Text(
-                  'Today\'s Events',
-                  style: TextStyle(
+                Text(
+                  l10n!.todaysEvents, // Localized "Today's Events"
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -591,16 +589,16 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                         color: AppColors.textSecondary.withOpacity(0.5),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'No Events Today',
-                        style: TextStyle(
+                      Text(
+                        l10n.noEventsToday, // Localized "No Events Today"
+                        style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      const Text(
-                        'Enjoy your free day!',
-                        style: TextStyle(
+                      Text(
+                        l10n.enjoyFreeDay, // Localized "Enjoy your free day!"
+                        style: const TextStyle(
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -609,14 +607,17 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                 ),
               )
             else
-              ...todaysEvents.map((event) => _buildEventCard(event)),
+              ...todaysEvents.map((event) => _buildEventCard(event)), // Display today's events
           ],
         );
       },
     );
   }
 
+  // Builds a single event card for today's events
   Widget _buildEventCard(OccasionModel event) {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -638,7 +639,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${event.clientName} • ${event.expectedGuests} guests'),
+            Text('${event.clientName} • ${l10n!.guestsCount(event.expectedGuests)}'), // Localized guests count
             Text(
               DateFormat('HH:mm').format(event.date),
               style: const TextStyle(
@@ -655,7 +656,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            event.status.toUpperCase(),
+            _getLocalizedStatus(event.status, l10n).toUpperCase(),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 10,
@@ -668,7 +669,34 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Helper to get localized status string
+  String _getLocalizedStatus(String status, AppLocalizations l10n) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return l10n.active;
+      case 'inactive':
+        return l10n.inactive;
+      case 'available':
+        return l10n.available;
+      case 'unavailable':
+        return l10n.unavailable;
+      case 'booked':
+        return l10n.booked;
+      case 'pending':
+        return l10n.pending;
+      case 'completed':
+        return l10n.completed;
+      case 'cancelled':
+        return l10n.cancelled;
+      default:
+        return status;
+    }
+  }
+
+  // Builds the Quick Stats section
   Widget _buildQuickStatsSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer2<OccasionProvider, StockProvider>(
       builder: (context, occasionProvider, stockProvider, child) {
         return Card(
@@ -677,9 +705,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Quick Stats',
-                  style: TextStyle(
+                Text(
+                  l10n!.quickStats, // Localized "Quick Stats"
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -690,7 +718,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                   children: [
                     Expanded(
                       child: _buildQuickStatItem(
-                        'Equipment Utilization',
+                        l10n.equipmentUtilization, // Localized "Equipment Utilization"
                         '${stockProvider
                             .getEquipmentUtilizationRate()
                             .toStringAsFixed(1)}%',
@@ -700,7 +728,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                     ),
                     Expanded(
                       child: _buildQuickStatItem(
-                        'Avg Order Value',
+                        l10n.averageOrderValue, // Localized "Avg Order Value"
                         '\$${occasionProvider
                             .getOccasionStatistics()['averageOrderValue']
                             .toStringAsFixed(0)}',
@@ -718,6 +746,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Helper method to build a single quick stat item
   Widget _buildQuickStatItem(String label, String value, IconData icon,
       Color color) {
     return Row(
@@ -748,7 +777,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Recent Activities section
   Widget _buildRecentActivitiesSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer<OccasionProvider>(
       builder: (context, provider, child) {
         final recentOccasions = provider.occasions
@@ -761,9 +793,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Recent Activities',
-              style: TextStyle(
+            Text(
+              l10n!.recentActivities, // Localized "Recent Activities"
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -772,25 +804,28 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             const SizedBox(height: 16),
 
             if (recentOccasions.isEmpty)
-              const Card(
+              Card(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Text(
-                    'No recent activities',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    l10n.noRecentActivities, // Localized "No recent activities"
+                    style: const TextStyle(color: AppColors.textSecondary),
                   ),
                 ),
               )
             else
               ...recentOccasions.map((occasion) =>
-                  _buildActivityItem(occasion)),
+                  _buildActivityItem(occasion)), // Display recent activities
           ],
         );
       },
     );
   }
 
+  // Builds a single activity item for recent activities
   Widget _buildActivityItem(OccasionModel occasion) {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 4),
       child: ListTile(
@@ -808,11 +843,12 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
           style: const TextStyle(fontSize: 14),
         ),
         subtitle: Text(
-          'Updated ${_getTimeAgo(occasion.updatedAt)}',
+          l10n!.updatedAgo(
+              _getTimeAgo(occasion.updatedAt)), // Localized "Updated X ago"
           style: const TextStyle(fontSize: 12),
         ),
         trailing: Text(
-          occasion.status.toUpperCase(),
+          _getLocalizedStatus(occasion.status, l10n).toUpperCase(),
           style: TextStyle(
             fontSize: 10,
             color: _getStatusColor(occasion.status),
@@ -823,7 +859,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Analytics tab content
   Widget _buildAnalyticsTab() {
+    final l10n = AppLocalizations.of(context);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -843,12 +882,13 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Monthly Revenue Chart
   Widget _buildRevenueChart() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer<OccasionProvider>(
       builder: (context, provider, child) {
-        final monthlyRevenue = provider.getMonthlyRevenue(DateTime
-            .now()
-            .year);
+        final monthlyRevenue = provider.getMonthlyRevenue(DateTime.now().year);
 
         return Card(
           child: Padding(
@@ -856,9 +896,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Monthly Revenue',
-                  style: TextStyle(
+                Text(
+                  l10n!.monthlyRevenue, // Localized "Monthly Revenue"
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -878,19 +918,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                           sideTitles: SideTitles(
                             showTitles: true,
                             getTitlesWidget: (value, meta) {
-                              const months = [
-                                'Jan',
-                                'Feb',
-                                'Mar',
-                                'Apr',
-                                'May',
-                                'Jun',
-                                'Jul',
-                                'Aug',
-                                'Sep',
-                                'Oct',
-                                'Nov',
-                                'Dec'
+                              final months = [
+                                l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june,
+                                l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december
                               ];
                               return Text(
                                 months[value.toInt()],
@@ -930,20 +960,21 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Generates FlSpot data for the revenue chart
   List<FlSpot> _generateRevenueSpots(Map<String, double> monthlyRevenue) {
     List<FlSpot> spots = [];
     for (int i = 0; i < 12; i++) {
-      String monthKey = '${DateTime
-          .now()
-          .year}-${(i + 1).toString().padLeft(2, '0')}';
+      String monthKey = '${DateTime.now().year}-${(i + 1).toString().padLeft(2, '0')}';
       double revenue = monthlyRevenue[monthKey] ?? 0;
       spots.add(FlSpot(i.toDouble(), revenue));
     }
     return spots;
   }
 
-
+  // Builds the Equipment Utilization section
   Widget _buildEquipmentUtilizationSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer<EquipmentBookingProvider>(
       builder: (context, provider, child) {
         final now = DateTime.now();
@@ -957,10 +988,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
           ),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Card(
+              return Card(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator()),
+                  padding: const EdgeInsets.all(16),
+                  child: Center(child: Text(l10n!.loading)), // Localized loading message
                 ),
               );
             }
@@ -978,20 +1009,20 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Text(
-                          'Equipment Utilization',
-                          style: TextStyle(
+                          l10n!.equipmentUtilization, // Localized "Equipment Utilization"
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Text(
-                          'This Month',
-                          style: TextStyle(
+                          l10n.thisMonth, // Localized "This Month"
+                          style: const TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 12,
                           ),
@@ -1005,21 +1036,21 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                       children: [
                         Expanded(
                           child: _buildUtilizationStat(
-                            'Average',
+                            l10n.average, // Localized "Average"
                             '${stats['averageUtilization'].toStringAsFixed(1)}%',
                             AppColors.info,
                           ),
                         ),
                         Expanded(
                           child: _buildUtilizationStat(
-                            'Fully Booked',
+                            l10n.fullyBooked, // Localized "Fully Booked"
                             '${stats['fullyBookedTypes']}',
                             AppColors.error,
                           ),
                         ),
                         Expanded(
                           child: _buildUtilizationStat(
-                            'Available',
+                            l10n.available, // Localized "Available"
                             '${stats['totalEquipmentTypes'] - stats['fullyBookedTypes']}',
                             AppColors.success,
                           ),
@@ -1030,9 +1061,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                     const SizedBox(height: 16),
 
                     // Top utilized equipment
-                    const Text(
-                      'Most Utilized Equipment:',
-                      style: TextStyle(
+                    Text(
+                      l10n.mostUtilizedEquipment, // Localized "Most Utilized Equipment:"
+                      style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         color: AppColors.textPrimary,
                       ),
@@ -1044,7 +1075,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                     if (report.length > 3)
                       TextButton(
                         onPressed: () => _showFullUtilizationReport(report),
-                        child: Text('View All ${report.length} Items'),
+                        child: Text('${l10n.view} ${l10n.allGood.split(' ')[1]} ${l10n.itemsCount(report.length)}'), // Localized "View All X Items"
                       ),
                   ],
                 ),
@@ -1056,6 +1087,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Helper method to build a single utilization stat item
   Widget _buildUtilizationStat(String label, String value, Color color) {
     return Column(
       children: [
@@ -1078,6 +1110,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds a single utilization item with a progress bar
   Widget _buildUtilizationItem(Map<String, dynamic> item) {
     final utilizationRate = item['utilizationRate'] as double;
     Color utilizationColor = AppColors.success;
@@ -1120,7 +1153,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Popular Items section
   Widget _buildPopularItemsSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer<StockProvider>(
       builder: (context, provider, child) {
         final meals = provider.meals.take(5).toList();
@@ -1131,16 +1167,16 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Popular Meals',
-                  style: TextStyle(
+                Text(
+                  '${l10n!.popular} ${l10n.meals}', // Localized "Popular Meals"
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 16),
-                ...meals.map((meal) => _buildPopularMealItem(meal)),
+                ...meals.map((meal) => _buildPopularMealItem(meal)), // Display popular meals
               ],
             ),
           ),
@@ -1149,6 +1185,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds a single popular meal item
   Widget _buildPopularMealItem(meal) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -1201,6 +1238,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Calendar tab content (Equipment Booking Calendar)
   Widget _buildCalendarTab() {
     return const Padding(
       padding: EdgeInsets.all(16),
@@ -1208,7 +1246,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Reports tab content
   Widget _buildReportsTab() {
+    final l10n = AppLocalizations.of(context);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1233,16 +1274,19 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Report Filters section
   Widget _buildReportFilters() {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Report Filters',
-              style: TextStyle(
+            Text(
+              l10n!.reportFilters, // Localized "Report Filters"
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -1253,7 +1297,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
               children: [
                 Expanded(
                   child: CustomButton(
-                    text: 'This Week',
+                    text: l10n.thisWeek, // Localized "This Week"
                     onPressed: () => _generateReport('week'),
                     outlined: true,
                   ),
@@ -1261,7 +1305,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                 const SizedBox(width: 8),
                 Expanded(
                   child: CustomButton(
-                    text: 'This Month',
+                    text: l10n.thisMonth, // Localized "This Month"
                     onPressed: () => _generateReport('month'),
                     outlined: true,
                   ),
@@ -1269,7 +1313,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                 const SizedBox(width: 8),
                 Expanded(
                   child: CustomButton(
-                    text: 'This Year',
+                    text: l10n.thisYear, // Localized "This Year"
                     onPressed: () => _generateReport('year'),
                     outlined: true,
                   ),
@@ -1282,7 +1326,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Financial Report section
   Widget _buildFinancialReportSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer<OccasionProvider>(
       builder: (context, provider, child) {
         final now = DateTime.now();
@@ -1293,10 +1340,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
           future: provider.getProfitReport(startOfMonth, endOfMonth),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Card(
+              return Card(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator()),
+                  padding: const EdgeInsets.all(16),
+                  child: Center(child: Text(l10n!.loading)), // Localized loading message
                 ),
               );
             }
@@ -1313,9 +1360,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Financial Report - This Month',
-                      style: TextStyle(
+                    Text(
+                      '${l10n!.financialReport} - ${l10n.thisMonth}', // Localized "Financial Report - This Month"
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -1327,7 +1374,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                       children: [
                         Expanded(
                           child: _buildFinancialMetric(
-                            'Total Revenue',
+                            l10n.totalRevenue, // Localized "Total Revenue"
                             '${report['totalRevenue'].toStringAsFixed(2)}',
                             Icons.trending_up,
                             AppColors.success,
@@ -1335,7 +1382,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                         ),
                         Expanded(
                           child: _buildFinancialMetric(
-                            'Total Cost',
+                            l10n.totalCost, // Localized "Total Cost"
                             '${report['totalCost'].toStringAsFixed(2)}',
                             Icons.trending_down,
                             AppColors.error,
@@ -1350,7 +1397,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                       children: [
                         Expanded(
                           child: _buildFinancialMetric(
-                            'Net Profit',
+                            '${l10n.netProfit}', // Localized "Net Profit"
                             '${report['totalProfit'].toStringAsFixed(2)}',
                             Icons.attach_money,
                             AppColors.primary,
@@ -1358,7 +1405,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                         ),
                         Expanded(
                           child: _buildFinancialMetric(
-                            'Profit Margin',
+                            l10n.profitMargin, // Localized "Profit Margin"
                             '${report['profitMargin'].toStringAsFixed(1)}%',
                             Icons.percent,
                             AppColors.info,
@@ -1382,7 +1429,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                     const SizedBox(height: 8),
 
                     Text(
-                      'Based on ${report['totalOccasions']} completed events',
+                      l10n.basedOnEvents(report['totalOccasions']), // Localized "Based on X completed events"
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -1398,6 +1445,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Helper method to build a single financial metric card
   Widget _buildFinancialMetric(String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1431,7 +1479,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Equipment Status Report section
   Widget _buildEquipmentReportSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Consumer<StockProvider>(
       builder: (context, provider, child) {
         return Card(
@@ -1440,9 +1491,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Equipment Status Report',
-                  style: TextStyle(
+                Text(
+                  l10n!.equipmentStatusReport, // Localized "Equipment Status Report"
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -1454,9 +1505,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
 
                 const SizedBox(height: 16),
 
-                const Text(
-                  'Low Stock Alerts:',
-                  style: TextStyle(
+                Text(
+                  l10n.lowStockAlerts, // Localized "Low Stock Alerts:"
+                  style: const TextStyle(
                     fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
                   ),
@@ -1464,12 +1515,12 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                 const SizedBox(height: 8),
 
                 ...provider.getLowStockArticles().take(3).map((article) =>
-                    _buildLowStockItem(article)),
+                    _buildLowStockItem(article)), // Display top 3 low stock items
 
                 if (provider.getLowStockArticles().length > 3)
                   TextButton(
                     onPressed: _showAllLowStockItems,
-                    child: Text('View All ${provider.getLowStockArticles().length} Items'),
+                    child: Text('${l10n.view} ${l10n.allGood.split(' ')[1]} ${l10n.itemsCount(provider.getLowStockArticles().length)}'), // Localized "View All X Items"
                   ),
               ],
             ),
@@ -1479,12 +1530,15 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the equipment status overview cards
   Widget _buildEquipmentStatusOverview(StockProvider provider) {
+    final l10n = AppLocalizations.of(context);
+
     return Row(
       children: [
         Expanded(
           child: _buildEquipmentStatusCard(
-            'Total Equipment',
+            '${l10n!.total} ${l10n.equipment}', // Localized "Total Equipment"
             provider.equipment.length.toString(),
             Icons.inventory,
             AppColors.info,
@@ -1492,7 +1546,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
         ),
         Expanded(
           child: _buildEquipmentStatusCard(
-            'Available',
+            l10n.available, // Localized "Available"
             provider.getAvailableEquipment().length.toString(),
             Icons.check_circle,
             AppColors.success,
@@ -1500,7 +1554,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
         ),
         Expanded(
           child: _buildEquipmentStatusCard(
-            'Checked Out',
+            l10n.checkedOut, // Localized "Checked Out"
             provider.getFullyCheckedOutEquipment().length.toString(),
             Icons.output,
             AppColors.warning,
@@ -1510,6 +1564,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Helper method to build a single equipment status card
   Widget _buildEquipmentStatusCard(String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -1543,6 +1598,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds a single low stock item
   Widget _buildLowStockItem(article) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -1569,16 +1625,19 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  // Builds the Export Reports section
   Widget _buildExportSection() {
+    final l10n = AppLocalizations.of(context);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Export Reports',
-              style: TextStyle(
+            Text(
+              l10n!.exportReports, // Localized "Export Reports"
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -1589,7 +1648,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
               children: [
                 Expanded(
                   child: CustomButton(
-                    text: 'Export PDF',
+                    text: l10n.exportPdf, // Localized "Export PDF"
                     onPressed: _exportPDF,
                     icon: Icons.picture_as_pdf,
                   ),
@@ -1597,7 +1656,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                 const SizedBox(width: 16),
                 Expanded(
                   child: CustomButton(
-                    text: 'Export Excel',
+                    text: l10n.exportExcel, // Localized "Export Excel"
                     onPressed: _exportExcel,
                     icon: Icons.table_chart,
                     outlined: true,
@@ -1611,7 +1670,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
-  // Helper methods
+  // Helper methods for colors, icons, and time formatting
   Color _getAlertColor(String priority) {
     switch (priority.toLowerCase()) {
       case 'urgent':
@@ -1662,31 +1721,41 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   String _getTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
+    final l10n = AppLocalizations.of(context)!;
 
     if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
+      return l10n.updatedAgo('${difference.inDays}${l10n.dayAbbreviation}'); // Example: "2d ago"
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
+      return l10n.updatedAgo('${difference.inHours}${l10n.hourAbbreviation}'); // Example: "3h ago"
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
+      return l10n.updatedAgo('${difference.inMinutes}${l10n.minuteAbbreviation}'); // Example: "5m ago"
     } else {
-      return 'Just now';
+      return l10n.justNow; // Localized "Just now"
     }
   }
 
-  // Action methods
+  // Action methods for various interactions
   void _showNotifications() {
-    // Navigate to notifications screen
+    final l10n = AppLocalizations.of(context);
+
     showDialog(
       context: context,
-      builder: (context) => const AlertDialog(
-        title: Text('Notifications'),
-        content: Text('Full notifications screen would be implemented here'),
+      builder: (context) => AlertDialog(
+        title: Text(l10n!.notifications), // Localized title
+        content: Text(l10n.noAlertsMessage), // Using an existing localized string for content
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.close), // Localized "Close"
+          ),
+        ],
       ),
     );
   }
 
   void _showQuickActions() {
+    final l10n = AppLocalizations.of(context);
+
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -1694,9 +1763,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Quick Actions',
-              style: TextStyle(
+            Text(
+              l10n!.quickActions, // Localized "Quick Actions"
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1704,46 +1773,41 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             const SizedBox(height: 16),
             ListTile(
               leading: const Icon(Icons.event_note),
-              title: const Text('Create New Event'),
+              title: Text(l10n.createNewEvent), // Localized "Create New Event"
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to create event
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const OccasionManagementScreen()));
               },
             ),
             ListTile(
               leading: const Icon(Icons.build),
-              title: const Text('Add Equipment'),
+              title: Text(l10n.addEquipment), // Localized "Add Equipment"
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to add equipment
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const StockManagementScreen()));
               },
             ),
             ListTile(
               leading: const Icon(Icons.restaurant_menu),
-              title: const Text('Add Meal'),
+              title: Text(l10n.addMeal), // Localized "Add Meal"
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to add meal
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const StockManagementScreen()));
               },
             ),
             ListTile(
               leading: const Icon(Icons.inventory_2),
-              title: const Text('Add Articles'),
+              title: Text(l10n.addArticle), // Localized "Add Article"
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to add meal
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const StockManagementScreen()));
               },
             ),
             ListTile(
               leading: const Icon(Icons.person_add),
-              title: const Text('Add Employee'),
+              title: Text(l10n.addEmployee), // Localized "Add Employee"
               onTap: () {
                 Navigator.pop(context);
-                // Navigate to add employee
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const EmployeeManagementScreen()));
               },
             ),
@@ -1754,25 +1818,48 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   }
 
   void _showAllAlerts() {
-    // Navigate to full alerts screen
+    // Implement navigation to full alerts screen
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${l10n!.viewAll} ${l10n.notifications}'),
+        backgroundColor: AppColors.info,
+      ),
+    );
   }
 
   void _handleAlertTap(Map<String, dynamic> alert) {
-    // Handle alert tap based on type
+    // Handle alert tap based on type, navigate to specific details
     if (alert['occasionId'] != null) {
-      // Navigate to occasion details
+      // Example: Navigate to occasion details
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${l10n!.occasionDetails}: ${alert['occasionId']}'),
+          backgroundColor: AppColors.info,
+        ),
+      );
     }
   }
 
   void _navigateToEventDetails(OccasionModel event) {
-    // Navigate to event details screen
+    // Implement navigation to event details screen
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${l10n!.occasionDetails}: ${event.title}'),
+        backgroundColor: AppColors.info,
+      ),
+    );
   }
 
   void _showFullUtilizationReport(List<Map<String, dynamic>> report) {
+    final l10n = AppLocalizations.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Equipment Utilization Report'),
+        title: Text('${l10n!.equipment} ${l10n.utilizationReport}'), // Localized title
         content: SizedBox(
           width: double.maxFinite,
           height: 400,
@@ -1786,7 +1873,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.close), // Localized "Close"
           ),
         ],
       ),
@@ -1794,37 +1881,46 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   }
 
   void _showAllLowStockItems() {
-    // Navigate to inventory management
+    // Implement navigation to inventory management for low stock items
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${l10n!.viewAll} ${l10n.lowStockAlerts}'),
+        backgroundColor: AppColors.info,
+      ),
+    );
   }
 
   void _generateReport(String period) {
-    // Generate report for the specified period
+    final l10n = AppLocalizations.of(context);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Generating $period report...'),
+        content: Text(l10n!.generatingReport(period)), // Localized report generation message
         backgroundColor: AppColors.info,
       ),
     );
   }
 
   void _exportPDF() {
-    // Export current reports to PDF
+    final l10n = AppLocalizations.of(context);
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Exporting to PDF...'),
+      SnackBar(
+        content: Text(l10n!.exportingToPdf), // Localized PDF export message
         backgroundColor: AppColors.info,
       ),
     );
   }
 
   void _exportExcel() {
-    // Export current reports to Excel
+    final l10n = AppLocalizations.of(context);
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Exporting to Excel...'),
+      SnackBar(
+        content: Text(l10n!.exportingToExcel), // Localized Excel export message
         backgroundColor: AppColors.info,
       ),
     );
   }
 }
-

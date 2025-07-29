@@ -5,6 +5,7 @@ import '../../models/article_model.dart';
 import '../../models/meal_model.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class AddEditMealDialog extends StatefulWidget {
   final MealModel? meal;
@@ -51,9 +52,10 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
   Widget build(BuildContext context) {
     final stockProvider = Provider.of<StockProvider>(context);
     final calculatedPrice = _calculateTotalCost();
+    final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: Text(widget.meal == null ? 'Add Meal' : 'Edit Meal'),
+      title: Text(widget.meal == null ? l10n.addMeal : l10n.editMeal), // Localized title
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.8,
         height: MediaQuery.of(context).size.height * 0.8,
@@ -66,13 +68,13 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 // Name Field
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Meal Name *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.mealNameRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter meal name';
+                      return l10n.validationEnterMealName; // Localized validation
                     }
                     return null;
                   },
@@ -82,9 +84,9 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 // Category Dropdown
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
-                  decoration: const InputDecoration(
-                    labelText: 'Category *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.categoryRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   items: _categories.map((category) {
                     return DropdownMenuItem(
@@ -103,14 +105,14 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 // Description Field
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.descriptionRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   maxLines: 3,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter description';
+                      return l10n.validationEnterDescription; // Localized validation
                     }
                     return null;
                   },
@@ -123,19 +125,19 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _sellingPriceController,
-                        decoration: const InputDecoration(
-                          labelText: 'Selling Price *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.sellingPriceRequired, // Localized label
+                          border: const OutlineInputBorder(),
                           prefixText: '\$ ',
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Enter price';
+                            return l10n.validationEnterPrice; // Localized validation
                           }
                           final price = double.tryParse(value);
                           if (price == null || price <= 0) {
-                            return 'Enter valid price';
+                            return l10n.validationEnterValidPrice; // Localized validation
                           }
                           return null;
                         },
@@ -145,18 +147,18 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                     Expanded(
                       child: TextFormField(
                         controller: _servingsController,
-                        decoration: const InputDecoration(
-                          labelText: 'Servings *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: l10n.servingsRequired, // Localized label
+                          border: const OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Enter servings';
+                            return l10n.validationEnterServings; // Localized validation
                           }
                           final servings = int.tryParse(value);
                           if (servings == null || servings <= 0) {
-                            return 'Enter valid servings';
+                            return l10n.validationEnterValidServings; // Localized validation
                           }
                           return null;
                         },
@@ -169,18 +171,18 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 // Preparation Time
                 TextFormField(
                   controller: _preparationTimeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Preparation Time (minutes) *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.preparationTimeMinutesRequired, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Enter preparation time';
+                      return l10n.validationEnterPreparationTime; // Localized validation
                     }
                     final time = int.tryParse(value);
                     if (time == null || time <= 0) {
-                      return 'Enter valid time';
+                      return l10n.validationEnterValidTime; // Localized validation
                     }
                     return null;
                   },
@@ -190,17 +192,17 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 // Image URL Field
                 TextFormField(
                   controller: _imageUrlController,
-                  decoration: const InputDecoration(
-                    labelText: 'Image URL (Optional)',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.imageUrlOptional, // Localized label
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 16),
 
                 // Ingredients Section
-                const Text(
-                  'Ingredients',
-                  style: TextStyle(
+                Text(
+                  l10n.ingredients, // Localized
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                   ),
@@ -252,7 +254,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 ElevatedButton.icon(
                   onPressed: () => _showAddIngredientDialog(context),
                   icon: const Icon(Icons.add),
-                  label: const Text('Add Ingredient'),
+                  label: Text(l10n.addIngredient), // Localized
                 ),
                 const SizedBox(height: 16),
 
@@ -262,11 +264,11 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
-                        _buildPriceRow('Total Cost', calculatedPrice),
-                        _buildPriceRow('Selling Price', double.tryParse(_sellingPriceController.text) ?? 0),
+                        _buildPriceRow(l10n.totalCost, calculatedPrice), // Localized
+                        _buildPriceRow(l10n.sellingPrice, double.tryParse(_sellingPriceController.text) ?? 0), // Localized
                         const Divider(),
                         _buildPriceRow(
-                          'Profit',
+                          l10n.profit, // Localized
                           (double.tryParse(_sellingPriceController.text) ?? 0) - calculatedPrice,
                           isBold: true,
                         ),
@@ -282,7 +284,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel), // Localized
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _saveMeal,
@@ -292,7 +294,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           )
-              : Text(widget.meal == null ? 'Add' : 'Update'),
+              : Text(widget.meal == null ? l10n.add : l10n.update), // Localized
         ),
       ],
     );
@@ -322,10 +324,11 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
   }
 
   Future<void> _showAddIngredientDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final article = await showDialog<ArticleModel>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select Article'),
+        title: Text(l10n.selectArticle), // Localized title
         content: SizedBox(
           width: MediaQuery.of(context).size.width * 0.8,
           height: MediaQuery.of(context).size.height * 0.6,
@@ -334,9 +337,9 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
               return Column(
                 children: [
                   TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Search Articles',
-                      prefixIcon: Icon(Icons.search),
+                    decoration: InputDecoration(
+                      labelText: l10n.searchArticles, // Localized label
+                      prefixIcon: const Icon(Icons.search),
                     ),
                     onChanged: (value) {
                       // Implement search if needed
@@ -367,7 +370,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel), // Localized
           ),
         ],
       ),
@@ -378,7 +381,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
       final result = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Add ${article.name}'),
+          title: Text(l10n.addArticleName(article.name)), // Localized title with parameter
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -386,13 +389,13 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 controller: quantityController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Quantity (${article.unit})',
+                  labelText: l10n.quantityUnit(article.unit), // Localized label with parameter
                   border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Available: ${article.quantity} ${article.unit}',
+                l10n.availableQuantityUnit(article.quantity, article.unit), // Localized text with parameters
                 style: const TextStyle(
                   color: AppColors.textSecondary,
                 ),
@@ -402,7 +405,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel), // Localized
             ),
             ElevatedButton(
               onPressed: () {
@@ -410,7 +413,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                   Navigator.pop(context, true);
                 }
               },
-              child: const Text('Add'),
+              child: Text(l10n.add), // Localized
             ),
           ],
         ),
@@ -446,6 +449,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
 
     try {
       final stockProvider = Provider.of<StockProvider>(context, listen: false);
+      final l10n = AppLocalizations.of(context)!;
 
       final meal = MealModel(
         id: widget.meal?.id ?? '',
@@ -479,8 +483,8 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
           SnackBar(
             content: Text(
               widget.meal == null
-                  ? 'Meal added successfully'
-                  : 'Meal updated successfully',
+                  ? l10n.mealAddedSuccessfully
+                  : l10n.mealUpdatedSuccessfully,
             ),
             backgroundColor: AppColors.success,
           ),
@@ -491,17 +495,18 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
             content: Text(
               stockProvider.errorMessage ??
                   (widget.meal == null
-                      ? 'Failed to add meal'
-                      : 'Failed to update meal'),
+                      ? l10n.failedToAddMeal
+                      : l10n.failedToUpdateMeal),
             ),
             backgroundColor: AppColors.error,
           ),
         );
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text('${l10n.error}: $e'), // Localized error message
           backgroundColor: AppColors.error,
         ),
       );

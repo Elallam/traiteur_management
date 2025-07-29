@@ -14,6 +14,7 @@ import '../../providers/occasion_provider.dart';
 import '../../providers/stock_provider.dart';
 import '../../providers/equipment_booking_provider.dart';
 import '../../core/widgets/equipment_availability_widget.dart';
+import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
 
 class AddOccasionDialog extends StatefulWidget {
   final OccasionModel? occasion;
@@ -108,6 +109,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
@@ -120,7 +122,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
             Row(
               children: [
                 Text(
-                  widget.occasion == null ? 'Create New Event' : 'Edit Event',
+                  widget.occasion == null ? l10n.createNewEvent : l10n.editOccasion, // Localized
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -142,10 +144,10 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
               labelColor: AppColors.primary,
               unselectedLabelColor: AppColors.textSecondary,
               indicatorColor: AppColors.primary,
-              tabs: const [
-                Tab(text: 'Basic Info'),
-                Tab(text: 'Meals'),
-                Tab(text: 'Equipment'),
+              tabs: [
+                Tab(text: l10n.basicInfo), // Localized
+                Tab(text: l10n.meals), // Localized
+                Tab(text: l10n.equipment), // Localized
               ],
             ),
 
@@ -170,7 +172,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
               children: [
                 Expanded(
                   child: CustomButton(
-                    text: 'Cancel',
+                    text: l10n.cancel, // Localized
                     onPressed: () => Navigator.pop(context),
                     outlined: true,
                   ),
@@ -178,7 +180,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
                 const SizedBox(width: 16),
                 Expanded(
                   child: CustomButton(
-                    text: widget.occasion == null ? 'Create Event' : 'Update Event',
+                    text: widget.occasion == null ? l10n.createEvent : l10n.updateEvent, // Localized
                     onPressed: _saveOccasion,
                     isLoading: _isLoading,
                   ),
@@ -192,23 +194,24 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildBasicInfoTab() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         children: [
           CustomTextField(
-            label: 'Event Title',
+            label: l10n.eventTitle, // Localized
             controller: _titleController,
             validator: Validators.required,
-            hint: 'Enter event title',
+            hint: l10n.enterEventTitle, // Localized
           ),
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: 'Description',
+            label: l10n.description, // Localized
             controller: _descriptionController,
             validator: Validators.required,
-            hint: 'Describe the event',
+            hint: l10n.describeEvent, // Localized
             maxLines: 3,
           ),
           const SizedBox(height: 16),
@@ -228,30 +231,30 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: 'Event Address',
+            label: l10n.eventAddress, // Localized
             controller: _addressController,
             validator: Validators.required,
-            hint: 'Enter complete address',
+            hint: l10n.enterCompleteAddress, // Localized
             maxLines: 2,
           ),
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: 'Expected Guests',
+            label: l10n.expectedGuests, // Localized
             controller: _expectedGuestsController,
             validator: Validators.required,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            hint: 'Number of guests',
+            hint: l10n.numberOfGuests, // Localized
           ),
           const SizedBox(height: 24),
 
           // Client Information
-          const Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Client Information',
-              style: TextStyle(
+              l10n.clientInformation, // Localized
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -261,35 +264,35 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: 'Client Name',
+            label: l10n.clientName, // Localized
             controller: _clientNameController,
             validator: Validators.required,
-            hint: 'Enter client name',
+            hint: l10n.enterClientName, // Localized
           ),
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: 'Client Phone',
+            label: l10n.clientPhone, // Localized
             controller: _clientPhoneController,
             validator: Validators.phone,
             keyboardType: TextInputType.phone,
-            hint: 'Enter phone number',
+            hint: l10n.enterPhoneNumber, // Localized
           ),
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: 'Client Email',
+            label: l10n.clientEmail, // Localized
             controller: _clientEmailController,
             validator: Validators.email,
             keyboardType: TextInputType.emailAddress,
-            hint: 'Enter email address',
+            hint: l10n.enterEmailAddress, // Localized
           ),
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: 'Notes (Optional)',
+            label: l10n.notesOptional, // Localized
             controller: _notesController,
-            hint: 'Additional notes',
+            hint: l10n.additionalNotes, // Localized
             maxLines: 3,
           ),
         ],
@@ -298,12 +301,13 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildDateField() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Event Date',
-          style: TextStyle(
+        Text(
+          l10n.eventDate, // Localized
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: AppColors.textPrimary,
@@ -335,12 +339,13 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildTimeField() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Event Time',
-          style: TextStyle(
+        Text(
+          l10n.eventTime, // Localized
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: AppColors.textPrimary,
@@ -372,6 +377,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildMealsTab() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Consumer<StockProvider>(
       builder: (context, stockProvider, child) {
         if (stockProvider.isLoading) {
@@ -410,6 +416,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildSelectedMealsSummary() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     double totalPrice = _selectedMeals.fold(0.0, (sum, meal) => sum + meal.totalPrice);
 
     return Card(
@@ -423,9 +430,9 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
               children: [
                 const Icon(Icons.restaurant_menu, color: AppColors.primary),
                 const SizedBox(width: 8),
-                const Text(
-                  'Selected Meals',
-                  style: TextStyle(
+                Text(
+                  l10n.selectedMeals, // Localized
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primary,
@@ -433,7 +440,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
                 ),
                 const Spacer(),
                 Text(
-                  '${totalPrice.toStringAsFixed(2)}',
+                  '\$${totalPrice.toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -444,7 +451,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
             ),
             const SizedBox(height: 8),
             Text(
-              '${_selectedMeals.length} meal(s) selected',
+              l10n.mealsSelected(_selectedMeals.length), // Localized
               style: const TextStyle(color: AppColors.textSecondary),
             ),
           ],
@@ -454,6 +461,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildMealCard(MealModel meal, bool isSelected, int quantity) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -483,7 +491,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${meal.sellingPrice.toStringAsFixed(2)} per serving',
+                        l10n.pricePerServing(meal.sellingPrice.toStringAsFixed(2)), // Localized
                         style: const TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
@@ -516,7 +524,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
                       ),
                     ] else ...[
                       CustomButton(
-                        text: 'Add',
+                        text: l10n.add, // Localized
                         onPressed: () => _addMeal(meal),
                         width: 80,
                         height: 36,
@@ -533,6 +541,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildEquipmentTab() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Consumer2<StockProvider, EquipmentBookingProvider>(
       builder: (context, stockProvider, bookingProvider, child) {
         if (stockProvider.isLoading) {
@@ -597,6 +606,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
 
 
   Widget _buildSelectedEquipmentSummary() {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Card(
       color: AppColors.info.withOpacity(0.1),
       child: Padding(
@@ -608,9 +618,9 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
               children: [
                 const Icon(Icons.inventory, color: AppColors.info),
                 const SizedBox(width: 8),
-                const Text(
-                  'Selected Equipment',
-                  style: TextStyle(
+                Text(
+                  l10n.selectedEquipment, // Localized
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: AppColors.info,
@@ -620,7 +630,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
             ),
             const SizedBox(height: 8),
             Text(
-              '${_selectedEquipment.length} item(s) selected',
+              l10n.itemsSelected(_selectedEquipment.length), // Localized
               style: const TextStyle(color: AppColors.textSecondary),
             ),
           ],
@@ -658,6 +668,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Widget _buildEquipmentCard(EquipmentModel equipment, bool isSelected, int quantity) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -686,7 +697,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
                   ],
                   const SizedBox(height: 4),
                   Text(
-                    'Available: ${equipment.availableQuantity}/${equipment.totalQuantity}',
+                    l10n.availableQuantityTotal(equipment.availableQuantity, equipment.totalQuantity), // Localized
                     style: TextStyle(
                       color: equipment.availableQuantity > 0
                           ? AppColors.success
@@ -721,7 +732,7 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
               ),
             ] else ...[
               CustomButton(
-                text: 'Add',
+                text: l10n.add, // Localized
                 onPressed: equipment.availableQuantity > 0
                     ? () => _addEquipment(equipment)
                     : null,
@@ -821,14 +832,15 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
   }
 
   Future<void> _saveOccasion() async {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     if (_selectedMeals.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select at least one meal'),
+        SnackBar(
+          content: Text(l10n.selectAtLeastOneMeal), // Localized
           backgroundColor: AppColors.error,
         ),
       );
@@ -856,8 +868,8 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
 
       if (!validation['isValid']) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Equipment availability conflicts detected. Please resolve them first.'),
+          SnackBar(
+            content: Text(l10n.equipmentAvailabilityConflicts), // Localized
             backgroundColor: AppColors.error,
           ),
         );
@@ -909,23 +921,24 @@ class _AddOccasionDialogState extends State<AddOccasionDialog>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(widget.occasion == null
-                ? 'Event created successfully with equipment booking confirmed'
-                : 'Event updated successfully'),
+                ? l10n.eventCreatedSuccessWithBooking
+                : l10n.eventUpdatedSuccessfully), // Localized
             backgroundColor: AppColors.success,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(occasionProvider.errorMessage ?? 'Failed to save event'),
+            content: Text(occasionProvider.errorMessage ?? l10n.failedToSaveEvent), // Localized fallback
             backgroundColor: AppColors.error,
           ),
         );
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!; // Localizations instance
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text('${l10n.error}: $e'), // Localized error message
           backgroundColor: AppColors.error,
         ),
       );

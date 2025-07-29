@@ -5,10 +5,10 @@ import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/custom_text_field.dart';
 import '../../core/widgets/loading_widget.dart';
+import '../../generated/l10n/app_localizations.dart';
 import '../../models/equipment_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/stock_provider.dart';
 import '../../services/firestore_service.dart';
 
 class EquipmentCheckoutScreen extends StatefulWidget {
@@ -16,10 +16,10 @@ class EquipmentCheckoutScreen extends StatefulWidget {
   final String? occasionTitle;
 
   const EquipmentCheckoutScreen({
-    Key? key,
+    super.key,
     this.occasionId,
     this.occasionTitle,
-  }) : super(key: key);
+  });
 
   @override
   State<EquipmentCheckoutScreen> createState() => _EquipmentCheckoutScreenState();
@@ -34,24 +34,56 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
   List<EquipmentModel> _allEquipment = [];
   List<EquipmentModel> _filteredEquipment = [];
   Map<String, int> _checkoutQuantities = {};
-  String _selectedCategory = 'All';
+  String _selectedCategory = 'All'; // This will be updated with localized string
   bool _isLoading = false;
   bool _isCheckingOut = false;
 
   late TabController _tabController;
-  final List<String> _categories = ['All', 'chairs', 'tables', 'utensils', 'decorations', 'other'];
+  // Categories will be dynamically built based on localized strings
+  List<String> _categories = [];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _categories.length, vsync: this);
+    // Initialize _categories after context is available for localization
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeCategories();
+    });
     _loadEquipment();
+  }
+
+  void _initializeCategories() {
+    setState(() {
+      final localizations = AppLocalizations.of(context)!;
+      _categories = [
+        localizations.all,
+        localizations.chairs,
+        localizations.tables,
+        localizations.utensils,
+        localizations.decorations,
+        localizations.other
+      ];
+      _tabController = TabController(length: _categories.length, vsync: this);
+      _tabController.addListener(_handleTabSelection); // Add listener for tab changes
+      _selectedCategory = _categories[0]; // Set initial selected category to 'All' (localized)
+      _filterEquipment(); // Filter initially based on 'All'
+    });
+  }
+
+  void _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        _selectedCategory = _categories[_tabController.index];
+        _filterEquipment();
+      });
+    }
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     _notesController.dispose();
+    _tabController.removeListener(_handleTabSelection); // Remove listener
     _tabController.dispose();
     super.dispose();
   }
@@ -62,19 +94,32 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
       _allEquipment = await _firestoreService.getEquipment();
       _filterEquipment();
     } catch (e) {
-      _showErrorSnackBar('Failed to load equipment: $e');
+      _showErrorSnackBar(AppLocalizations.of(context)!.failedToLoadEquipment(e.toString()));
     }
     setState(() => _isLoading = false);
   }
 
   void _filterEquipment() {
     setState(() {
+      // Get the original English category names for filtering logic
+      final localizations = AppLocalizations.of(context)!;
+      final Map<String, String> localizedCategoryMap = {
+        localizations.all: 'All',
+        localizations.chairs: 'chairs',
+        localizations.tables: 'tables',
+        localizations.utensils: 'utensils',
+        localizations.decorations: 'decorations',
+        localizations.other: 'other',
+      };
+      final String actualSelectedCategory = localizedCategoryMap[_selectedCategory] ?? 'All';
+
+
       _filteredEquipment = _allEquipment.where((equipment) {
         // Filter by active status
         if (!equipment.isActive) return false;
 
         // Filter by category
-        if (_selectedCategory != 'All' && equipment.category != _selectedCategory) {
+        if (actualSelectedCategory != 'All' && equipment.category != actualSelectedCategory) {
           return false;
         }
 
@@ -115,8 +160,9 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
   }
 
   Future<void> _performCheckout() async {
+    final localizations = AppLocalizations.of(context)!;
     if (_checkoutQuantities.isEmpty) {
-      _showErrorSnackBar('Please select equipment to checkout');
+      _showErrorSnackBar(localizations.pleaseSelectEquipmentToCheckout);
       return;
     }
 
@@ -124,7 +170,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
     final UserModel? currentUser = authProvider.currentUser;
 
     if (currentUser == null) {
-      _showErrorSnackBar('User not authenticated');
+      _showErrorSnackBar(localizations.userNotAuthenticated);
       return;
     }
 
@@ -141,7 +187,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
 
         if (equipment.availableQuantity < requestedQuantity) {
           allAvailable = false;
-          unavailableItems.add('${equipment.name} (requested: $requestedQuantity, available: ${equipment.availableQuantity})');
+          unavailableItems.add('${equipment.name} (${localizations.requested}: $requestedQuantity, ${localizations.available}: ${equipment.availableQuantity})');
         }
       }
 
@@ -186,13 +232,14 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
       _showSuccessDialog(checkouts.length, _getTotalSelectedItems().toInt());
 
     } catch (e) {
-      _showErrorSnackBar('Checkout failed: $e');
+      _showErrorSnackBar('${localizations.checkoutFailed}: $e');
     } finally {
       setState(() => _isCheckingOut = false);
     }
   }
 
   void _showSuccessDialog(int itemTypes, int totalQuantity) {
+    final localizations = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -202,24 +249,24 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           color: AppColors.success,
           size: 64,
         ),
-        title: const Text('Checkout Successful'),
+        title: Text(localizations.checkoutSuccessful),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Successfully checked out:',
+              localizations.successfullyCheckedOut,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 8),
             Text(
-              '$itemTypes equipment types',
+              localizations.equipmentTypesCount(itemTypes),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
             ),
             Text(
-              '$totalQuantity total items',
+              localizations.totalItemsCount(totalQuantity),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
@@ -228,7 +275,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
             if (widget.occasionTitle != null) ...[
               const SizedBox(height: 12),
               Text(
-                'For: ${widget.occasionTitle}',
+                '${localizations.forText}: ${widget.occasionTitle}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontStyle: FontStyle.italic,
                 ),
@@ -238,7 +285,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
         ),
         actions: [
           CustomButton(
-            text: 'Done',
+            text: localizations.done,
             onPressed: () {
               Navigator.of(context).pop();
               Navigator.of(context).pop(true); // Return to previous screen with success
@@ -250,6 +297,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
   }
 
   void _showUnavailabilityDialog(List<String> unavailableItems) {
+    final localizations = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -258,25 +306,25 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           color: AppColors.warning,
           size: 64,
         ),
-        title: const Text('Equipment Unavailable'),
+        title: Text(localizations.equipmentUnavailable),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('The following equipment is not available in the requested quantity:'),
+            Text(localizations.equipmentNotAvailableInRequestedQuantity),
             const SizedBox(height: 12),
             ...unavailableItems.map((item) => Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Text('• $item', style: const TextStyle(color: AppColors.error)),
             )),
             const SizedBox(height: 12),
-            const Text('Please adjust quantities or remove unavailable items.'),
+            Text(localizations.adjustQuantitiesOrRemoveUnavailableItems),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(localizations.ok),
           ),
         ],
       ),
@@ -295,18 +343,19 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: _isLoading ? const LoadingWidget() : _buildBody(),
-      bottomNavigationBar: _buildBottomBar(),
+      appBar: _buildAppBar(context),
+      body: _isLoading ? const LoadingWidget() : _buildBody(context),
+      bottomNavigationBar: _buildBottomBar(context),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return AppBar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Equipment Checkout'),
+          Text(localizations.equipmentCheckout),
           if (widget.occasionTitle != null)
             Text(
               widget.occasionTitle!,
@@ -341,6 +390,8 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
       bottom: TabBar(
         controller: _tabController,
         isScrollable: true,
+        labelColor: AppColors.secondary,
+        unselectedLabelColor: AppColors.white,
         onTap: (index) {
           setState(() {
             _selectedCategory = _categories[index];
@@ -348,13 +399,14 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           });
         },
         tabs: _categories.map((category) => Tab(
-          text: category == 'All' ? 'All' : category.capitalize(),
+          text: category.capitalize(localizations), // Categories are already localized
         )).toList(),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Column(
       children: [
         // Search bar
@@ -362,7 +414,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           padding: const EdgeInsets.all(16),
           child: CustomTextField(
             controller: _searchController,
-            label: 'Search equipment...',
+            label: localizations.searchEquipment,
             prefixIcon: Icons.search,
             onChanged: (_) => _filterEquipment(),
           ),
@@ -371,12 +423,12 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
         // Equipment list
         Expanded(
           child: _filteredEquipment.isEmpty
-              ? _buildEmptyState()
+              ? _buildEmptyState(context)
               : ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: _filteredEquipment.length,
             itemBuilder: (context, index) {
-              return _buildEquipmentCard(_filteredEquipment[index]);
+              return _buildEquipmentCard(_filteredEquipment[index], context);
             },
           ),
         ),
@@ -384,7 +436,8 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -396,7 +449,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'No equipment found',
+            localizations.noEquipmentFound,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Colors.grey[600],
             ),
@@ -404,8 +457,8 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           const SizedBox(height: 8),
           Text(
             _searchController.text.isNotEmpty
-                ? 'Try adjusting your search terms'
-                : 'No equipment available in this category',
+                ? localizations.tryAdjustingYourSearchTerms
+                : localizations.noEquipmentAvailableInCategory,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey[500],
             ),
@@ -415,7 +468,8 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
     );
   }
 
-  Widget _buildEquipmentCard(EquipmentModel equipment) {
+  Widget _buildEquipmentCard(EquipmentModel equipment, BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final isSelected = _checkoutQuantities.containsKey(equipment.id);
     final selectedQuantity = _checkoutQuantities[equipment.id] ?? 0;
 
@@ -470,7 +524,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        equipment.category.capitalize(),
+                        equipment.category.capitalize(localizations),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: _getCategoryColor(equipment.category),
                           fontWeight: FontWeight.w500,
@@ -486,7 +540,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '${equipment.availableQuantity}/${equipment.totalQuantity} available',
+                            localizations.availableQuantityTotal(equipment.availableQuantity, equipment.totalQuantity),
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: equipment.isAvailable ? AppColors.success : AppColors.error,
                             ),
@@ -535,7 +589,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Quantity to checkout:',
+                  localizations.quantityToCheckout,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -581,8 +635,10 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
     );
   }
 
-  Widget _buildBottomBar() {
+  Widget _buildBottomBar(BuildContext context) {
     if (_checkoutQuantities.isEmpty) return const SizedBox.shrink();
+
+    final localizations = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -602,7 +658,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           // Notes field
           CustomTextField(
             controller: _notesController,
-            label: 'Notes (optional)',
+            label: localizations.notesOptional,
             maxLines: 2,
             prefixIcon: Icons.note_alt_outlined,
           ),
@@ -616,13 +672,13 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${_getTotalSelectedTypes().toInt()} types selected',
+                      localizations.typesSelected(localizations.equipmentTypesCount(_getTotalSelectedTypes().toInt())),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
-                      '${_getTotalSelectedItems()} total items',
+                      localizations.totalItemsCount(_getTotalSelectedItems()),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.primary,
@@ -635,7 +691,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
               SizedBox(
                 width: 140,
                 child: CustomButton(
-                  text: _isCheckingOut ? 'Processing...' : 'Checkout',
+                  text: _isCheckingOut ? localizations.processing : localizations.checkout,
                   onPressed: _isCheckingOut ? null : _performCheckout,
                   backgroundColor: AppColors.primary,
                 ),
@@ -679,7 +735,29 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
 }
 
 extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  String capitalize(AppLocalizations localizations) {
+    // Check if the string is one of the category keys and return its localized capitalized version
+    switch (this.toLowerCase()) {
+      case 'all':
+        return localizations.all;
+      case 'chairs':
+        return localizations.chairs.capitalizeFirstofEach;
+      case 'tables':
+        return localizations.tables.capitalizeFirstofEach;
+      case 'utensils':
+        return localizations.utensils.capitalizeFirstofEach;
+      case 'decorations':
+        return localizations.decorations.capitalizeFirstofEach;
+      case 'other':
+        return localizations.other.capitalizeFirstofEach;
+      default:
+        if (isEmpty) return this;
+        return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+    }
+  }
+
+  // Helper to capitalize the first letter of each word
+  String get capitalizeFirstofEach {
+    return split(" ").map((str) => str.isEmpty ? "" : "${str[0].toUpperCase()}${str.substring(1)}").join(" ");
   }
 }
