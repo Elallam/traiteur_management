@@ -178,6 +178,7 @@
   "exportReports": "Export Reports",
   "exportPdf": "Export PDF",
   "exportExcel": "Export Excel",
+  "exportInfo": "Export Info",
   "quickActions": "Quick Actions",
   "createNewEvent": "Create New Event",
   "allGood": "All Good!",

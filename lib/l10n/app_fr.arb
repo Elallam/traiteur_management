@@ -173,6 +173,7 @@
   "exportReports": "Exporter les Rapports",
   "exportPdf": "Exporter PDF",
   "exportExcel": "Exporter Excel",
+  "exportInfo": "Exporter Info",
   "quickActions": "Actions Rapides",
   "createNewEvent": "Créer un Nouvel Événement",
   "allGood": "Tout Va Bien !",

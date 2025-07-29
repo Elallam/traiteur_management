@@ -42,8 +42,8 @@ class MealModel {
       ingredients: (map['ingredients'] as List<dynamic>?)
           ?.map((ingredient) => MealIngredient.fromMap(ingredient))
           .toList() ?? [],
-      calculatedPrice: (map['calculatedPrice'] ?? 0.0).toDouble(),
-      sellingPrice: (map['sellingPrice'] ?? 0.0).toDouble(),
+      calculatedPrice: (map['calculatedPrice'] ?? 0.0).uble(),
+      sellingPrice: (map['sellingPrice'] ?? 0.0).uble(),
       category: map['category'] ?? 'main',
       servings: map['servings'] ?? 1,
       preparationTime: map['preparationTime'] ?? 0,
@@ -177,9 +177,9 @@ class MealIngredient {
     return MealIngredient(
       articleId: map['articleId'] ?? '',
       articleName: map['articleName'] ?? '',
-      quantity: (map['quantity'] ?? 0.0).toDouble(),
+      quantity: (map['quantity'] ?? 0.0).uble(),
       unit: map['unit'] ?? '',
-      pricePerUnit: (map['pricePerUnit'] ?? 0.0).toDouble(),
+      pricePerUnit: (map['pricePerUnit'] ?? 0.0).uble(),
     );
   }
 

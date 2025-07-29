@@ -999,7 +999,7 @@ Date: ${DateFormat('EEEE, MMMM dd, yyyy • HH:mm').format(_occasion.date)}
 Location: ${_occasion.address}
 Client: ${_occasion.clientName}
 Guests: ${_occasion.expectedGuests}
-Total: \${_occasion.totalPrice.toStringAsFixed(2)}
+Total: ${_occasion.totalPrice.toStringAsFixed(2)}
 ''';
 
     // TODO: Implement share functionality

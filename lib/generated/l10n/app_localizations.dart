@@ -994,6 +994,12 @@ abstract class AppLocalizations {
   /// **'Export Excel'**
   String get exportExcel;
 
+  /// No description provided for @exportInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Info'**
+  String get exportInfo;
+
   /// No description provided for @quickActions.
   ///
   /// In en, this message translates to:

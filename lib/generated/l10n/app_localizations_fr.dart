@@ -461,6 +461,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get exportExcel => 'Exporter Excel';
 
   @override
+  String get exportInfo => 'Exporter Info';
+
+  @override
   String get quickActions => 'Actions Rapides';
 
   @override
