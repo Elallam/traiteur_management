@@ -198,7 +198,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get language => 'Langue';
 
   @override
-  String get analytics => 'Analyses';
+  String get analytics => 'Analytiques';
 
   @override
   String get profit => 'Profit';
@@ -315,7 +315,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get to => 'À';
 
   @override
-  String get total => 'Total';
+  String get total => 'TOTAL';
 
   @override
   String get subtotal => 'Sous-total';
@@ -360,10 +360,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get totalRevenue => 'Chiffre d\'Affaires Total';
 
   @override
-  String get thisMonth => 'Ce Mois';
+  String get thisMonth => 'Ce mois-ci';
 
   @override
-  String get thisWeek => 'Cette Semaine';
+  String get thisWeek => 'Cette semaine';
 
   @override
   String get thisYear => 'Cette Année';
@@ -434,7 +434,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get netProfit => 'Bénéfice Net';
 
   @override
-  String get profitMargin => 'Marge Bénéficiaire';
+  String get profitMargin => 'Marge bénéficiaire (%)';
 
   @override
   String get completedEvents => 'Événements Terminés';
@@ -464,6 +464,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get exportInfo => 'Exporter Info';
 
   @override
+  String get remove => 'Supprimer';
+
+  @override
+  String get noEquipmentAvailable => 'Aucun équipement disponible';
+
+  @override
+  String get items => 'Articles';
+
+  @override
   String get quickActions => 'Actions Rapides';
 
   @override
@@ -479,7 +488,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noAlertsMessage => 'Aucune alerte ou notification pour le moment';
 
   @override
-  String get viewAll => 'Voir Tout';
+  String get viewAll => 'Voir tout';
 
   @override
   String generatingReport(String period) {
@@ -926,7 +935,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unitRequired => 'Unité *';
 
   @override
-  String get descriptionOptional => 'Description (Facultatif)';
+  String get descriptionOptional => 'Description (Optionnelle)';
 
   @override
   String get imageUrlOptional => 'URL de l\'image (Facultatif)';
@@ -2032,4 +2041,430 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get processing => 'Traitement...';
+
+  @override
+  String get categoryManagement => 'Gestion des catégories';
+
+  @override
+  String get addCategory => 'Ajouter une catégorie';
+
+  @override
+  String get editCategory => 'Modifier la catégorie';
+
+  @override
+  String get categoryName => 'Nom de la catégorie';
+
+  @override
+  String get icon => 'Icône';
+
+  @override
+  String get optional => 'optionnel';
+
+  @override
+  String get validationEnterCategoryName =>
+      'Veuillez entrer un nom de catégorie';
+
+  @override
+  String get deleteCategory => 'Supprimer la catégorie';
+
+  @override
+  String confirmDeleteCategory(Object category) {
+    return 'Êtes-vous sûr de vouloir supprimer $category?';
+  }
+
+  @override
+  String get validationSelectCategory => 'Please select a category';
+
+  @override
+  String get selectCategory => 'Sélectionner une catégorie';
+
+  @override
+  String get uncategorized => 'Non classé';
+
+  @override
+  String get financialTabTitle => 'Financier';
+
+  @override
+  String get mealsTotal => 'Total des repas';
+
+  @override
+  String get equipmentDepreciation => 'Amortissement de l’équipement (%)';
+
+  @override
+  String get transportCost => 'Coût du transport';
+
+  @override
+  String get costBreakdown => 'Répartition des coûts';
+
+  @override
+  String get dhCurrency => 'DH';
+
+  @override
+  String get sortBy => 'Trier par';
+
+  @override
+  String get mealsCost => 'Coût des repas';
+
+  @override
+  String get equipmentRental => 'Location d\'équipement';
+
+  @override
+  String get totalBaseCost => 'Coût de base total';
+
+  @override
+  String get equipmentRentalPricing => 'Tarification location équipement';
+
+  @override
+  String get totalEquipmentRentalPrice => 'Prix total location équipement';
+
+  @override
+  String get enterEquipmentRentalPrice => 'Entrez le prix de location';
+
+  @override
+  String get autoCalculate => 'Calcul automatique';
+
+  @override
+  String get equipmentBreakdown => 'Détail des équipements';
+
+  @override
+  String get transportConfiguration => 'Configuration du transport';
+
+  @override
+  String get transportDeliveryCost => 'Frais de transport/livraison';
+
+  @override
+  String get enterTransportCost => 'Entrez les frais de transport';
+
+  @override
+  String get profitMarginConfiguration => 'Configuration marge bénéficiaire';
+
+  @override
+  String get profitMarginPercentage => 'Pourcentage marge bénéficiaire';
+
+  @override
+  String get enterProfitMargin => 'Entrez la marge bénéficiaire';
+
+  @override
+  String get finalPricingSummary => 'Récapitulatif des prix';
+
+  @override
+  String get baseCost => 'Coût de base';
+
+  @override
+  String get profitAmount => 'Montant du bénéfice';
+
+  @override
+  String get finalTotalPrice => 'Prix total final';
+
+  @override
+  String get estimatedPricePerGuest => 'Prix estimé par invité';
+
+  @override
+  String get searchMeals => 'Rechercher des Repas';
+
+  @override
+  String get checkoutRequestFailed => 'Échec de la demande de retrait';
+
+  @override
+  String get requestSubmitted => 'Demande soumise';
+
+  @override
+  String get checkoutRequestSubmittedSuccessfully =>
+      'Demande de retrait soumise avec succès';
+
+  @override
+  String get adminWillReviewRequest =>
+      'L\'administrateur examinera votre demande sous peu';
+
+  @override
+  String get submittingRequest => 'Soumission de la demande...';
+
+  @override
+  String get submitRequest => 'Soumettre la demande';
+
+  @override
+  String get equipmentRequests => 'Demandes d\'équipement';
+
+  @override
+  String get pendingApproval => 'En attente d\'approbation';
+
+  @override
+  String get noPendingRequests => 'Aucune demande en attente';
+
+  @override
+  String get allRequestsProcessed => 'Toutes les demandes ont été traitées';
+
+  @override
+  String get reviewRequests => 'Examiner les demandes';
+
+  @override
+  String get viewAllRequests => 'Voir toutes les demandes';
+
+  @override
+  String daysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'il y a $count jours',
+      one: 'il y a 1 jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'il y a $count heures',
+      one: 'il y a 1 heure',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String minutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'il y a $count minutes',
+      one: 'il y a 1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String requestSummary(int itemCount, int totalQuantity) {
+    String _temp0 = intl.Intl.pluralLogic(
+      itemCount,
+      locale: localeName,
+      other: '$itemCount articles',
+      one: '1 article',
+    );
+    return '$_temp0 • $totalQuantity au total';
+  }
+
+  @override
+  String andMoreItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count articles supplémentaires',
+      one: '1 article supplémentaire',
+    );
+    return 'et $_temp0';
+  }
+
+  @override
+  String andMoreRequests(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count demandes supplémentaires',
+      one: '1 demande supplémentaire',
+    );
+    return '+$_temp0';
+  }
+
+  @override
+  String get addTransaction => 'Ajouter une transaction';
+
+  @override
+  String get transactionType => 'Type de transaction';
+
+  @override
+  String get deposit => 'Dépôt';
+
+  @override
+  String get withdraw => 'Retrait';
+
+  @override
+  String get operationName => 'Nom de l\'opération';
+
+  @override
+  String get enterOperationName => 'Entrez le nom de l\'opération';
+
+  @override
+  String get operationNameRequired => 'Le nom de l\'opération est requis';
+
+  @override
+  String get operationNameMinLength =>
+      'Le nom de l\'opération doit comporter au moins 2 caractères';
+
+  @override
+  String get amount => 'Montant';
+
+  @override
+  String get enterAmount => 'Entrez le montant';
+
+  @override
+  String get amountRequired => 'Le montant est requis';
+
+  @override
+  String get invalidAmountFormat => 'Format de montant invalide';
+
+  @override
+  String get amountMustBePositive => 'Le montant doit être positif';
+
+  @override
+  String get transactionDate => 'Date de la transaction';
+
+  @override
+  String get enterDescription => 'Entrez une description';
+
+  @override
+  String get depositAddedSuccess => 'Dépôt ajouté avec succès';
+
+  @override
+  String get withdrawalAddedSuccess => 'Retrait ajouté avec succès';
+
+  @override
+  String addTransactionFailed(Object error) {
+    return 'Échec de l\'ajout de la transaction : $error';
+  }
+
+  @override
+  String get transactionDetails => 'Détails de la transaction';
+
+  @override
+  String get editTransaction => 'Modifier la transaction';
+
+  @override
+  String get transactionUpdatedSuccess => 'Transaction mise à jour avec succès';
+
+  @override
+  String updateTransactionFailed(Object error) {
+    return 'Échec de la mise à jour de la transaction : $error';
+  }
+
+  @override
+  String get deleteTransaction => 'Supprimer la transaction';
+
+  @override
+  String get cashRegister => 'La caisse';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get loadingCashData => 'Chargement des données de caisse...';
+
+  @override
+  String get realtimeBalance => 'Solde en temps réel';
+
+  @override
+  String get noTransactionsYet => 'Aucune transaction pour le moment';
+
+  @override
+  String get totalDeposits => 'Total des dépôts';
+
+  @override
+  String transactionsCount(Object count) {
+    return '$count transactions';
+  }
+
+  @override
+  String get totalWithdrawals => 'Total des retraits';
+
+  @override
+  String get recentTransactions => 'Transactions récentes';
+
+  @override
+  String get noTransactions => 'Aucune transaction';
+
+  @override
+  String get noTransactionsFound =>
+      'Aucune transaction trouvée. Ajoutez votre première transaction !';
+
+  @override
+  String get noMatchingTransactions =>
+      'Aucune transaction ne correspond aux filtres sélectionnés.';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get allTypes => 'Tous les types';
+
+  @override
+  String get deposits => 'Dépôts';
+
+  @override
+  String get withdrawals => 'Retraits';
+
+  @override
+  String get period => 'Période';
+
+  @override
+  String get allTime => 'Tout le temps';
+
+  @override
+  String customRangeDisplay(Object endDate, Object startDate) {
+    return 'Plage personnalisée : $startDate - $endDate';
+  }
+
+  @override
+  String get cashFlowAnalytics => 'Analyse des flux de trésorerie';
+
+  @override
+  String get transactionCount => 'Nombre de transactions';
+
+  @override
+  String get averageDeposit => 'Dépôt moyen';
+
+  @override
+  String get averageWithdrawal => 'Retrait moyen';
+
+  @override
+  String get netFlow => 'Flux net';
+
+  @override
+  String get chartComingSoon => 'Implémentation du graphique à venir';
+
+  @override
+  String confirmDeleteMessage(Object transactionName) {
+    return 'Êtes-vous sûr de vouloir supprimer cette transaction : \"$transactionName\" ?';
+  }
+
+  @override
+  String get transactionDeletedSuccess => 'Transaction supprimée avec succès';
+
+  @override
+  String deleteTransactionFailed(Object error) {
+    return 'Échec de la suppression de la transaction : $error';
+  }
+
+  @override
+  String get addedBy => 'Ajouté par';
+
+  @override
+  String get transactionOptions => 'Options de transaction';
+
+  @override
+  String get selectImageSource => 'Sélectionner la source d\'image';
+
+  @override
+  String get camera => 'Caméra';
+
+  @override
+  String get gallery => 'Galerie';
+
+  @override
+  String get addPhoto => 'Ajouter une photo';
+
+  @override
+  String get tapToAddPhoto => 'Appuyez pour ajouter une photo';
+
+  @override
+  String get permissionRequired => 'Permission requise';
+
+  @override
+  String get permissionRequiredMessage =>
+      'Cette application a besoin des permissions de caméra et de galerie photo pour ajouter des images. Veuillez accorder les permissions dans les paramètres.';
+
+  @override
+  String get openSettings => 'Ouvrir les paramètres';
+
+  @override
+  String get imagePickerError => 'Échec de la sélection d\'image';
 }

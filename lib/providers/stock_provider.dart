@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:traiteur_management/providers/category_provider.dart';
 import '../models/article_model.dart';
 import '../models/equipment_model.dart';
 import '../models/meal_model.dart';
@@ -197,6 +198,48 @@ class StockProvider extends ChangeNotifier {
     }
 
     _setLoading(false);
+  }
+
+  EquipmentModel? getEquipmentById(String equipmentId) {
+    try {
+      // First check in available equipment
+      final availableEquipment = getAvailableEquipment();
+      final equipment = availableEquipment.firstWhereOrNull(
+            (eq) => eq.id == equipmentId,
+      );
+
+      if (equipment != null) {
+        return equipment;
+      }
+
+      // If not found in available, check in all equipment (in case it's out of stock)
+      return _equipment.firstWhereOrNull(
+            (eq) => eq.id == equipmentId,
+      );
+    } catch (e) {
+      debugPrint('Error getting equipment by ID: $e');
+      return null;
+    }
+  }
+
+  MealModel? getMealById(String id) {
+    try {
+      final meals = _meals;
+      print(_meals.length);
+      final meal = meals.firstWhereOrNull(
+            (m) => m.id == id,
+      );
+
+      print(meal);
+
+      if (meal != null) {
+        return meal;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error getting meal by ID: $e');
+      return null;
+    }
   }
 
   /// Add new equipment
@@ -423,8 +466,10 @@ class StockProvider extends ChangeNotifier {
 
     try {
       _meals = await _firestoreService.getMeals();
+      print('Loaded ${_meals.length} meals'); // Add this line
       notifyListeners();
     } catch (e) {
+      print('Error loading meals: $e'); // Add this line
       _setError(e.toString());
     }
 

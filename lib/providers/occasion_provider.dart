@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import 'package:traiteur_management/providers/stock_provider.dart';
 import '../models/occasion_model.dart';
 import '../models/meal_model.dart';
 import '../models/equipment_model.dart';
@@ -6,13 +9,22 @@ import '../services/firestore_service.dart';
 
 class OccasionProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
+  final StockProvider _stockProvider = StockProvider();
 
   bool _isLoading = false;
   String? _errorMessage;
 
+  String _currentSortField = 'date';
+  bool _isSortAscending = true;
+
+
   // Getters
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+
+  String get currentSortField => _currentSortField;
+  bool get isSortAscending => _isSortAscending;
+
 
   // Occasions
   List<OccasionModel> _occasions = [];
@@ -36,6 +48,7 @@ class OccasionProvider extends ChangeNotifier {
 
     try {
       _occasions = await _firestoreService.getOccasions();
+      sortOccasions(_currentSortField); // Apply current sorting
       notifyListeners();
     } catch (e) {
       _setError(e.toString());
@@ -160,20 +173,24 @@ class OccasionProvider extends ChangeNotifier {
   Map<String, double> calculateOccasionTotals({
     required List<OccasionMeal> meals,
     required List<OccasionEquipment> equipment,
+    required double equipmentCost,
+    required double transportCost,
+    required double profitMargin,
+    required BuildContext context,
   }) {
     double totalMealCost = 0.0;
     double totalMealPrice = 0.0;
+    final stockProvider = Provider.of<StockProvider>(context, listen: false);
 
     for (var meal in meals) {
       totalMealPrice += meal.totalPrice;
       // Note: We would need meal cost calculation here
-      // For now, we'll use a simplified approach
+      MealModel? m = stockProvider.getMealById(meal.mealId);
+      totalMealCost += m!.calculatedPrice*meal.quantity;
     }
 
-    // Equipment doesn't have cost in this model, but could be added
-    double equipmentCost = 0.0;
-
-    double totalCost = totalMealCost + equipmentCost;
+    //Todo: update the totalCost and totalPrice based on the given formula
+    double totalCost = totalMealCost + equipmentCost + transportCost;
     double totalPrice = totalMealPrice;
 
     return {
@@ -196,9 +213,20 @@ class OccasionProvider extends ChangeNotifier {
     required List<OccasionMeal> meals,
     required List<OccasionEquipment> equipment,
     required int expectedGuests,
+    required double equipmentCost,
+    required double transportCost,
+    required double profitMargin,
     String? notes,
+    required BuildContext context,
   }) {
-    final totals = calculateOccasionTotals(meals: meals, equipment: equipment);
+    final totals = calculateOccasionTotals(
+        meals: meals,
+        equipment: equipment,
+        equipmentCost: equipmentCost,
+        transportCost: transportCost,
+        profitMargin: profitMargin,
+        context: context
+    );
 
     return OccasionModel(
       id: '', // Will be set by Firestore
@@ -379,6 +407,38 @@ class OccasionProvider extends ChangeNotifier {
   /// Get alert count
   int getAlertCount() {
     return getOccasionsRequiringAttention().length;
+  }
+
+  void sortOccasions(String field, {bool? ascending}) {
+    _currentSortField = field;
+    _isSortAscending = ascending ?? !_isSortAscending;
+
+    switch (field) {
+      case 'date':
+        _occasions.sort((a, b) => _isSortAscending
+            ? a.date.compareTo(b.date)
+            : b.date.compareTo(a.date));
+        break;
+      case 'name':
+        _occasions.sort((a, b) => _isSortAscending
+            ? a.title.compareTo(b.title)
+            : b.title.compareTo(a.title));
+        break;
+      case 'totalCost':
+        _occasions.sort((a, b) => _isSortAscending
+            ? a.totalCost.compareTo(b.totalCost)
+            : b.totalCost.compareTo(a.totalCost));
+        break;
+      case 'totalPrice':
+        _occasions.sort((a, b) => _isSortAscending
+            ? a.totalPrice.compareTo(b.totalPrice)
+            : b.totalPrice.compareTo(a.totalPrice));
+        break;
+      default:
+        _occasions.sort((a, b) => a.date.compareTo(b.date));
+    }
+
+    notifyListeners();
   }
 
   // ==================== HELPER METHODS ====================

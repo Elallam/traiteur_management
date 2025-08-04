@@ -1,15 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/equipment_model.dart';
+import '../../providers/category_provider.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
-import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
+import 'package:traiteur_management/generated/l10n/app_localizations.dart';
+
+import 'image_picker_widget.dart'; // Import localization
 
 class AddEditEquipmentDialog extends StatefulWidget {
   final EquipmentModel? equipment;
 
-  const AddEditEquipmentDialog({Key? key, this.equipment}) : super(key: key);
+  const AddEditEquipmentDialog({super.key, this.equipment});
 
   @override
   State<AddEditEquipmentDialog> createState() => _AddEditEquipmentDialogState();
@@ -21,15 +25,16 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
   final _totalQuantityController = TextEditingController();
   final _availableQuantityController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _priceController = TextEditingController();
   final _imageUrlController = TextEditingController();
 
-  String _selectedCategory = 'other';
+  String _selectedCategory = 'Autre';
   bool _isLoading = false;
 
-  final List<String> _categories = [
-    'chairs', 'tables', 'utensils', 'decorations', 'sound_equipment',
-    'lighting', 'tents', 'linens', 'serving_equipment', 'other'
-  ];
+  // final List<String> _categories = [
+  //   'chairs', 'tables', 'utensils', 'decorations', 'sound_equipment',
+  //   'lighting', 'tents', 'linens', 'serving_equipment', 'other'
+  // ];
 
   @override
   void initState() {
@@ -39,13 +44,20 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
       _totalQuantityController.text = widget.equipment!.totalQuantity.toString();
       _availableQuantityController.text = widget.equipment!.availableQuantity.toString();
       _descriptionController.text = widget.equipment!.description ?? '';
-      _imageUrlController.text = widget.equipment!.imageUrl ?? '';
+      _imageUrlController.text = widget.equipment!.imagePath ?? '';
       _selectedCategory = widget.equipment!.category;
+      _priceController.text = widget.equipment!.price.toString() ?? '0.0';
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CategoryProvider>(context, listen: false).loadCategories();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final equipmentCategories = categoryProvider.getCategoriesByType('equipment');
+
     final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(widget.equipment == null ? l10n.addEquipment : l10n.editEquipment), // Localized title
@@ -77,19 +89,40 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
                   decoration: InputDecoration(
-                    labelText: l10n.categoryRequired, // Localized label
+                    labelText: l10n.categoryRequired,
                     border: const OutlineInputBorder(),
                   ),
-                  items: _categories.map((category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(category.replaceAll('_', ' ').toUpperCase()),
-                    );
-                  }).toList(),
+                  items: [
+                    // Add a disabled default item
+                    DropdownMenuItem<String>(
+                      value: l10n.other,
+                      enabled: true,
+                      child: Text(
+                        l10n.other.toUpperCase(),
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    // Add actual categories
+
+                    ...equipmentCategories.map((category) {
+                      return DropdownMenuItem(
+                        value: category.id,
+                        child: Text(category.name.toUpperCase()),
+                      );
+                    }),
+                  ],
                   onChanged: (value) {
-                    setState(() {
-                      _selectedCategory = value!;
-                    });
+                    if (value != null) {
+                      setState(() {
+                        _selectedCategory = value;
+                      });
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return l10n.validationSelectCategory;
+                    }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -150,6 +183,28 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 16),
+                // Price Field
+                TextFormField(
+                  controller: _priceController,
+                  decoration: InputDecoration(
+                    labelText: l10n.price, // Make sure to add this in your ARB files
+                    border: const OutlineInputBorder(),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return l10n.validationEnterPrice; // Add this in ARB files
+                    }
+                    final price = double.tryParse(value);
+                    if (price == null || price < 0) {
+                      return l10n.validationEnterValidPrice; // Add this in ARB files
+                    }
+                    return null;
+                  },
+                ),
+
                 const SizedBox(height: 16),
 
                 // Description Field
@@ -164,13 +219,18 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
                 const SizedBox(height: 16),
 
                 // Image URL Field
-                TextFormField(
-                  controller: _imageUrlController,
-                  decoration: InputDecoration(
-                    labelText: l10n.imageUrlOptional, // Localized label
-                    border: const OutlineInputBorder(),
-                  ),
+                ImagePickerWidget(
+                  initialImagePath: widget.equipment?.imagePath,
+                  onImageSelected: (path) {
+                    setState(() {
+                      _imageUrlController.text = path ?? '';
+                    });
+                  },
+                  width: double.infinity,
+                  height: 150,
+                  placeholder: l10n.selectImageSource,
                 ),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -215,12 +275,13 @@ class _AddEditEquipmentDialogState extends State<AddEditEquipmentDialog> {
         description: _descriptionController.text.trim().isEmpty
             ? null
             : _descriptionController.text.trim(),
-        imageUrl: _imageUrlController.text.trim().isEmpty
+        imagePath: _imageUrlController.text.trim().isEmpty
             ? null
             : _imageUrlController.text.trim(),
         createdAt: widget.equipment?.createdAt ?? DateTime.now(),
         updatedAt: DateTime.now(),
         isActive: widget.equipment?.isActive ?? true,
+        price: double.tryParse(_priceController.text) ?? 0.0,
       );
 
       bool success;

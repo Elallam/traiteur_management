@@ -42,7 +42,6 @@ class AuthService {
       // Check if 'Secondary' app is already initialized
       return Firebase.app('Secondary');
     } catch (e) {
-      print('Initializing secondary Firebase app');
       FirebaseApp defaultApp = Firebase.app();
       return await Firebase.initializeApp(
         name: 'Secondary',
@@ -68,8 +67,6 @@ class AuthService {
       // Handle type casting error specifically
       catch (e) {
         if (e is TypeError) {
-          print('Handling type cast exception during user creation');
-
           // Get the current user directly
           final user = secondaryAuth.currentUser;
           if (user != null) {
@@ -85,11 +82,8 @@ class AuthService {
         rethrow;
       }
     } on FirebaseAuthException catch (e) {
-      print('FirebaseAuthException: ${e.code} - ${e.message}');
       rethrow;
     } catch (e, stackTrace) {
-      print('Unexpected error in createUser: $e');
-      print('Stack trace: $stackTrace');
       throw Exception('Failed to create user: ${e.toString()}');
     }
   }
@@ -104,8 +98,6 @@ class AuthService {
   }) async {
     try {
       UserCredential result = await createUser(email, password);
-
-      print("The user is created : ${result.user}");
 
       if (result.user != null) {
         UserModel newUser = UserModel(
@@ -125,7 +117,6 @@ class AuthService {
               .doc(result.user!.uid)
               .set(newUser.toMap());
         } catch (e) {
-          print('Firestore error: $e');
           throw Exception('Failed to write user to Firestore.');
         }
 
@@ -138,7 +129,6 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw Exception(_handleAuthException(e));
     } catch (e) {
-      print("The exception is : ${e}");
       throw Exception('Failed to create user account. Please try again. ${e}');
     }
   }

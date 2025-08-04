@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/models/category_model.dart';
 
 import '../../models/article_model.dart';
+import '../../providers/category_provider.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
-import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
+import 'package:traiteur_management/generated/l10n/app_localizations.dart';
+
+import 'image_picker_widget.dart'; // Import localization
 
 class AddEditArticleDialog extends StatefulWidget {
   final ArticleModel? article;
 
-  const AddEditArticleDialog({Key? key, this.article}) : super(key: key);
+  const AddEditArticleDialog({super.key, this.article});
 
   @override
   State<AddEditArticleDialog> createState() => _AddEditArticleDialogState();
@@ -24,17 +28,17 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
   final _imageUrlController = TextEditingController();
 
   String _selectedUnit = 'pieces';
-  String _selectedCategory = 'other';
+  String _selectedCategory = 'Autre';
   bool _isLoading = false;
 
   final List<String> _units = [
     'pieces', 'kg', 'grams', 'liters', 'ml', 'boxes', 'packets', 'bottles'
   ];
-
-  final List<String> _categories = [
-    'vegetables', 'fruits', 'meat', 'dairy', 'grains', 'spices',
-    'beverages', 'desserts', 'frozen', 'canned', 'other'
-  ];
+  //
+  // final List<String> _categories = [
+  //   'vegetables', 'fruits', 'meat', 'dairy', 'grains', 'spices',
+  //   'beverages', 'desserts', 'frozen', 'canned', 'other'
+  // ];
 
   @override
   void initState() {
@@ -44,14 +48,20 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
       _priceController.text = widget.article!.price.toString();
       _quantityController.text = widget.article!.quantity.toString();
       _descriptionController.text = widget.article!.description ?? '';
-      _imageUrlController.text = widget.article!.imageUrl ?? '';
+      _imageUrlController.text = widget.article!.imagePath ?? '';
       _selectedUnit = widget.article!.unit;
       _selectedCategory = widget.article!.category;
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CategoryProvider>(context, listen: false).loadCategories();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final articleCategories = categoryProvider.getCategoriesByType('article');
+
     final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(widget.article == null ? l10n.addArticle : l10n.editArticle), // Localized title
@@ -88,19 +98,39 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
                   decoration: InputDecoration(
-                    labelText: l10n.categoryRequired, // Localized label
+                    labelText: l10n.categoryRequired,
                     border: const OutlineInputBorder(),
                   ),
-                  items: _categories.map((category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(category.toUpperCase()),
-                    );
-                  }).toList(),
+                  items: [
+                    // Add a disabled default item
+                    DropdownMenuItem<String>(
+                      value: 'Autre',
+                      enabled: true,
+                      child: Text(
+                        l10n.other.toUpperCase(),
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    // Add actual categories
+                    ...articleCategories.map((category) {
+                      return DropdownMenuItem(
+                        value: category.id,
+                        child: Text(category.name.toUpperCase()),
+                      );
+                    }).toList(),
+                  ],
                   onChanged: (value) {
-                    setState(() {
-                      _selectedCategory = value!;
-                    });
+                    if (value != null) {
+                      setState(() {
+                        _selectedCategory = value;
+                      });
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return l10n.validationSelectCategory;
+                    }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -191,13 +221,18 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
                 const SizedBox(height: 16),
 
                 // Image URL Field
-                TextFormField(
-                  controller: _imageUrlController,
-                  decoration: InputDecoration(
-                    labelText: l10n.imageUrlOptional, // Localized label
-                    border: const OutlineInputBorder(),
-                  ),
+                ImagePickerWidget(
+                  initialImagePath: widget.article?.imagePath,
+                  onImageSelected: (path) {
+                    setState(() {
+                      _imageUrlController.text = path ?? '';
+                    });
+                  },
+                  width: double.infinity,
+                  height: 150,
+                  placeholder: l10n.selectImageSource,
                 ),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -245,7 +280,7 @@ class _AddEditArticleDialogState extends State<AddEditArticleDialog> {
             .isEmpty
             ? null
             : _descriptionController.text.trim(),
-        imageUrl: _imageUrlController.text
+        imagePath: _imageUrlController.text
             .trim()
             .isEmpty
             ? null

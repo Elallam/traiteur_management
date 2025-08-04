@@ -5,10 +5,11 @@ class EquipmentModel {
   final int availableQuantity;
   final String category; // chairs, tables, utensils, decorations, etc.
   final String? description;
-  final String? imageUrl;
+  final String? imagePath; // Changed from imageUrl to imagePath
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isActive;
+  final double? price;
 
   EquipmentModel({
     required this.id,
@@ -17,10 +18,11 @@ class EquipmentModel {
     required this.availableQuantity,
     required this.category,
     this.description,
-    this.imageUrl,
+    this.imagePath, // Updated parameter name
     required this.createdAt,
     required this.updatedAt,
     this.isActive = true,
+    this.price,
   });
 
   // Convert from Firestore document
@@ -32,10 +34,11 @@ class EquipmentModel {
       availableQuantity: map['availableQuantity'] ?? 0,
       category: map['category'] ?? 'other',
       description: map['description'],
-      imageUrl: map['imageUrl'],
+      imagePath: map['imagePath'], // Updated field name
       createdAt: map['createdAt']?.toDate() ?? DateTime.now(),
       updatedAt: map['updatedAt']?.toDate() ?? DateTime.now(),
       isActive: map['isActive'] ?? true,
+      price: map['price'] ?? 0.0,
     );
   }
 
@@ -47,10 +50,11 @@ class EquipmentModel {
       'availableQuantity': availableQuantity,
       'category': category,
       'description': description,
-      'imageUrl': imageUrl,
+      'imagePath': imagePath, // Updated field name
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'isActive': isActive,
+      'price': price,
     };
   }
 
@@ -62,10 +66,11 @@ class EquipmentModel {
     int? availableQuantity,
     String? category,
     String? description,
-    String? imageUrl,
+    String? imagePath, // Updated parameter name
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isActive,
+    double? price,
   }) {
     return EquipmentModel(
       id: id ?? this.id,
@@ -74,10 +79,11 @@ class EquipmentModel {
       availableQuantity: availableQuantity ?? this.availableQuantity,
       category: category ?? this.category,
       description: description ?? this.description,
-      imageUrl: imageUrl ?? this.imageUrl,
+      imagePath: imagePath ?? this.imagePath, // Updated field
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isActive: isActive ?? this.isActive,
+      price: price ?? this.price,
     );
   }
 
@@ -111,18 +117,26 @@ class EquipmentModel {
   int get hashCode => id.hashCode;
 }
 
-// Equipment checkout tracking model
+
+// Equipment checkout tracking model - UPDATED with approval workflow fields
 class EquipmentCheckout {
   final String id;
   final String equipmentId;
   final String employeeId;
   final String employeeName;
   final int quantity;
-  final DateTime checkoutDate;
+  final DateTime? requestDate; // When the request was made
+  final DateTime? checkoutDate; // When approved and checked out
   final DateTime? returnDate;
   final String? occasionId;
-  final String status; // 'checked_out', 'returned', 'overdue'
+  final String status; // 'pending_approval', 'approved', 'rejected', 'checked_out', 'returned', 'overdue'
   final String? notes;
+  final double? price;
+  final String? requestId; // Group related requests together
+  final String? equipmentName; // For easier notification display
+  final String? approvedBy; // Admin who approved/rejected
+  final DateTime? approvalDate; // When approved/rejected
+  final String? rejectionReason; // If rejected, why
 
   EquipmentCheckout({
     required this.id,
@@ -130,11 +144,18 @@ class EquipmentCheckout {
     required this.employeeId,
     required this.employeeName,
     required this.quantity,
-    required this.checkoutDate,
+    this.requestDate,
+    this.checkoutDate,
     this.returnDate,
     this.occasionId,
     required this.status,
     this.notes,
+    this.price,
+    this.requestId,
+    this.equipmentName,
+    this.approvedBy,
+    this.approvalDate,
+    this.rejectionReason,
   });
 
   factory EquipmentCheckout.fromMap(Map<String, dynamic> map, String id) {
@@ -144,11 +165,18 @@ class EquipmentCheckout {
       employeeId: map['employeeId'] ?? '',
       employeeName: map['employeeName'] ?? '',
       quantity: map['quantity'] ?? 0,
-      checkoutDate: map['checkoutDate']?.toDate() ?? DateTime.now(),
+      requestDate: map['requestDate']?.toDate(),
+      checkoutDate: map['checkoutDate']?.toDate(),
       returnDate: map['returnDate']?.toDate(),
       occasionId: map['occasionId'],
-      status: map['status'] ?? 'checked_out',
+      status: map['status'] ?? 'pending_approval',
       notes: map['notes'],
+      price: map['price'] ?? 0.0,
+      requestId: map['requestId'],
+      equipmentName: map['equipmentName'],
+      approvedBy: map['approvedBy'],
+      approvalDate: map['approvalDate']?.toDate(),
+      rejectionReason: map['rejectionReason'],
     );
   }
 
@@ -158,11 +186,18 @@ class EquipmentCheckout {
       'employeeId': employeeId,
       'employeeName': employeeName,
       'quantity': quantity,
+      'requestDate': requestDate,
       'checkoutDate': checkoutDate,
       'returnDate': returnDate,
       'occasionId': occasionId,
       'status': status,
       'notes': notes,
+      'price': price,
+      'requestId': requestId,
+      'equipmentName': equipmentName,
+      'approvedBy': approvedBy,
+      'approvalDate': approvalDate,
+      'rejectionReason': rejectionReason,
     };
   }
 
@@ -172,11 +207,18 @@ class EquipmentCheckout {
     String? employeeId,
     String? employeeName,
     int? quantity,
+    DateTime? requestDate,
     DateTime? checkoutDate,
     DateTime? returnDate,
     String? occasionId,
     String? status,
     String? notes,
+    double? price,
+    String? requestId,
+    String? equipmentName,
+    String? approvedBy,
+    DateTime? approvalDate,
+    String? rejectionReason,
   }) {
     return EquipmentCheckout(
       id: id ?? this.id,
@@ -184,21 +226,52 @@ class EquipmentCheckout {
       employeeId: employeeId ?? this.employeeId,
       employeeName: employeeName ?? this.employeeName,
       quantity: quantity ?? this.quantity,
+      requestDate: requestDate ?? this.requestDate,
       checkoutDate: checkoutDate ?? this.checkoutDate,
       returnDate: returnDate ?? this.returnDate,
       occasionId: occasionId ?? this.occasionId,
       status: status ?? this.status,
       notes: notes ?? this.notes,
+      price: price ?? this.price,
+      requestId: requestId ?? this.requestId,
+      equipmentName: equipmentName ?? this.equipmentName,
+      approvedBy: approvedBy ?? this.approvedBy,
+      approvalDate: approvalDate ?? this.approvalDate,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
     );
   }
 
   // Check if checkout is overdue (more than 7 days without return)
   bool get isOverdue {
-    if (status == 'returned') return false;
-    final daysSinceCheckout = DateTime.now().difference(checkoutDate).inDays;
+    if (status == 'returned' || checkoutDate == null) return false;
+    final daysSinceCheckout = DateTime.now().difference(checkoutDate!).inDays;
     return daysSinceCheckout > 7;
   }
 
   // Get duration since checkout
-  Duration get checkoutDuration => DateTime.now().difference(checkoutDate);
+  Duration get checkoutDuration {
+    if (checkoutDate == null) return Duration.zero;
+    return DateTime.now().difference(checkoutDate!);
+  }
+
+  // Get duration since request
+  Duration get requestDuration {
+    if (requestDate == null) return Duration.zero;
+    return DateTime.now().difference(requestDate!);
+  }
+
+  // Check if request is pending
+  bool get isPending => status == 'pending_approval';
+
+  // Check if approved
+  bool get isApproved => ['approved', 'checked_out', 'returned'].contains(status);
+
+  // Check if rejected
+  bool get isRejected => status == 'rejected';
+
+  // Check if checked out
+  bool get isCheckedOut => status == 'checked_out';
+
+  // Check if returned
+  bool get isReturned => status == 'returned';
 }

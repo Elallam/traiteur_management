@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 
 import '../../models/article_model.dart';
 import '../../models/meal_model.dart';
+import '../../providers/category_provider.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
-import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
+import 'package:traiteur_management/generated/l10n/app_localizations.dart';
+
+import 'image_picker_widget.dart'; // Import localization
 
 class AddEditMealDialog extends StatefulWidget {
   final MealModel? meal;
@@ -25,7 +28,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
   final _preparationTimeController = TextEditingController();
   final _imageUrlController = TextEditingController();
 
-  String _selectedCategory = 'main';
+  String _selectedCategory = 'Autre';
   bool _isLoading = false;
   List<MealIngredient> _ingredients = [];
 
@@ -42,16 +45,22 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
       _sellingPriceController.text = widget.meal!.sellingPrice.toString();
       _servingsController.text = widget.meal!.servings.toString();
       _preparationTimeController.text = widget.meal!.preparationTime.toString();
-      _imageUrlController.text = widget.meal!.imageUrl ?? '';
+      _imageUrlController.text = widget.meal!.imagePath ?? '';
       _selectedCategory = widget.meal!.category;
       _ingredients = List.from(widget.meal!.ingredients);
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CategoryProvider>(context, listen: false).loadCategories();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final stockProvider = Provider.of<StockProvider>(context);
     final calculatedPrice = _calculateTotalCost();
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final mealsCategories = categoryProvider.getCategoriesByType('meal');
+
     final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
@@ -85,19 +94,39 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
                   decoration: InputDecoration(
-                    labelText: l10n.categoryRequired, // Localized label
+                    labelText: l10n.categoryRequired,
                     border: const OutlineInputBorder(),
                   ),
-                  items: _categories.map((category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(category.toUpperCase()),
-                    );
-                  }).toList(),
+                  items: [
+                    // Add a disabled default item
+                    DropdownMenuItem<String>(
+                      value: 'Autre',
+                      enabled: true,
+                      child: Text(
+                        l10n.other.toUpperCase(),
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    // Add actual categories
+                    ...mealsCategories.map((category) {
+                      return DropdownMenuItem(
+                        value: category.id,
+                        child: Text(category.name.toUpperCase()),
+                      );
+                    }).toList(),
+                  ],
                   onChanged: (value) {
-                    setState(() {
-                      _selectedCategory = value!;
-                    });
+                    if (value != null) {
+                      setState(() {
+                        _selectedCategory = value;
+                      });
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return l10n.validationSelectCategory;
+                    }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 16),
@@ -190,12 +219,16 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
                 const SizedBox(height: 16),
 
                 // Image URL Field
-                TextFormField(
-                  controller: _imageUrlController,
-                  decoration: InputDecoration(
-                    labelText: l10n.imageUrlOptional, // Localized label
-                    border: const OutlineInputBorder(),
-                  ),
+                ImagePickerWidget(
+                  initialImagePath: widget.meal?.imagePath,
+                  onImageSelected: (path) {
+                    setState(() {
+                      _imageUrlController.text = path ?? '';
+                    });
+                  },
+                  width: double.infinity,
+                  height: 150,
+                  placeholder: l10n.selectImageSource,
                 ),
                 const SizedBox(height: 16),
 
@@ -461,7 +494,7 @@ class _AddEditMealDialogState extends State<AddEditMealDialog> {
         category: _selectedCategory,
         servings: int.parse(_servingsController.text),
         preparationTime: int.parse(_preparationTimeController.text),
-        imageUrl: _imageUrlController.text.trim().isEmpty
+        imagePath: _imageUrlController.text.trim().isEmpty
             ? null
             : _imageUrlController.text.trim(),
         createdAt: widget.meal?.createdAt ?? DateTime.now(),

@@ -313,7 +313,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get to => 'إلى';
 
   @override
-  String get total => 'المجموع';
+  String get total => 'الإجمالي';
 
   @override
   String get subtotal => 'المجموع الفرعي';
@@ -432,7 +432,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get netProfit => 'صافي الربح';
 
   @override
-  String get profitMargin => 'هامش الربح';
+  String get profitMargin => 'هامش الربح (%)';
 
   @override
   String get completedEvents => 'الأحداث المكتملة';
@@ -460,6 +460,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get exportInfo => 'تصدير المعلومات';
+
+  @override
+  String get remove => 'إزالة';
+
+  @override
+  String get noEquipmentAvailable => 'لا توجد معدات متاحة';
+
+  @override
+  String get items => 'العناصر';
 
   @override
   String get quickActions => 'إجراءات سريعة';
@@ -731,7 +740,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exportReport => 'تصدير التقرير';
 
   @override
-  String get articles => 'المقالات';
+  String get articles => 'المواد';
 
   @override
   String get searchStockItems => 'البحث في عناصر المخزون...';
@@ -2000,4 +2009,427 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get processing => 'جاري المعالجة...';
+
+  @override
+  String get categoryManagement => 'إدارة التصنيفات';
+
+  @override
+  String get addCategory => 'إضافة تصنيف';
+
+  @override
+  String get editCategory => 'تعديل التصنيف';
+
+  @override
+  String get categoryName => 'اسم التصنيف';
+
+  @override
+  String get icon => 'أيقونة';
+
+  @override
+  String get optional => 'اختياري';
+
+  @override
+  String get validationEnterCategoryName => 'الرجاء إدخال اسم التصنيف';
+
+  @override
+  String get deleteCategory => 'حذف التصنيف';
+
+  @override
+  String confirmDeleteCategory(Object category) {
+    return 'هل أنت متأكد من رغبتك في حذف $category؟';
+  }
+
+  @override
+  String get validationSelectCategory => 'Please select a category';
+
+  @override
+  String get selectCategory => 'إختر التصنيف';
+
+  @override
+  String get uncategorized => 'غير مصنف';
+
+  @override
+  String get financialTabTitle => 'المالية';
+
+  @override
+  String get mealsTotal => 'إجمالي الوجبات';
+
+  @override
+  String get equipmentDepreciation => 'استهلاك المعدات (%)';
+
+  @override
+  String get transportCost => 'تكلفة النقل';
+
+  @override
+  String get costBreakdown => 'تفصيل التكاليف';
+
+  @override
+  String get dhCurrency => 'درهم';
+
+  @override
+  String get sortBy => 'فرز حسب';
+
+  @override
+  String get mealsCost => 'تكلفة الوجبات';
+
+  @override
+  String get equipmentRental => 'تأجير المعدات';
+
+  @override
+  String get totalBaseCost => 'التكلفة الأساسية الإجمالية';
+
+  @override
+  String get equipmentRentalPricing => 'تسعير تأجير المعدات';
+
+  @override
+  String get totalEquipmentRentalPrice => 'إجمالي سعر تأجير المعدات';
+
+  @override
+  String get enterEquipmentRentalPrice => 'أدخل سعر تأجير المعدات';
+
+  @override
+  String get autoCalculate => 'حساب تلقائي';
+
+  @override
+  String get equipmentBreakdown => 'تفصيل المعدات';
+
+  @override
+  String get transportConfiguration => 'تهيئة النقل';
+
+  @override
+  String get transportDeliveryCost => 'تكلفة النقل/التوصيل';
+
+  @override
+  String get enterTransportCost => 'أدخل تكلفة النقل';
+
+  @override
+  String get profitMarginConfiguration => 'تهيئة هامش الربح';
+
+  @override
+  String get profitMarginPercentage => 'نسبة هامش الربح';
+
+  @override
+  String get enterProfitMargin => 'أدخل هامش الربح';
+
+  @override
+  String get finalPricingSummary => 'ملخص التسعير النهائي';
+
+  @override
+  String get baseCost => 'التكلفة الأساسية';
+
+  @override
+  String get profitAmount => 'مبلغ الربح';
+
+  @override
+  String get finalTotalPrice => 'السعر الإجمالي النهائي';
+
+  @override
+  String get estimatedPricePerGuest => 'السعر المقدر لكل ضيف';
+
+  @override
+  String get searchMeals => 'البحث عن الوجبات';
+
+  @override
+  String get checkoutRequestFailed => 'فشل طلب السحب';
+
+  @override
+  String get requestSubmitted => 'تم تقديم الطلب';
+
+  @override
+  String get checkoutRequestSubmittedSuccessfully => 'تم تقديم طلب السحب بنجاح';
+
+  @override
+  String get adminWillReviewRequest => 'سيراجع المسؤول طلبك قريبًا';
+
+  @override
+  String get submittingRequest => 'جارٍ تقديم الطلب...';
+
+  @override
+  String get submitRequest => 'تقديم الطلب';
+
+  @override
+  String get equipmentRequests => 'طلبات المعدات';
+
+  @override
+  String get pendingApproval => 'في انتظار الموافقة';
+
+  @override
+  String get noPendingRequests => 'لا توجد طلبات معلقة';
+
+  @override
+  String get allRequestsProcessed => 'تمت معالجة جميع الطلبات';
+
+  @override
+  String get reviewRequests => 'مراجعة الطلبات';
+
+  @override
+  String get viewAllRequests => 'عرض جميع الطلبات';
+
+  @override
+  String daysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'قبل $count أيام',
+      one: 'قبل يوم واحد',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'قبل $count ساعات',
+      one: 'قبل ساعة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String minutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'قبل $count دقائق',
+      one: 'قبل دقيقة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String requestSummary(int itemCount, int totalQuantity) {
+    String _temp0 = intl.Intl.pluralLogic(
+      itemCount,
+      locale: localeName,
+      other: '$itemCount عناصر',
+      one: '1 عنصر',
+    );
+    return '$_temp0 • $totalQuantity إجمالي';
+  }
+
+  @override
+  String andMoreItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count عناصر أخرى',
+      one: 'عنصر واحد آخر',
+    );
+    return 'و$_temp0';
+  }
+
+  @override
+  String andMoreRequests(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count طلبات أخرى',
+      one: 'طلب واحد آخر',
+    );
+    return '+$_temp0';
+  }
+
+  @override
+  String get addTransaction => 'إضافة معاملة';
+
+  @override
+  String get transactionType => 'نوع المعاملة';
+
+  @override
+  String get deposit => 'إيداع';
+
+  @override
+  String get withdraw => 'سحب';
+
+  @override
+  String get operationName => 'اسم العملية';
+
+  @override
+  String get enterOperationName => 'أدخل اسم العملية';
+
+  @override
+  String get operationNameRequired => 'اسم العملية مطلوب';
+
+  @override
+  String get operationNameMinLength =>
+      'يجب أن يكون اسم العملية على الأقل حرفين';
+
+  @override
+  String get amount => 'المبلغ';
+
+  @override
+  String get enterAmount => 'أدخل المبلغ';
+
+  @override
+  String get amountRequired => 'المبلغ مطلوب';
+
+  @override
+  String get invalidAmountFormat => 'تنسيق مبلغ غير صالح';
+
+  @override
+  String get amountMustBePositive => 'يجب أن يكون المبلغ موجبًا';
+
+  @override
+  String get transactionDate => 'تاريخ المعاملة';
+
+  @override
+  String get enterDescription => 'أدخل وصفًا';
+
+  @override
+  String get depositAddedSuccess => 'تمت إضافة الإيداع بنجاح';
+
+  @override
+  String get withdrawalAddedSuccess => 'تمت إضافة السحب بنجاح';
+
+  @override
+  String addTransactionFailed(Object error) {
+    return 'فشل إضافة المعاملة: $error';
+  }
+
+  @override
+  String get transactionDetails => 'تفاصيل المعاملة';
+
+  @override
+  String get editTransaction => 'تعديل المعاملة';
+
+  @override
+  String get transactionUpdatedSuccess => 'تم تحديث المعاملة بنجاح';
+
+  @override
+  String updateTransactionFailed(Object error) {
+    return 'فشل تحديث المعاملة: $error';
+  }
+
+  @override
+  String get deleteTransaction => 'حذف المعاملة';
+
+  @override
+  String get cashRegister => 'الصندق';
+
+  @override
+  String get transactions => 'المعاملات';
+
+  @override
+  String get loadingCashData => 'جاري تحميل بيانات السجل النقدي...';
+
+  @override
+  String get realtimeBalance => 'الرصيد الفعلي';
+
+  @override
+  String get noTransactionsYet => 'لا توجد معاملات حتى الآن';
+
+  @override
+  String get totalDeposits => 'إجمالي الإيداعات';
+
+  @override
+  String transactionsCount(Object count) {
+    return '$count معاملات';
+  }
+
+  @override
+  String get totalWithdrawals => 'إجمالي السحوبات';
+
+  @override
+  String get recentTransactions => 'المعاملات الحديثة';
+
+  @override
+  String get noTransactions => 'لا توجد معاملات';
+
+  @override
+  String get noTransactionsFound =>
+      'لم يتم العثور على معاملات. أضف معاملتك الأولى!';
+
+  @override
+  String get noMatchingTransactions =>
+      'لا توجد معاملات تطابق عوامل التصفية المحددة.';
+
+  @override
+  String get type => 'النوع';
+
+  @override
+  String get allTypes => 'جميع الأنواع';
+
+  @override
+  String get deposits => 'الإيداعات';
+
+  @override
+  String get withdrawals => 'السحوبات';
+
+  @override
+  String get period => 'الفترة';
+
+  @override
+  String get allTime => 'طوال الوقت';
+
+  @override
+  String customRangeDisplay(Object endDate, Object startDate) {
+    return 'النطاق المخصص: $startDate - $endDate';
+  }
+
+  @override
+  String get cashFlowAnalytics => 'تحليلات التدفق النقدي';
+
+  @override
+  String get transactionCount => 'عدد المعاملات';
+
+  @override
+  String get averageDeposit => 'متوسط الإيداع';
+
+  @override
+  String get averageWithdrawal => 'متوسط السحب';
+
+  @override
+  String get netFlow => 'صافي التدفق';
+
+  @override
+  String get chartComingSoon => 'سيتم تنفيذ الرسم البياني قريبًا';
+
+  @override
+  String confirmDeleteMessage(Object transactionName) {
+    return 'هل أنت متأكد أنك تريد حذف هذه المعاملة: \"$transactionName\"؟';
+  }
+
+  @override
+  String get transactionDeletedSuccess => 'تم حذف المعاملة بنجاح';
+
+  @override
+  String deleteTransactionFailed(Object error) {
+    return 'فشل حذف المعاملة: $error';
+  }
+
+  @override
+  String get addedBy => 'أضيف بواسطة';
+
+  @override
+  String get transactionOptions => 'خيارات المعاملة';
+
+  @override
+  String get selectImageSource => 'اختر مصدر الصورة';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get gallery => 'المعرض';
+
+  @override
+  String get addPhoto => 'إضافة صورة';
+
+  @override
+  String get tapToAddPhoto => 'اضغط لإضافة صورة';
+
+  @override
+  String get permissionRequired => 'الإذن مطلوب';
+
+  @override
+  String get permissionRequiredMessage =>
+      'يحتاج هذا التطبيق إلى أذونات الكاميرا ومكتبة الصور لإضافة الصور. يرجى منح الأذونات في الإعدادات.';
+
+  @override
+  String get openSettings => 'فتح الإعدادات';
+
+  @override
+  String get imagePickerError => 'فشل في اختيار الصورة';
 }

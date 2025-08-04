@@ -417,11 +417,11 @@ class _OccasionDetailsScreenState extends State<OccasionDetailsScreen>
                       ),
                     ),
                     Text(
-                      '${_occasion.profitPercentage.toStringAsFixed(1)}%',
+                      '${_occasion.profit.toStringAsFixed(1)}%',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: _occasion.profitPercentage >= 0 ? AppColors
+                        color: _occasion.profit >= 0 ? AppColors
                             .success : AppColors.error,
                       ),
                     ),

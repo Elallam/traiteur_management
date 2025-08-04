@@ -313,7 +313,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get to => 'To';
 
   @override
-  String get total => 'Total';
+  String get total => 'TOTAL';
 
   @override
   String get subtotal => 'Subtotal';
@@ -432,7 +432,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get netProfit => 'Net Profit';
 
   @override
-  String get profitMargin => 'Profit Margin';
+  String get profitMargin => 'Profit Margin (%)';
 
   @override
   String get completedEvents => 'Completed Events';
@@ -460,6 +460,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exportInfo => 'Export Info';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get noEquipmentAvailable => 'No Equipment Available';
+
+  @override
+  String get items => 'Items';
 
   @override
   String get quickActions => 'Quick Actions';
@@ -2004,4 +2013,428 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get processing => 'Processing...';
+
+  @override
+  String get categoryManagement => 'Category Management';
+
+  @override
+  String get addCategory => 'Add Category';
+
+  @override
+  String get editCategory => 'Edit Category';
+
+  @override
+  String get categoryName => 'Category Name';
+
+  @override
+  String get icon => 'Icon';
+
+  @override
+  String get optional => 'optional';
+
+  @override
+  String get validationEnterCategoryName => 'Please enter a category name';
+
+  @override
+  String get deleteCategory => 'Delete Category';
+
+  @override
+  String confirmDeleteCategory(Object category) {
+    return 'Are you sure you want to delete $category?';
+  }
+
+  @override
+  String get validationSelectCategory => 'Please select a category';
+
+  @override
+  String get selectCategory => 'Select Category';
+
+  @override
+  String get uncategorized => 'Uncategorized';
+
+  @override
+  String get financialTabTitle => 'Financial';
+
+  @override
+  String get mealsTotal => 'Meals Total';
+
+  @override
+  String get equipmentDepreciation => 'Equipment Depreciation (%)';
+
+  @override
+  String get transportCost => 'Transport Cost';
+
+  @override
+  String get costBreakdown => 'Cost Breakdown';
+
+  @override
+  String get dhCurrency => 'DH';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get mealsCost => 'Meals Cost';
+
+  @override
+  String get equipmentRental => 'Equipment Rental';
+
+  @override
+  String get totalBaseCost => 'Total Base Cost';
+
+  @override
+  String get equipmentRentalPricing => 'Equipment Rental Pricing';
+
+  @override
+  String get totalEquipmentRentalPrice => 'Total Equipment Rental Price';
+
+  @override
+  String get enterEquipmentRentalPrice => 'Enter Equipment Rental Price';
+
+  @override
+  String get autoCalculate => 'Auto Calculate';
+
+  @override
+  String get equipmentBreakdown => 'Equipment Breakdown';
+
+  @override
+  String get transportConfiguration => 'Transport Configuration';
+
+  @override
+  String get transportDeliveryCost => 'Transport/Delivery Cost';
+
+  @override
+  String get enterTransportCost => 'Enter Transport Cost';
+
+  @override
+  String get profitMarginConfiguration => 'Profit Margin Configuration';
+
+  @override
+  String get profitMarginPercentage => 'Profit Margin Percentage';
+
+  @override
+  String get enterProfitMargin => 'Enter Profit Margin';
+
+  @override
+  String get finalPricingSummary => 'Final Pricing Summary';
+
+  @override
+  String get baseCost => 'Base Cost';
+
+  @override
+  String get profitAmount => 'Profit Amount';
+
+  @override
+  String get finalTotalPrice => 'Final Total Price';
+
+  @override
+  String get estimatedPricePerGuest => 'Estimated Price per Guest';
+
+  @override
+  String get searchMeals => 'Search Meals';
+
+  @override
+  String get checkoutRequestFailed => 'Checkout request failed';
+
+  @override
+  String get requestSubmitted => 'Request submitted';
+
+  @override
+  String get checkoutRequestSubmittedSuccessfully =>
+      'Checkout request submitted successfully';
+
+  @override
+  String get adminWillReviewRequest => 'Admin will review your request shortly';
+
+  @override
+  String get submittingRequest => 'Submitting request...';
+
+  @override
+  String get submitRequest => 'Submit Request';
+
+  @override
+  String get equipmentRequests => 'Equipment Requests';
+
+  @override
+  String get pendingApproval => 'Pending Approval';
+
+  @override
+  String get noPendingRequests => 'No Pending Requests';
+
+  @override
+  String get allRequestsProcessed => 'All requests have been processed';
+
+  @override
+  String get reviewRequests => 'Review Requests';
+
+  @override
+  String get viewAllRequests => 'View All Requests';
+
+  @override
+  String daysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String minutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes ago',
+      one: '1 minute ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String requestSummary(int itemCount, int totalQuantity) {
+    String _temp0 = intl.Intl.pluralLogic(
+      itemCount,
+      locale: localeName,
+      other: '$itemCount items',
+      one: '1 item',
+    );
+    return '$_temp0 • $totalQuantity total';
+  }
+
+  @override
+  String andMoreItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more items',
+      one: '1 more item',
+    );
+    return 'and $_temp0';
+  }
+
+  @override
+  String andMoreRequests(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count more requests',
+      one: '1 more request',
+    );
+    return '+$_temp0';
+  }
+
+  @override
+  String get addTransaction => 'Add Transaction';
+
+  @override
+  String get transactionType => 'Transaction Type';
+
+  @override
+  String get deposit => 'Deposit';
+
+  @override
+  String get withdraw => 'Withdraw';
+
+  @override
+  String get operationName => 'Operation Name';
+
+  @override
+  String get enterOperationName => 'Enter operation name';
+
+  @override
+  String get operationNameRequired => 'Operation name is required';
+
+  @override
+  String get operationNameMinLength =>
+      'Operation name must be at least 2 characters';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get enterAmount => 'Enter amount';
+
+  @override
+  String get amountRequired => 'Amount is required';
+
+  @override
+  String get invalidAmountFormat => 'Invalid amount format';
+
+  @override
+  String get amountMustBePositive => 'Amount must be positive';
+
+  @override
+  String get transactionDate => 'Transaction Date';
+
+  @override
+  String get enterDescription => 'Enter description';
+
+  @override
+  String get depositAddedSuccess => 'Deposit added successfully';
+
+  @override
+  String get withdrawalAddedSuccess => 'Withdrawal added successfully';
+
+  @override
+  String addTransactionFailed(Object error) {
+    return 'Failed to add transaction: $error';
+  }
+
+  @override
+  String get transactionDetails => 'Transaction Details';
+
+  @override
+  String get editTransaction => 'Edit Transaction';
+
+  @override
+  String get transactionUpdatedSuccess => 'Transaction updated successfully';
+
+  @override
+  String updateTransactionFailed(Object error) {
+    return 'Failed to update transaction: $error';
+  }
+
+  @override
+  String get deleteTransaction => 'Delete Transaction';
+
+  @override
+  String get cashRegister => 'Cash Register';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get loadingCashData => 'Loading cash register data...';
+
+  @override
+  String get realtimeBalance => 'Real-time Balance';
+
+  @override
+  String get noTransactionsYet => 'No transactions yet';
+
+  @override
+  String get totalDeposits => 'Total Deposits';
+
+  @override
+  String transactionsCount(Object count) {
+    return '$count transactions';
+  }
+
+  @override
+  String get totalWithdrawals => 'Total Withdrawals';
+
+  @override
+  String get recentTransactions => 'Recent Transactions';
+
+  @override
+  String get noTransactions => 'No Transactions';
+
+  @override
+  String get noTransactionsFound =>
+      'No transactions found. Add your first transaction!';
+
+  @override
+  String get noMatchingTransactions =>
+      'No transactions match the selected filters.';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get allTypes => 'All Types';
+
+  @override
+  String get deposits => 'Deposits';
+
+  @override
+  String get withdrawals => 'Withdrawals';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get allTime => 'All Time';
+
+  @override
+  String customRangeDisplay(Object endDate, Object startDate) {
+    return 'Custom Range: $startDate - $endDate';
+  }
+
+  @override
+  String get cashFlowAnalytics => 'Cash Flow Analytics';
+
+  @override
+  String get transactionCount => 'Transaction Count';
+
+  @override
+  String get averageDeposit => 'Average Deposit';
+
+  @override
+  String get averageWithdrawal => 'Average Withdrawal';
+
+  @override
+  String get netFlow => 'Net Flow';
+
+  @override
+  String get chartComingSoon => 'Chart implementation coming soon';
+
+  @override
+  String confirmDeleteMessage(Object transactionName) {
+    return 'Are you sure you want to delete this transaction: \"$transactionName\"?';
+  }
+
+  @override
+  String get transactionDeletedSuccess => 'Transaction deleted successfully';
+
+  @override
+  String deleteTransactionFailed(Object error) {
+    return 'Failed to delete transaction: $error';
+  }
+
+  @override
+  String get addedBy => 'Added by';
+
+  @override
+  String get transactionOptions => 'Transaction Options';
+
+  @override
+  String get selectImageSource => 'Select Image Source';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get addPhoto => 'Add Photo';
+
+  @override
+  String get tapToAddPhoto => 'Tap to add photo';
+
+  @override
+  String get permissionRequired => 'Permission Required';
+
+  @override
+  String get permissionRequiredMessage =>
+      'This app needs camera and photo library permissions to add images. Please grant permissions in settings.';
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
+  String get imagePickerError => 'Failed to pick image';
 }

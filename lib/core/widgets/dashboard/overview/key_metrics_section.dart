@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/core/utils/helpers.dart';
 import '../../../../generated/l10n/app_localizations.dart';
 import '../../../../providers/occasion_provider.dart';
 import '../../../../providers/stock_provider.dart';
@@ -34,7 +36,7 @@ class KeyMetricsSection extends StatelessWidget {
                 Expanded(
                   child: MetricCard(
                     title: l10n.totalRevenue,
-                    value: '\$${occasionStats['totalRevenue'].toStringAsFixed(0)}',
+                    value: Helpers.formatMAD(occasionStats['totalRevenue'],compact:  true),
                     icon: Icons.attach_money,
                     color: AppColors.success,
                     subtitle: l10n.thisMonth,
@@ -71,7 +73,7 @@ class KeyMetricsSection extends StatelessWidget {
                 Expanded(
                   child: MetricCard(
                     title: l10n.stockValue,
-                    value: '\$${stockSummary['totalStockValue'].toStringAsFixed(0)}',
+                    value: Helpers.formatMAD(stockSummary['totalStockValue'], compact: true),
                     icon: Icons.assessment,
                     color: AppColors.warning,
                     subtitle: '${stockSummary['lowStockArticles']} ${l10n.lowStock}',

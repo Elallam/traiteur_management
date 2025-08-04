@@ -709,7 +709,7 @@ abstract class AppLocalizations {
   /// No description provided for @total.
   ///
   /// In en, this message translates to:
-  /// **'Total'**
+  /// **'TOTAL'**
   String get total;
 
   /// No description provided for @subtotal.
@@ -943,7 +943,7 @@ abstract class AppLocalizations {
   /// No description provided for @profitMargin.
   ///
   /// In en, this message translates to:
-  /// **'Profit Margin'**
+  /// **'Profit Margin (%)'**
   String get profitMargin;
 
   /// No description provided for @completedEvents.
@@ -999,6 +999,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export Info'**
   String get exportInfo;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @noEquipmentAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No Equipment Available'**
+  String get noEquipmentAvailable;
+
+  /// No description provided for @items.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get items;
 
   /// No description provided for @quickActions.
   ///
@@ -3819,6 +3837,720 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Processing...'**
   String get processing;
+
+  /// No description provided for @categoryManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Management'**
+  String get categoryManagement;
+
+  /// No description provided for @addCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Category'**
+  String get addCategory;
+
+  /// No description provided for @editCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Category'**
+  String get editCategory;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Name'**
+  String get categoryName;
+
+  /// No description provided for @icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get icon;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'optional'**
+  String get optional;
+
+  /// No description provided for @validationEnterCategoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a category name'**
+  String get validationEnterCategoryName;
+
+  /// No description provided for @deleteCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Category'**
+  String get deleteCategory;
+
+  /// No description provided for @confirmDeleteCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {category}?'**
+  String confirmDeleteCategory(Object category);
+
+  /// No description provided for @validationSelectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category'**
+  String get validationSelectCategory;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Category'**
+  String get selectCategory;
+
+  /// No description provided for @uncategorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Uncategorized'**
+  String get uncategorized;
+
+  /// No description provided for @financialTabTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial'**
+  String get financialTabTitle;
+
+  /// No description provided for @mealsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Meals Total'**
+  String get mealsTotal;
+
+  /// No description provided for @equipmentDepreciation.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment Depreciation (%)'**
+  String get equipmentDepreciation;
+
+  /// No description provided for @transportCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport Cost'**
+  String get transportCost;
+
+  /// No description provided for @costBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Breakdown'**
+  String get costBreakdown;
+
+  /// No description provided for @dhCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'DH'**
+  String get dhCurrency;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @mealsCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Meals Cost'**
+  String get mealsCost;
+
+  /// No description provided for @equipmentRental.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment Rental'**
+  String get equipmentRental;
+
+  /// No description provided for @totalBaseCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Base Cost'**
+  String get totalBaseCost;
+
+  /// No description provided for @equipmentRentalPricing.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment Rental Pricing'**
+  String get equipmentRentalPricing;
+
+  /// No description provided for @totalEquipmentRentalPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Equipment Rental Price'**
+  String get totalEquipmentRentalPrice;
+
+  /// No description provided for @enterEquipmentRentalPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Equipment Rental Price'**
+  String get enterEquipmentRentalPrice;
+
+  /// No description provided for @autoCalculate.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Calculate'**
+  String get autoCalculate;
+
+  /// No description provided for @equipmentBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment Breakdown'**
+  String get equipmentBreakdown;
+
+  /// No description provided for @transportConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport Configuration'**
+  String get transportConfiguration;
+
+  /// No description provided for @transportDeliveryCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport/Delivery Cost'**
+  String get transportDeliveryCost;
+
+  /// No description provided for @enterTransportCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Transport Cost'**
+  String get enterTransportCost;
+
+  /// No description provided for @profitMarginConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit Margin Configuration'**
+  String get profitMarginConfiguration;
+
+  /// No description provided for @profitMarginPercentage.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit Margin Percentage'**
+  String get profitMarginPercentage;
+
+  /// No description provided for @enterProfitMargin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Profit Margin'**
+  String get enterProfitMargin;
+
+  /// No description provided for @finalPricingSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Final Pricing Summary'**
+  String get finalPricingSummary;
+
+  /// No description provided for @baseCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Cost'**
+  String get baseCost;
+
+  /// No description provided for @profitAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit Amount'**
+  String get profitAmount;
+
+  /// No description provided for @finalTotalPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Final Total Price'**
+  String get finalTotalPrice;
+
+  /// No description provided for @estimatedPricePerGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Price per Guest'**
+  String get estimatedPricePerGuest;
+
+  /// No description provided for @searchMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Meals'**
+  String get searchMeals;
+
+  /// Error message when checkout request fails
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout request failed'**
+  String get checkoutRequestFailed;
+
+  /// Title for successful request submission
+  ///
+  /// In en, this message translates to:
+  /// **'Request submitted'**
+  String get requestSubmitted;
+
+  /// Message shown when checkout request is successful
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout request submitted successfully'**
+  String get checkoutRequestSubmittedSuccessfully;
+
+  /// Message informing user that admin will review request
+  ///
+  /// In en, this message translates to:
+  /// **'Admin will review your request shortly'**
+  String get adminWillReviewRequest;
+
+  /// Loading text when submitting request
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting request...'**
+  String get submittingRequest;
+
+  /// Text for submit request button
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Request'**
+  String get submitRequest;
+
+  /// No description provided for @equipmentRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment Requests'**
+  String get equipmentRequests;
+
+  /// No description provided for @pendingApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Approval'**
+  String get pendingApproval;
+
+  /// No description provided for @noPendingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No Pending Requests'**
+  String get noPendingRequests;
+
+  /// No description provided for @allRequestsProcessed.
+  ///
+  /// In en, this message translates to:
+  /// **'All requests have been processed'**
+  String get allRequestsProcessed;
+
+  /// No description provided for @reviewRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Requests'**
+  String get reviewRequests;
+
+  /// No description provided for @viewAllRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'View All Requests'**
+  String get viewAllRequests;
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String daysAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String hoursAgo(int count);
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute ago} other{{count} minutes ago}}'**
+  String minutesAgo(int count);
+
+  /// No description provided for @requestSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{itemCount, plural, =1{1 item} other{{itemCount} items}} • {totalQuantity} total'**
+  String requestSummary(int itemCount, int totalQuantity);
+
+  /// No description provided for @andMoreItems.
+  ///
+  /// In en, this message translates to:
+  /// **'and {count, plural, =1{1 more item} other{{count} more items}}'**
+  String andMoreItems(int count);
+
+  /// No description provided for @andMoreRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count, plural, =1{1 more request} other{{count} more requests}}'**
+  String andMoreRequests(int count);
+
+  /// No description provided for @addTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Transaction'**
+  String get addTransaction;
+
+  /// No description provided for @transactionType.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Type'**
+  String get transactionType;
+
+  /// No description provided for @deposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit'**
+  String get deposit;
+
+  /// No description provided for @withdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get withdraw;
+
+  /// No description provided for @operationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation Name'**
+  String get operationName;
+
+  /// No description provided for @enterOperationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter operation name'**
+  String get enterOperationName;
+
+  /// No description provided for @operationNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation name is required'**
+  String get operationNameRequired;
+
+  /// No description provided for @operationNameMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation name must be at least 2 characters'**
+  String get operationNameMinLength;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @enterAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter amount'**
+  String get enterAmount;
+
+  /// No description provided for @amountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount is required'**
+  String get amountRequired;
+
+  /// No description provided for @invalidAmountFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid amount format'**
+  String get invalidAmountFormat;
+
+  /// No description provided for @amountMustBePositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount must be positive'**
+  String get amountMustBePositive;
+
+  /// No description provided for @transactionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Date'**
+  String get transactionDate;
+
+  /// No description provided for @enterDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter description'**
+  String get enterDescription;
+
+  /// No description provided for @depositAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit added successfully'**
+  String get depositAddedSuccess;
+
+  /// No description provided for @withdrawalAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal added successfully'**
+  String get withdrawalAddedSuccess;
+
+  /// No description provided for @addTransactionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add transaction: {error}'**
+  String addTransactionFailed(Object error);
+
+  /// No description provided for @transactionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Details'**
+  String get transactionDetails;
+
+  /// No description provided for @editTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Transaction'**
+  String get editTransaction;
+
+  /// No description provided for @transactionUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction updated successfully'**
+  String get transactionUpdatedSuccess;
+
+  /// No description provided for @updateTransactionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update transaction: {error}'**
+  String updateTransactionFailed(Object error);
+
+  /// No description provided for @deleteTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Transaction'**
+  String get deleteTransaction;
+
+  /// No description provided for @cashRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Register'**
+  String get cashRegister;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @loadingCashData.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading cash register data...'**
+  String get loadingCashData;
+
+  /// No description provided for @realtimeBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time Balance'**
+  String get realtimeBalance;
+
+  /// No description provided for @noTransactionsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions yet'**
+  String get noTransactionsYet;
+
+  /// No description provided for @totalDeposits.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Deposits'**
+  String get totalDeposits;
+
+  /// No description provided for @transactionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} transactions'**
+  String transactionsCount(Object count);
+
+  /// No description provided for @totalWithdrawals.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Withdrawals'**
+  String get totalWithdrawals;
+
+  /// No description provided for @recentTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Transactions'**
+  String get recentTransactions;
+
+  /// No description provided for @noTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No Transactions'**
+  String get noTransactions;
+
+  /// No description provided for @noTransactionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found. Add your first transaction!'**
+  String get noTransactionsFound;
+
+  /// No description provided for @noMatchingTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions match the selected filters.'**
+  String get noMatchingTransactions;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @allTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'All Types'**
+  String get allTypes;
+
+  /// No description provided for @deposits.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposits'**
+  String get deposits;
+
+  /// No description provided for @withdrawals.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawals'**
+  String get withdrawals;
+
+  /// No description provided for @period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get period;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get allTime;
+
+  /// No description provided for @customRangeDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Range: {startDate} - {endDate}'**
+  String customRangeDisplay(Object endDate, Object startDate);
+
+  /// No description provided for @cashFlowAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Flow Analytics'**
+  String get cashFlowAnalytics;
+
+  /// No description provided for @transactionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Count'**
+  String get transactionCount;
+
+  /// No description provided for @averageDeposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Deposit'**
+  String get averageDeposit;
+
+  /// No description provided for @averageWithdrawal.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Withdrawal'**
+  String get averageWithdrawal;
+
+  /// No description provided for @netFlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Net Flow'**
+  String get netFlow;
+
+  /// No description provided for @chartComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Chart implementation coming soon'**
+  String get chartComingSoon;
+
+  /// No description provided for @confirmDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this transaction: \"{transactionName}\"?'**
+  String confirmDeleteMessage(Object transactionName);
+
+  /// No description provided for @transactionDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction deleted successfully'**
+  String get transactionDeletedSuccess;
+
+  /// No description provided for @deleteTransactionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete transaction: {error}'**
+  String deleteTransactionFailed(Object error);
+
+  /// No description provided for @addedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by'**
+  String get addedBy;
+
+  /// No description provided for @transactionOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Options'**
+  String get transactionOptions;
+
+  /// No description provided for @selectImageSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image Source'**
+  String get selectImageSource;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Photo'**
+  String get addPhoto;
+
+  /// No description provided for @tapToAddPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add photo'**
+  String get tapToAddPhoto;
+
+  /// No description provided for @permissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission Required'**
+  String get permissionRequired;
+
+  /// No description provided for @permissionRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This app needs camera and photo library permissions to add images. Please grant permissions in settings.'**
+  String get permissionRequiredMessage;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
+
+  /// No description provided for @imagePickerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick image'**
+  String get imagePickerError;
 }
 
 class _AppLocalizationsDelegate

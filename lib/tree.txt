@@ -1,0 +1,130 @@
+lib
+¦   app.dart
+¦   firebase_options.dart
+¦   main.dart
+¦   tree.txt
+¦   
++---core
+¦   ¦   form_validators.dart
+¦   ¦   
+¦   +---constants
+¦   ¦       app_colors.dart
+¦   ¦       app_dimensions.dart
+¦   ¦       app_strings.dart
+¦   ¦       
+¦   +---error
+¦   ¦       app_error.dart
+¦   ¦       error_handler.dart
+¦   ¦       
+¦   +---theme
+¦   ¦       app_theme.dart
+¦   ¦       
+¦   +---utils
+¦   ¦       date_utils.dart
+¦   ¦       helpers.dart
+¦   ¦       i18n_utils.dart
+¦   ¦       optimized_future_builder.dart
+¦   ¦       optimized_tab_bar.dart
+¦   ¦       performance_utils.dart
+¦   ¦       smart_refresher.dart
+¦   ¦       validators.dart
+¦   ¦       
+¦   +---widgets
+¦       ¦   add_article_dialog.dart
+¦       ¦   add_edit_equipment_dialog.dart
+¦       ¦   add_edit_meal_dialog.dart
+¦       ¦   article_details_dialog.dart
+¦       ¦   custom_button.dart
+¦       ¦   custom_text_field.dart
+¦       ¦   equipment_availability_widget.dart
+¦       ¦   equipment_booking_calendar_widget.dart
+¦       ¦   equipment_details_dialog.dart
+¦       ¦   error_boundary.dart
+¦       ¦   error_widget.dart
+¦       ¦   language_selector.dart
+¦       ¦   loading_widget.dart
+¦       ¦   meal_details_dialog.dart
+¦       ¦   
+¦       +---dashboard
+¦           ¦   dashboard_drawer.dart
+¦           ¦   
+¦           +---analytics
+¦           ¦       revenue_chart_widget.dart
+¦           ¦       
+¦           +---common
+¦           ¦       equipment_utilization_widget.dart
+¦           ¦       metric_card.dart
+¦           ¦       popular_items_widget.dart
+¦           ¦       quick_actions_bottom_sheet.dart
+¦           ¦       section_header.dart
+¦           ¦       
+¦           +---overview
+¦           ¦       alerts_section.dart
+¦           ¦       key_metrics_section.dart
+¦           ¦       
+¦           +---reports
+¦                   equipment_report_widget.dart
+¦                   export_section_widget.dart
+¦                   financial_report_widget.dart
+¦                   report_filters_widget.dart
+¦                   
++---generated
+¦   +---l10n
+¦           app_localizations.dart
+¦           app_localizations_ar.dart
+¦           app_localizations_en.dart
+¦           app_localizations_fr.dart
+¦           
++---l10n
+¦       app_ar.arb
+¦       app_en.arb
+¦       app_fr.arb
+¦       
++---models
+¦       article_model.dart
+¦       equipment_model.dart
+¦       meal_model.dart
+¦       mock_usercredential.dart
+¦       occasion_model.dart
+¦       user_model.dart
+¦       
++---providers
+¦       auth_provider.dart
+¦       employee_provider.dart
+¦       equipment_booking_provider.dart
+¦       locale_provider.dart
+¦       occasion_provider.dart
+¦       stock_provider.dart
+¦       
++---routes
+¦       app_routes.dart
+¦       
++---screens
+¦   +---admin
+¦   ¦       add_edit_occaion_screen.dart
+¦   ¦       admin_dashboard.dart
+¦   ¦       dashboard_notifications_screen.dart
+¦   ¦       employee_management.dart
+¦   ¦       enhanced_admin_dashboard.dart
+¦   ¦       enhanced_occasion_details_screen.dart
+¦   ¦       occasion_details_screen.dart
+¦   ¦       occasion_management.dart
+¦   ¦       profit_analytics_screen.dart
+¦   ¦       stock_management.dart
+¦   ¦       
+¦   +---auth
+¦   ¦       login_screen.dart
+¦   ¦       splash_screen.dart
+¦   ¦       
+¦   +---employee
+¦           employee_dashboard.dart
+¦           equipment_activity_screen.dart
+¦           equipment_checkout.dart
+¦           
++---services
+        auth_service.dart
+        equipment_booking_service.dart
+        firestore_service.dart
+        notification_service.dart
+        storage_service.dart
+        

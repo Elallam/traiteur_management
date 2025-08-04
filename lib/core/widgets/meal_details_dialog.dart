@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/core/utils/helpers.dart';
 import '../../models/article_model.dart';
+import '../../models/category_model.dart';
 import '../../models/meal_model.dart';
+import '../../providers/category_provider.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
 import 'add_edit_meal_dialog.dart';
@@ -17,6 +22,17 @@ class MealDetailsDialog extends StatelessWidget {
     final stockProvider = Provider.of<StockProvider>(context);
     final canBePrepared = stockProvider.canMealBePrepared(meal);
     final l10n = AppLocalizations.of(context)!;
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final category = categoryProvider.categories.firstWhere(
+          (c) => c.id == meal.category,
+      orElse: () => CategoryModel(
+        id: '',
+        name: l10n.uncategorized,
+        type: 'meal',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
 
     return Dialog(
       child: Container(
@@ -41,15 +57,11 @@ class MealDetailsDialog extends StatelessWidget {
                   Container(
                     width: 60,
                     height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: meal.imageUrl != null
+                    child: meal.imagePath != null
                         ? ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        meal.imageUrl!,
+                      child: Image.file(
+                        File(meal.imagePath!),
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(
@@ -80,7 +92,7 @@ class MealDetailsDialog extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          meal.category.toUpperCase(),
+                          category.name.toUpperCase(),
                           style: TextStyle(
                             color: AppColors.white.withOpacity(0.8),
                             fontSize: 14,
@@ -136,19 +148,22 @@ class MealDetailsDialog extends StatelessWidget {
                                 : AppColors.warning,
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            (meal.isAvailable && canBePrepared)
-                                ? l10n.available
-                                : !meal.isAvailable
-                                ? l10n.disabled
-                                : l10n.ingredientsLow, // Localized
-                            style: TextStyle(
-                              color: (meal.isAvailable && canBePrepared)
-                                  ? AppColors.success
+                          Flexible(
+                            child: Text(
+                              (meal.isAvailable && canBePrepared)
+                                  ? l10n.available
                                   : !meal.isAvailable
-                                  ? AppColors.error
-                                  : AppColors.warning,
-                              fontWeight: FontWeight.w600,
+                                  ? l10n.disabled
+                                  : l10n.ingredientsLow,
+                              style: TextStyle(
+                                color: (meal.isAvailable && canBePrepared)
+                                    ? AppColors.success
+                                    : !meal.isAvailable
+                                    ? AppColors.error
+                                    : AppColors.warning,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -156,31 +171,37 @@ class MealDetailsDialog extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // Pricing info
-                    Row(
-                      children: [
-                        _buildInfoChip(l10n.cost, '\$${meal.calculatedPrice.toStringAsFixed(2)}'), // Localized
-                        const SizedBox(width: 8),
-                        _buildInfoChip(l10n.price, '\$${meal.sellingPrice.toStringAsFixed(2)}'), // Localized
-                        const SizedBox(width: 8),
-                        _buildInfoChip(l10n.profit, '\$${meal.profitMargin.toStringAsFixed(2)}'), // Localized
-                      ],
+                    // Pricing info - Made scrollable horizontally
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildInfoChip(l10n.cost, Helpers.formatMAD(meal.calculatedPrice)),
+                          const SizedBox(width: 8),
+                          _buildInfoChip(l10n.price, Helpers.formatMAD(meal.sellingPrice)),
+                          const SizedBox(width: 8),
+                          _buildInfoChip(l10n.profit, Helpers.formatMAD(meal.profitMargin)),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
 
-                    // Servings and prep time
-                    Row(
-                      children: [
-                        _buildInfoChip(l10n.servings, meal.servings.toString()), // Localized
-                        const SizedBox(width: 8),
-                        _buildInfoChip(l10n.prepTime, l10n.minutes(meal.preparationTime)), // Localized
-                      ],
+                    // Servings and prep time - Made scrollable horizontally
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildInfoChip(l10n.servings, meal.servings.toString()),
+                          const SizedBox(width: 8),
+                          _buildInfoChip(l10n.prepTime, l10n.minutes(meal.preparationTime)),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 20),
 
                     // Ingredients section
                     Text(
-                      l10n.ingredients, // Localized
+                      l10n.ingredients,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -217,15 +238,16 @@ class MealDetailsDialog extends StatelessWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                l10n.ingredientDetails(ingredient.articleName, ingredient.quantity, ingredient.unit), // Localized
+                                l10n.ingredientDetails(ingredient.articleName, ingredient.quantity, ingredient.unit),
                                 style: TextStyle(
                                   color: hasEnough ? AppColors.textPrimary : AppColors.error,
                                 ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             if (article.id.isNotEmpty)
                               Text(
-                                l10n.availableQuantityUnit(article.quantity, article.unit), // Localized
+                                l10n.availableQuantityUnit(article.quantity, article.unit),
                                 style: TextStyle(
                                   color: hasEnough ? AppColors.textSecondary : AppColors.error,
                                   fontSize: 12,
@@ -239,7 +261,7 @@ class MealDetailsDialog extends StatelessWidget {
                     // Description
                     const SizedBox(height: 20),
                     Text(
-                      l10n.description, // Localized
+                      l10n.description,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -263,8 +285,8 @@ class MealDetailsDialog extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          _buildDetailRow(l10n.created, _formatDate(meal.createdAt)), // Localized
-                          _buildDetailRow(l10n.lastUpdated, _formatDate(meal.updatedAt)), // Localized
+                          _buildDetailRow(l10n.created, _formatDate(meal.createdAt)),
+                          _buildDetailRow(l10n.lastUpdated, _formatDate(meal.updatedAt)),
                         ],
                       ),
                     ),
@@ -302,7 +324,7 @@ class MealDetailsDialog extends StatelessWidget {
                         children: [
                           Icon(
                             meal.isAvailable ? Icons.visibility_off : Icons.visibility,
-                            size: 20,
+                            size: 14,
                           ),
                           const SizedBox(width: 8),
                           Text(meal.isAvailable ? l10n.disable : l10n.enable), // Localized

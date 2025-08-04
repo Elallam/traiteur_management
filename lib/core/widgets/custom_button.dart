@@ -12,6 +12,7 @@ class CustomButton extends StatelessWidget {
   final IconData? icon;
   final bool outlined;
   final double? fontSize;
+  final EdgeInsetsGeometry? padding;
 
   const CustomButton({
     Key? key,
@@ -21,17 +22,17 @@ class CustomButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.width,
-    this.height = 50,
+    this.height = 48,
     this.icon,
     this.outlined = false,
     this.fontSize,
-
+    this.padding,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width ?? double.infinity,
+      width: width, // Remove double.infinity to allow button to fit content
       height: height,
       child: outlined ? _buildOutlinedButton() : _buildElevatedButton(),
     );
@@ -47,6 +48,9 @@ class CustomButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         elevation: 2,
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
+        minimumSize: Size.zero, // Allows button to shrink to content size
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Reduces tap target to content size
       ),
       child: _buildButtonContent(),
     );
@@ -64,6 +68,9 @@ class CustomButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       child: _buildButtonContent(),
     );
@@ -81,35 +88,29 @@ class CustomButton extends StatelessWidget {
       );
     }
 
-    if (icon != null) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 15),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: outlined
-                  ? backgroundColor ?? AppColors.primary
-                  : textColor ?? AppColors.white,
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Text(
+    final content = Text(
       text,
       style: TextStyle(
-        fontSize: 16,
+        fontSize: fontSize ?? 16,
         fontWeight: FontWeight.w500,
         color: outlined
             ? backgroundColor ?? AppColors.primary
             : textColor ?? AppColors.white,
       ),
     );
+
+    if (icon != null) {
+      return Row(
+        mainAxisSize: MainAxisSize.min, // Makes row take minimum space
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: fontSize != null ? fontSize! * 0.75 : 16),
+          const SizedBox(width: 8), // Increased spacing
+          content,
+        ],
+      );
+    }
+
+    return content;
   }
 }

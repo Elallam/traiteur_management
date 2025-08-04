@@ -179,6 +179,9 @@
   "exportPdf": "Export PDF",
   "exportExcel": "Export Excel",
   "exportInfo": "Export Info",
+  "remove": "Remove",
+  "noEquipmentAvailable": "No Equipment Available",
+  "items": "Items",
   "quickActions": "Quick Actions",
   "createNewEvent": "Create New Event",
   "allGood": "All Good!",
@@ -1154,5 +1157,213 @@
               "type": "int"
             }
           }
-        }
+        },
+
+    "categoryManagement": "Category Management",
+    "articles": "Articles",
+    "meals": "Meals",
+    "equipment": "Equipment",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "categoryName": "Category Name",
+    "icon": "Icon",
+    "optional": "optional",
+    "validationEnterCategoryName": "Please enter a category name",
+    "deleteCategory": "Delete Category",
+    "confirmDeleteCategory": "Are you sure you want to delete {category}?",
+     "validationSelectCategory": "Please select a category",
+     "selectCategory": "Select Category",
+     "uncategorized": "Uncategorized",
+     "financialTabTitle": "Financial",
+    "mealsTotal": "Meals Total",
+    "equipmentDepreciation": "Equipment Depreciation (%)",
+    "transportCost": "Transport Cost",
+    "profitMargin": "Profit Margin (%)",
+    "costBreakdown": "Cost Breakdown",
+    "subtotal": "Subtotal",
+    "total": "TOTAL",
+    "dhCurrency": "DH",
+    "sortBy": "Sort by",
+      "mealsCost": "Meals Cost",
+      "equipmentRental": "Equipment Rental",
+      "totalBaseCost": "Total Base Cost",
+      "equipmentRentalPricing": "Equipment Rental Pricing",
+      "totalEquipmentRentalPrice": "Total Equipment Rental Price",
+      "enterEquipmentRentalPrice": "Enter Equipment Rental Price",
+      "autoCalculate": "Auto Calculate",
+      "equipmentBreakdown": "Equipment Breakdown",
+      "transportConfiguration": "Transport Configuration",
+      "transportDeliveryCost": "Transport/Delivery Cost",
+      "enterTransportCost": "Enter Transport Cost",
+      "profitMarginConfiguration": "Profit Margin Configuration",
+      "profitMarginPercentage": "Profit Margin Percentage",
+      "enterProfitMargin": "Enter Profit Margin",
+      "finalPricingSummary": "Final Pricing Summary",
+      "baseCost": "Base Cost",
+      "profitAmount": "Profit Amount",
+      "finalTotalPrice": "Final Total Price",
+      "estimatedPricePerGuest": "Estimated Price per Guest",
+      "searchMeals": "Search Meals",
+        "checkoutRequestFailed": "Checkout request failed",
+        "requestSubmitted": "Request submitted",
+        "checkoutRequestSubmittedSuccessfully": "Checkout request submitted successfully",
+        "adminWillReviewRequest": "Admin will review your request shortly",
+        "submittingRequest": "Submitting request...",
+        "submitRequest": "Submit Request",
+        "@checkoutRequestFailed": {
+          "description": "Error message when checkout request fails"
+        },
+        "@requestSubmitted": {
+          "description": "Title for successful request submission"
+        },
+        "@checkoutRequestSubmittedSuccessfully": {
+          "description": "Message shown when checkout request is successful"
+        },
+        "@adminWillReviewRequest": {
+          "description": "Message informing user that admin will review request"
+        },
+        "@submittingRequest": {
+          "description": "Loading text when submitting request"
+        },
+        "@submitRequest": {
+          "description": "Text for submit request button"
+        },
+
+          "equipmentRequests": "Equipment Requests",
+          "pendingApproval": "Pending Approval",
+          "noPendingRequests": "No Pending Requests",
+          "allRequestsProcessed": "All requests have been processed",
+          "reviewRequests": "Review Requests",
+          "viewAllRequests": "View All Requests",
+          "daysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+          "@daysAgo": {
+            "placeholders": {
+              "count": {
+                "type": "int"
+              }
+            }
+          },
+          "hoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+          "@hoursAgo": {
+            "placeholders": {
+              "count": {
+                "type": "int"
+              }
+            }
+          },
+          "minutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+          "@minutesAgo": {
+            "placeholders": {
+              "count": {
+                "type": "int"
+              }
+            }
+          },
+          "justNow": "Just now",
+          "requestSummary": "{itemCount, plural, =1{1 item} other{{itemCount} items}} • {totalQuantity} total",
+          "@requestSummary": {
+            "placeholders": {
+              "itemCount": {
+                "type": "int"
+              },
+              "totalQuantity": {
+                "type": "int"
+              }
+            }
+          },
+          "andMoreItems": "and {count, plural, =1{1 more item} other{{count} more items}}",
+          "@andMoreItems": {
+            "placeholders": {
+              "count": {
+                "type": "int"
+              }
+            }
+          },
+          "andMoreRequests": "+{count, plural, =1{1 more request} other{{count} more requests}}",
+          "@andMoreRequests": {
+            "placeholders": {
+              "count": {
+                "type": "int"
+              }
+            }
+          },
+    "addTransaction": "Add Transaction",
+    "transactionType": "Transaction Type",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "operationName": "Operation Name",
+    "enterOperationName": "Enter operation name",
+    "operationNameRequired": "Operation name is required",
+    "operationNameMinLength": "Operation name must be at least 2 characters",
+    "amount": "Amount",
+    "enterAmount": "Enter amount",
+    "amountRequired": "Amount is required",
+    "invalidAmountFormat": "Invalid amount format",
+    "amountMustBePositive": "Amount must be positive",
+    "transactionDate": "Transaction Date",
+    "descriptionOptional": "Description (Optional)",
+    "enterDescription": "Enter description",
+    "cancel": "Cancel",
+    "depositAddedSuccess": "Deposit added successfully",
+    "withdrawalAddedSuccess": "Withdrawal added successfully",
+    "addTransactionFailed": "Failed to add transaction: {error}",
+    "transactionDetails": "Transaction Details",
+    "close": "Close",
+    "editTransaction": "Edit Transaction",
+    "update": "Update",
+    "transactionUpdatedSuccess": "Transaction updated successfully",
+    "updateTransactionFailed": "Failed to update transaction: {error}",
+    "deleteTransaction": "Delete Transaction",
+    "cashRegister": "Cash Register",
+    "overview": "Overview",
+    "transactions": "Transactions",
+    "analytics": "Analytics",
+    "loadingCashData": "Loading cash register data...",
+    "realtimeBalance": "Real-time Balance",
+    "noTransactionsYet": "No transactions yet",
+    "totalDeposits": "Total Deposits",
+    "transactionsCount": "{count} transactions",
+    "totalWithdrawals": "Total Withdrawals",
+    "recentTransactions": "Recent Transactions",
+    "noTransactions": "No Transactions",
+    "noTransactionsFound": "No transactions found. Add your first transaction!",
+    "noMatchingTransactions": "No transactions match the selected filters.",
+    "type": "Type",
+    "allTypes": "All Types",
+    "deposits": "Deposits",
+    "withdrawals": "Withdrawals",
+    "period": "Period",
+    "allTime": "All Time",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "customRange": "Custom Range",
+    "customRangeDisplay": "Custom Range: {startDate} - {endDate}",
+    "cashFlowAnalytics": "Cash Flow Analytics",
+    "transactionCount": "Transaction Count",
+    "averageDeposit": "Average Deposit",
+    "averageWithdrawal": "Average Withdrawal",
+    "netFlow": "Net Flow",
+    "chartComingSoon": "Chart implementation coming soon",
+    "confirmDelete": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete this transaction: \"{transactionName}\"?",
+    "delete": "Delete",
+    "transactionDeletedSuccess": "Transaction deleted successfully",
+    "deleteTransactionFailed": "Failed to delete transaction: {error}",
+    "lastUpdated": "Last updated",
+    "cashRegister": "Cash Register",
+  "addedBy": "Added by",
+  "transactionOptions": "Transaction Options",
+    "selectImageSource": "Select Image Source",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "remove": "Remove",
+    "addPhoto": "Add Photo",
+    "tapToAddPhoto": "Tap to add photo",
+    "permissionRequired": "Permission Required",
+    "permissionRequiredMessage": "This app needs camera and photo library permissions to add images. Please grant permissions in settings.",
+    "openSettings": "Open Settings",
+    "error": "Error",
+    "imagePickerError": "Failed to pick image",
+    "ok": "OK"
 }

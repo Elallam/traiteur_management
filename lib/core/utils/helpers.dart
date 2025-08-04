@@ -16,6 +16,14 @@ class Helpers {
     }).join(' ');
   }
 
+  static String formatMAD(num amount, {bool compact = false}) {
+    final format = compact
+        ? NumberFormat.compactSimpleCurrency(locale: 'fr_MA', name: 'MAD')
+        : NumberFormat.currency(locale: 'fr_MA', symbol: 'DH', decimalDigits: 2);
+    return format.format(amount);
+  }
+
+
   /// Capitalize first letter only
   static String capitalizeFirst(String text) {
     if (text.isEmpty) return text;

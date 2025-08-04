@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/core/utils/helpers.dart';
+import 'package:traiteur_management/providers/category_provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/add_article_dialog.dart';
 import '../../core/widgets/add_edit_equipment_dialog.dart';
@@ -7,12 +9,14 @@ import '../../core/widgets/add_edit_meal_dialog.dart';
 import '../../core/widgets/article_details_dialog.dart';
 import '../../core/widgets/equipment_details_dialog.dart';
 import '../../core/widgets/meal_details_dialog.dart';
+import '../../core/widgets/image_picker_widget.dart'; // Import the new widget
 import '../../models/article_model.dart';
+import '../../models/category_model.dart';
 import '../../models/equipment_model.dart';
 import '../../models/meal_model.dart';
 import '../../providers/stock_provider.dart';
 import '../../core/widgets/loading_widget.dart';
-import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // Import localization
+import 'package:traiteur_management/generated/l10n/app_localizations.dart';
 
 class StockManagementScreen extends StatefulWidget {
   const StockManagementScreen({super.key});
@@ -33,13 +37,11 @@ class _StockManagementScreenState extends State<StockManagementScreen>
     'meals': null,
   };
 
-  // Add this method to handle category selection
   void handleCategorySelected(String type, String? category) {
     setState(() {
       _selectedCategories[type] = category;
     });
 
-    // Refresh the data with the new filter
     final stockProvider = Provider.of<StockProvider>(context, listen: false);
     stockProvider.applyCategoryFilters(_selectedCategories);
   }
@@ -56,6 +58,8 @@ class _StockManagementScreenState extends State<StockManagementScreen>
   Future<void> _loadStockData() async {
     final stockProvider = Provider.of<StockProvider>(context, listen: false);
     await stockProvider.loadAllStockData();
+    final categoryProvider = Provider.of<CategoryProvider>(context, listen:false);
+    await categoryProvider.loadCategories();
   }
 
   @override
@@ -70,32 +74,31 @@ class _StockManagementScreenState extends State<StockManagementScreen>
   PreferredSizeWidget _buildAppBar() {
     final l10n = AppLocalizations.of(context)!;
     return AppBar(
-      title: Text(l10n.stockManagement), // Localized title
+      title: Text(l10n.stockManagement),
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.white,
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: _loadStockData,
-          tooltip: l10n.refresh, // Localized tooltip
+          tooltip: l10n.refresh,
         ),
         IconButton(
           icon: const Icon(Icons.analytics),
           onPressed: _showStockAnalytics,
-          tooltip: l10n.analytics, // Localized tooltip
+          tooltip: l10n.analytics,
         ),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(150),
         child: Column(
           children: [
-            // Search Bar
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: l10n.searchStockItems, // Localized hint text
+                  hintText: l10n.searchStockItems,
                   prefixIcon: const Icon(Icons.search, color: AppColors.white),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
@@ -124,16 +127,15 @@ class _StockManagementScreenState extends State<StockManagementScreen>
                 },
               ),
             ),
-            // Tab Bar
             TabBar(
               controller: _tabController,
               indicatorColor: AppColors.white,
               labelColor: AppColors.white,
               unselectedLabelColor: AppColors.white.withOpacity(0.7),
               tabs: [
-                Tab(text: l10n.articles, icon: const Icon(Icons.inventory_2)), // Localized
-                Tab(text: l10n.equipment, icon: const Icon(Icons.build)), // Localized
-                Tab(text: l10n.meals, icon: const Icon(Icons.restaurant)), // Localized
+                Tab(text: l10n.articles, icon: const Icon(Icons.inventory_2)),
+                Tab(text: l10n.equipment, icon: const Icon(Icons.build)),
+                Tab(text: l10n.meals, icon: const Icon(Icons.restaurant)),
               ],
             ),
           ],
@@ -147,7 +149,7 @@ class _StockManagementScreenState extends State<StockManagementScreen>
     return FloatingActionButton(
       onPressed: _showAddItemDialog,
       backgroundColor: AppColors.primary,
-      child: Icon(Icons.add, color: AppColors.white, semanticLabel: l10n.addItem), // Localized semantic label
+      child: Icon(Icons.add, color: AppColors.white, semanticLabel: l10n.addItem),
     );
   }
 
@@ -170,7 +172,7 @@ class _StockManagementScreenState extends State<StockManagementScreen>
     return Consumer<StockProvider>(
       builder: (context, stockProvider, child) {
         if (stockProvider.isLoading) {
-          return LoadingWidget(message: '${l10n.loading} ${l10n.stockData}...'); // Localized loading message
+          return LoadingWidget(message: '${l10n.loading} ${l10n.stockData}...');
         }
 
         return Column(
@@ -225,28 +227,28 @@ class _StockManagementScreenState extends State<StockManagementScreen>
         child: Row(
           children: [
             _buildStatCard(
-              l10n.totalArticles, // Localized
+              l10n.totalArticles,
               stats['totalArticles'].toString(),
               Icons.inventory_2,
               AppColors.primary,
             ),
             const SizedBox(width: 12),
             _buildStatCard(
-              l10n.equipment, // Localized
+              l10n.equipment,
               stats['totalEquipment'].toString(),
               Icons.build,
               AppColors.secondary,
             ),
             const SizedBox(width: 12),
             _buildStatCard(
-              l10n.meals, // Localized
+              l10n.meals,
               stats['totalMeals'].toString(),
               Icons.restaurant,
               AppColors.success,
             ),
             const SizedBox(width: 12),
             _buildStatCard(
-              l10n.lowStock, // Localized
+              l10n.lowStock,
               stats['lowStockArticles'].toString(),
               Icons.warning,
               AppColors.error,
@@ -286,11 +288,10 @@ class _StockManagementScreenState extends State<StockManagementScreen>
   }
 
   void _showStockAnalytics() {
-    // TODO: Implement stock analytics dialog
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(l10n.stockAnalyticsComingSoon), // Localized
+        content: Text(l10n.stockAnalyticsComingSoon),
       ),
     );
   }
@@ -324,7 +325,7 @@ class _StockManagementScreenState extends State<StockManagementScreen>
   }
 }
 
-// Articles Tab
+// Articles Tab - Updated to use CustomImageDisplay
 class ArticlesTab extends StatelessWidget {
   final String searchQuery;
   final String? selectedCategory;
@@ -346,23 +347,21 @@ class ArticlesTab extends StatelessWidget {
 
         return Column(
           children: [
-            // Filter Chips
             _buildCategoryFilters(
-              stockProvider.articleCategories,
-              'articles',
-              selectedCategory,
-              onCategorySelected, context
+                stockProvider.articleCategories,
+                'articles',
+                selectedCategory,
+                onCategorySelected, context
             ),
-            // Articles List
             Expanded(
               child: articles.isEmpty
                   ? _buildEmptyState(
-                l10n.noArticlesFound, // Localized
-                searchQuery.isNotEmpty || selectedCategory != null
-                    ? l10n.adjustSearchFilters // Localized
-                    : l10n.addFirstArticleHint, // Localized
-                Icons.inventory_2,
-                    () => _showAddArticleDialog(context), context
+                  l10n.noArticlesFound,
+                  searchQuery.isNotEmpty || selectedCategory != null
+                      ? l10n.adjustSearchFilters
+                      : l10n.addFirstArticleHint,
+                  Icons.inventory_2,
+                      () => _showAddArticleDialog(context), context
               )
                   : RefreshIndicator(
                 onRefresh: () => stockProvider.loadArticles(),
@@ -384,12 +383,10 @@ class ArticlesTab extends StatelessWidget {
   List<ArticleModel> _getFilteredArticles(StockProvider stockProvider) {
     List<ArticleModel> articles = stockProvider.filteredArticles;
 
-    // Apply search filter
     if (searchQuery.isNotEmpty) {
       articles = stockProvider.searchArticles(searchQuery);
     }
 
-    // Apply category filter
     if (selectedCategory != null) {
       articles = articles.where((article) => article.category == selectedCategory).toList();
     }
@@ -399,6 +396,18 @@ class ArticlesTab extends StatelessWidget {
 
   Widget _buildArticleCard(BuildContext context, ArticleModel article, StockProvider stockProvider) {
     final l10n = AppLocalizations.of(context)!;
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final category = categoryProvider.categories.firstWhere(
+          (c) => c.id == article.category,
+      orElse: () => CategoryModel(
+        id: '',
+        name: l10n.uncategorized,
+        type: 'article',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -411,37 +420,15 @@ class ArticlesTab extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Article Image or Icon
-                  Container(
+                  // Updated to use CustomImageDisplay
+                  CustomImageDisplay(
+                    imagePath: article.imagePath,
                     width: 50,
                     height: 50,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: article.imageUrl != null
-                        ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        article.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.inventory_2,
-                            color: AppColors.primary,
-                            size: 24,
-                          );
-                        },
-                      ),
-                    )
-                        : const Icon(
-                      Icons.inventory_2,
-                      color: AppColors.primary,
-                      size: 24,
-                    ),
+                    defaultIcon: Icons.inventory_2,
+                    iconColor: AppColors.primary,
                   ),
                   const SizedBox(width: 12),
-                  // Article Info
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -456,7 +443,6 @@ class ArticlesTab extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Quantity Badge
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -483,7 +469,7 @@ class ArticlesTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          article.category.toUpperCase(),
+                          category.name.toUpperCase(),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w500,
@@ -501,7 +487,6 @@ class ArticlesTab extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Actions
                   PopupMenuButton<String>(
                     onSelected: (value) => _handleArticleAction(context, value, article, stockProvider),
                     itemBuilder: (context) => [
@@ -511,7 +496,7 @@ class ArticlesTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.visibility, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.viewDetails), // Localized
+                            Text(l10n.viewDetails),
                           ],
                         ),
                       ),
@@ -521,7 +506,7 @@ class ArticlesTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.edit, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.edit), // Localized
+                            Text(l10n.edit),
                           ],
                         ),
                       ),
@@ -531,7 +516,7 @@ class ArticlesTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.add_circle, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.updateQuantity), // Localized
+                            Text(l10n.updateQuantity),
                           ],
                         ),
                       ),
@@ -541,7 +526,7 @@ class ArticlesTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.delete, size: 18, color: AppColors.error),
                             const SizedBox(width: 8),
-                            Text(l10n.delete, style: const TextStyle(color: AppColors.error)), // Localized
+                            Text(l10n.delete, style: const TextStyle(color: AppColors.error)),
                           ],
                         ),
                       ),
@@ -550,12 +535,11 @@ class ArticlesTab extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              // Price and Total Value
               Row(
                 children: [
-                  _buildInfoChip(l10n.price, '\$${article.price.toStringAsFixed(2)}', context), // Localized
+                  _buildInfoChip(l10n.price, Helpers.formatMAD(article.price), context),
                   const SizedBox(width: 8),
-                  _buildInfoChip(l10n.totalValue, '\$${article.totalValue.toStringAsFixed(2)}', context), // Localized
+                  _buildInfoChip(l10n.totalValue, Helpers.formatMAD(article.totalValue), context),
                   const Spacer(),
                   if (article.isLowStock)
                     Container(
@@ -570,7 +554,7 @@ class ArticlesTab extends StatelessWidget {
                           const Icon(Icons.warning, color: AppColors.error, size: 14),
                           const SizedBox(width: 4),
                           Text(
-                            l10n.lowStock, // Localized
+                            l10n.lowStock,
                             style: const TextStyle(
                               color: AppColors.error,
                               fontSize: 12,
@@ -634,19 +618,19 @@ class ArticlesTab extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('${l10n.updateQuantity} - ${article.name}'), // Localized title
+        title: Text('${l10n.updateQuantity} - ${article.name}'),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            labelText: '${l10n.newQuantity} (${article.unit})', // Localized label
+            labelText: '${l10n.newQuantity} (${article.unit})',
             border: const OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel), // Localized
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -661,7 +645,7 @@ class ArticlesTab extends StatelessWidget {
                 if (success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(l10n.quantityUpdatedSuccess), // Localized
+                      content: Text(l10n.quantityUpdatedSuccess),
                       backgroundColor: AppColors.success,
                     ),
                   );
@@ -669,7 +653,7 @@ class ArticlesTab extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        stockProvider.errorMessage ?? l10n.failedToUpdateQuantity, // Localized fallback
+                        stockProvider.errorMessage ?? l10n.failedToUpdateQuantity,
                       ),
                       backgroundColor: AppColors.error,
                     ),
@@ -677,7 +661,7 @@ class ArticlesTab extends StatelessWidget {
                 }
               }
             },
-            child: Text(l10n.update), // Localized
+            child: Text(l10n.update),
           ),
         ],
       ),
@@ -689,12 +673,12 @@ class ArticlesTab extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.deleteArticle), // Localized
-        content: Text(l10n.deleteArticleConfirmation(article.name)), // Localized with parameter
+        title: Text(l10n.deleteArticle),
+        content: Text(l10n.deleteArticleConfirmation(article.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel), // Localized
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -704,7 +688,7 @@ class ArticlesTab extends StatelessWidget {
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(l10n.articleDeletedSuccess), // Localized
+                    content: Text(l10n.articleDeletedSuccess),
                     backgroundColor: AppColors.success,
                   ),
                 );
@@ -712,7 +696,7 @@ class ArticlesTab extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      stockProvider.errorMessage ?? l10n.failedToDeleteArticle, // Localized fallback
+                      stockProvider.errorMessage ?? l10n.failedToDeleteArticle,
                     ),
                     backgroundColor: AppColors.error,
                   ),
@@ -723,7 +707,7 @@ class ArticlesTab extends StatelessWidget {
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.white,
             ),
-            child: Text(l10n.delete), // Localized
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -731,7 +715,7 @@ class ArticlesTab extends StatelessWidget {
   }
 }
 
-// Equipment Tab
+// Equipment Tab - Updated to use CustomImageDisplay
 class EquipmentTab extends StatelessWidget {
   final String searchQuery;
   final String? selectedCategory;
@@ -753,23 +737,21 @@ class EquipmentTab extends StatelessWidget {
 
         return Column(
           children: [
-            // Filter Chips
             _buildCategoryFilters(
-              stockProvider.equipmentCategories,
-              'equipment',
-              selectedCategory,
-              onCategorySelected, context
+                stockProvider.equipmentCategories,
+                'equipment',
+                selectedCategory,
+                onCategorySelected, context
             ),
-            // Equipment List
             Expanded(
               child: equipment.isEmpty
                   ? _buildEmptyState(
-                l10n.noEquipmentFound, // Localized
-                searchQuery.isNotEmpty || selectedCategory != null
-                    ? l10n.adjustSearchFilters // Localized
-                    : l10n.addFirstEquipmentHint, // Localized
-                Icons.build,
-                    () => _showAddEquipmentDialog(context), context
+                  l10n.noEquipmentFound,
+                  searchQuery.isNotEmpty || selectedCategory != null
+                      ? l10n.adjustSearchFilters
+                      : l10n.addFirstEquipmentHint,
+                  Icons.build,
+                      () => _showAddEquipmentDialog(context), context
               )
                   : RefreshIndicator(
                 onRefresh: () => stockProvider.loadEquipment(),
@@ -791,12 +773,10 @@ class EquipmentTab extends StatelessWidget {
   List<EquipmentModel> _getFilteredEquipment(StockProvider stockProvider) {
     List<EquipmentModel> equipment = stockProvider.equipment;
 
-    // Apply search filter
     if (searchQuery.isNotEmpty) {
       equipment = stockProvider.searchEquipment(searchQuery);
     }
 
-    // Apply category filter
     if (selectedCategory != null) {
       equipment = equipment.where((item) => item.category == selectedCategory).toList();
     }
@@ -806,6 +786,18 @@ class EquipmentTab extends StatelessWidget {
 
   Widget _buildEquipmentCard(BuildContext context, EquipmentModel equipment, StockProvider stockProvider) {
     final l10n = AppLocalizations.of(context)!;
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final category = categoryProvider.categories.firstWhere(
+          (c) => c.id == equipment.category,
+      orElse: () => CategoryModel(
+        id: '',
+        name: l10n.uncategorized,
+        type: 'article',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -818,37 +810,15 @@ class EquipmentTab extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Equipment Icon
-                  Container(
+                  // Updated to use CustomImageDisplay
+                  CustomImageDisplay(
+                    imagePath: equipment.imagePath,
                     width: 50,
                     height: 50,
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: equipment.imageUrl != null
-                        ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        equipment.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.build,
-                            color: AppColors.secondary,
-                            size: 24,
-                          );
-                        },
-                      ),
-                    )
-                        : const Icon(
-                      Icons.build,
-                      color: AppColors.secondary,
-                      size: 24,
-                    ),
+                    defaultIcon: Icons.build,
+                    iconColor: AppColors.secondary,
                   ),
                   const SizedBox(width: 12),
-                  // Equipment Info
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -863,7 +833,6 @@ class EquipmentTab extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Availability Status
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -876,7 +845,7 @@ class EquipmentTab extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                equipment.isAvailable ? l10n.available : l10n.allCheckedOut, // Localized
+                                equipment.isAvailable ? l10n.available : l10n.allCheckedOut,
                                 style: TextStyle(
                                   color: equipment.isAvailable
                                       ? AppColors.success
@@ -890,7 +859,7 @@ class EquipmentTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          equipment.category.toUpperCase(),
+                          category.name.toUpperCase(),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.secondary,
                             fontWeight: FontWeight.w500,
@@ -908,7 +877,6 @@ class EquipmentTab extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Actions
                   PopupMenuButton<String>(
                     onSelected: (value) => _handleEquipmentAction(context, value, equipment, stockProvider),
                     itemBuilder: (context) => [
@@ -918,7 +886,7 @@ class EquipmentTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.visibility, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.viewDetails), // Localized
+                            Text(l10n.viewDetails),
                           ],
                         ),
                       ),
@@ -928,7 +896,7 @@ class EquipmentTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.edit, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.edit), // Localized
+                            Text(l10n.edit),
                           ],
                         ),
                       ),
@@ -938,7 +906,7 @@ class EquipmentTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.output, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.checkout), // Localized
+                            Text(l10n.checkout),
                           ],
                         ),
                       ),
@@ -948,7 +916,7 @@ class EquipmentTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.history, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.viewCheckouts), // Localized
+                            Text(l10n.viewCheckouts),
                           ],
                         ),
                       ),
@@ -958,7 +926,7 @@ class EquipmentTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.delete, size: 18, color: AppColors.error),
                             const SizedBox(width: 8),
-                            Text(l10n.delete, style: const TextStyle(color: AppColors.error)), // Localized
+                            Text(l10n.delete, style: const TextStyle(color: AppColors.error)),
                           ],
                         ),
                       ),
@@ -967,7 +935,6 @@ class EquipmentTab extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              // Availability Progress Bar
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -975,7 +942,7 @@ class EquipmentTab extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${l10n.available}: ${equipment.availableQuantity}/${equipment.totalQuantity}', // Localized
+                        '${l10n.available}: ${equipment.availableQuantity}/${equipment.totalQuantity}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -1008,13 +975,12 @@ class EquipmentTab extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              // Quick Actions
               Row(
                 children: [
                   if (equipment.checkedOutQuantity > 0)
                     _buildInfoChip(
-                      l10n.checkedOut, // Localized
-                      equipment.checkedOutQuantity.toString(), context
+                        l10n.checkedOut,
+                        equipment.checkedOutQuantity.toString(), context
                     ),
                   const SizedBox(width: 8),
                   if (equipment.isFullyCheckedOut)
@@ -1030,7 +996,7 @@ class EquipmentTab extends StatelessWidget {
                           const Icon(Icons.block, color: AppColors.error, size: 14),
                           const SizedBox(width: 4),
                           Text(
-                            l10n.allOut, // Localized
+                            l10n.allOut,
                             style: const TextStyle(
                               color: AppColors.error,
                               fontSize: 12,
@@ -1094,7 +1060,7 @@ class EquipmentTab extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(l10n.equipmentCheckoutComingSoon), // Localized
+        content: Text(l10n.equipmentCheckoutComingSoon),
       ),
     );
   }
@@ -1103,7 +1069,7 @@ class EquipmentTab extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(l10n.equipmentCheckoutHistoryComingSoon), // Localized
+        content: Text(l10n.equipmentCheckoutHistoryComingSoon),
       ),
     );
   }
@@ -1113,12 +1079,12 @@ class EquipmentTab extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.deleteEquipment), // Localized
-        content: Text(l10n.deleteEquipmentConfirmation(equipment.name)), // Localized with parameter
+        title: Text(l10n.deleteEquipment),
+        content: Text(l10n.deleteEquipmentConfirmation(equipment.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel), // Localized
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -1128,7 +1094,7 @@ class EquipmentTab extends StatelessWidget {
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(l10n.equipmentDeletedSuccess), // Localized
+                    content: Text(l10n.equipmentDeletedSuccess),
                     backgroundColor: AppColors.success,
                   ),
                 );
@@ -1136,7 +1102,7 @@ class EquipmentTab extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      stockProvider.errorMessage ?? l10n.failedToDeleteEquipment, // Localized fallback
+                      stockProvider.errorMessage ?? l10n.failedToDeleteEquipment,
                     ),
                     backgroundColor: AppColors.error,
                   ),
@@ -1147,7 +1113,7 @@ class EquipmentTab extends StatelessWidget {
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.white,
             ),
-            child: Text(l10n.delete), // Localized
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -1155,18 +1121,18 @@ class EquipmentTab extends StatelessWidget {
   }
 }
 
-// Meals Tab
+// Meals Tab - Updated to use CustomImageDisplay
 class MealsTab extends StatelessWidget {
   final String searchQuery;
   final String? selectedCategory;
   final Function(String?) onCategorySelected;
 
   const MealsTab({
-    Key? key,
+    super.key,
     required this.searchQuery,
     required this.selectedCategory,
     required this.onCategorySelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1177,23 +1143,21 @@ class MealsTab extends StatelessWidget {
 
         return Column(
           children: [
-            // Filter Chips
             _buildCategoryFilters(
-              stockProvider.mealCategories,
-              'meals',
-              selectedCategory,
-              onCategorySelected, context
+                stockProvider.mealCategories,
+                'meals',
+                selectedCategory,
+                onCategorySelected, context
             ),
-            // Meals List
             Expanded(
               child: meals.isEmpty
                   ? _buildEmptyState(
-                l10n.noMealsFound, // Localized
-                searchQuery.isNotEmpty || selectedCategory != null
-                    ? l10n.adjustSearchFilters // Localized
-                    : l10n.addFirstMealHint, // Localized
-                Icons.restaurant,
-                    () => _showAddMealDialog(context), context
+                  l10n.noMealsFound,
+                  searchQuery.isNotEmpty || selectedCategory != null
+                      ? l10n.adjustSearchFilters
+                      : l10n.addFirstMealHint,
+                  Icons.restaurant,
+                      () => _showAddMealDialog(context), context
               )
                   : RefreshIndicator(
                 onRefresh: () => stockProvider.loadMeals(),
@@ -1215,12 +1179,10 @@ class MealsTab extends StatelessWidget {
   List<MealModel> _getFilteredMeals(StockProvider stockProvider) {
     List<MealModel> meals = stockProvider.meals;
 
-    // Apply search filter
     if (searchQuery.isNotEmpty) {
       meals = stockProvider.searchMeals(searchQuery);
     }
 
-    // Apply category filter
     if (selectedCategory != null) {
       meals = meals.where((meal) => meal.category == selectedCategory).toList();
     }
@@ -1231,6 +1193,17 @@ class MealsTab extends StatelessWidget {
   Widget _buildMealCard(BuildContext context, MealModel meal, StockProvider stockProvider) {
     final l10n = AppLocalizations.of(context)!;
     final canBePrepared = stockProvider.canMealBePrepared(meal);
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final category = categoryProvider.categories.firstWhere(
+          (c) => c.id == meal.category,
+      orElse: () => CategoryModel(
+        id: '',
+        name: l10n.uncategorized,
+        type: 'article',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -1244,37 +1217,15 @@ class MealsTab extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Meal Image or Icon
-                  Container(
+                  // Updated to use CustomImageDisplay
+                  CustomImageDisplay(
+                    imagePath: meal.imagePath,
                     width: 50,
                     height: 50,
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: meal.imageUrl != null
-                        ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        meal.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.restaurant,
-                            color: AppColors.success,
-                            size: 24,
-                          );
-                        },
-                      ),
-                    )
-                        : const Icon(
-                      Icons.restaurant,
-                      color: AppColors.success,
-                      size: 24,
-                    ),
+                    defaultIcon: Icons.restaurant,
+                    iconColor: AppColors.success,
                   ),
                   const SizedBox(width: 12),
-                  // Meal Info
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1289,7 +1240,6 @@ class MealsTab extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // Availability Badge
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
@@ -1306,7 +1256,7 @@ class MealsTab extends StatelessWidget {
                                     ? l10n.available
                                     : !meal.isAvailable
                                     ? l10n.disabled
-                                    : l10n.outOfStock, // Localized
+                                    : l10n.outOfStock,
                                 style: TextStyle(
                                   color: (meal.isAvailable && canBePrepared)
                                       ? AppColors.success
@@ -1320,7 +1270,7 @@ class MealsTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          meal.category.toUpperCase(),
+                          category.name.toUpperCase(),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.success,
                             fontWeight: FontWeight.w500,
@@ -1337,7 +1287,6 @@ class MealsTab extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Actions
                   PopupMenuButton<String>(
                     onSelected: (value) => _handleMealAction(context, value, meal, stockProvider),
                     itemBuilder: (context) => [
@@ -1347,7 +1296,7 @@ class MealsTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.visibility, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.viewDetails), // Localized
+                            Text(l10n.viewDetails),
                           ],
                         ),
                       ),
@@ -1357,7 +1306,7 @@ class MealsTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.edit, size: 18),
                             const SizedBox(width: 8),
-                            Text(l10n.edit), // Localized
+                            Text(l10n.edit),
                           ],
                         ),
                       ),
@@ -1370,7 +1319,7 @@ class MealsTab extends StatelessWidget {
                               size: 18,
                             ),
                             const SizedBox(width: 8),
-                            Text(meal.isAvailable ? l10n.disable : l10n.enable), // Localized
+                            Text(meal.isAvailable ? l10n.disable : l10n.enable),
                           ],
                         ),
                       ),
@@ -1380,7 +1329,7 @@ class MealsTab extends StatelessWidget {
                           children: [
                             const Icon(Icons.delete, size: 18, color: AppColors.error),
                             const SizedBox(width: 8),
-                            Text(l10n.delete, style: const TextStyle(color: AppColors.error)), // Localized
+                            Text(l10n.delete, style: const TextStyle(color: AppColors.error)),
                           ],
                         ),
                       ),
@@ -1389,18 +1338,17 @@ class MealsTab extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              // Pricing Info
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildInfoChip(l10n.cost, meal.calculatedPrice.toStringAsFixed(2), context), // Localized
+                    _buildInfoChip(l10n.cost, meal.calculatedPrice.toStringAsFixed(2), context),
                     const SizedBox(width: 8),
-                    _buildInfoChip(l10n.price, meal.sellingPrice.toStringAsFixed(2), context), // Localized
+                    _buildInfoChip(l10n.price, meal.sellingPrice.toStringAsFixed(2), context),
                     const SizedBox(width: 8),
-                    _buildInfoChip(l10n.profit, meal.profitMargin.toStringAsFixed(2), context), // Localized
+                    _buildInfoChip(l10n.profit, meal.profitMargin.toStringAsFixed(2), context),
                     const SizedBox(width: 8),
-                    _buildInfoChip(l10n.servings, meal.servings.toString(), context), // Localized
+                    _buildInfoChip(l10n.servings, meal.servings.toString(), context),
                     const SizedBox(width: 8),
                     if (!canBePrepared && meal.isAvailable)
                       Container(
@@ -1415,7 +1363,7 @@ class MealsTab extends StatelessWidget {
                             const Icon(Icons.warning, color: AppColors.warning, size: 14),
                             const SizedBox(width: 4),
                             Text(
-                              l10n.ingredientsLow, // Localized
+                              l10n.ingredientsLow,
                               style: const TextStyle(
                                 color: AppColors.warning,
                                 fontSize: 12,
@@ -1429,13 +1377,12 @@ class MealsTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              // Preparation Time
               Row(
                 children: [
                   const Icon(Icons.timer, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
-                    l10n.minutes(meal.preparationTime), // Localized
+                    l10n.minutes(meal.preparationTime),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -1444,7 +1391,7 @@ class MealsTab extends StatelessWidget {
                   const Icon(Icons.inventory, size: 16, color: AppColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
-                    l10n.ingredientsCount(meal.ingredients.length), // Localized
+                    l10n.ingredientsCount(meal.ingredients.length),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -1505,7 +1452,7 @@ class MealsTab extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            meal.isAvailable ? l10n.mealDisabledSuccess : l10n.mealEnabledSuccess, // Localized
+            meal.isAvailable ? l10n.mealDisabledSuccess : l10n.mealEnabledSuccess,
           ),
           backgroundColor: AppColors.success,
         ),
@@ -1514,7 +1461,7 @@ class MealsTab extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            stockProvider.errorMessage ?? l10n.failedToUpdateMealAvailability, // Localized fallback
+            stockProvider.errorMessage ?? l10n.failedToUpdateMealAvailability,
           ),
           backgroundColor: AppColors.error,
         ),
@@ -1527,12 +1474,12 @@ class MealsTab extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.deleteMeal), // Localized
-        content: Text(l10n.deleteMealConfirmation(meal.name)), // Localized with parameter
+        title: Text(l10n.deleteMeal),
+        content: Text(l10n.deleteMealConfirmation(meal.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel), // Localized
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -1542,7 +1489,7 @@ class MealsTab extends StatelessWidget {
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(l10n.mealDeletedSuccess), // Localized
+                    content: Text(l10n.mealDeletedSuccess),
                     backgroundColor: AppColors.success,
                   ),
                 );
@@ -1550,7 +1497,7 @@ class MealsTab extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      stockProvider.errorMessage ?? l10n.failedToDeleteMeal, // Localized fallback
+                      stockProvider.errorMessage ?? l10n.failedToDeleteMeal,
                     ),
                     backgroundColor: AppColors.error,
                   ),
@@ -1561,7 +1508,7 @@ class MealsTab extends StatelessWidget {
               backgroundColor: AppColors.error,
               foregroundColor: AppColors.white,
             ),
-            child: Text(l10n.delete), // Localized
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -1591,7 +1538,7 @@ Widget _buildCategoryFilters(
             return Padding(
               padding: const EdgeInsets.only(right: 8),
               child: FilterChip(
-                label: Text(l10n.all), // Localized "All"
+                label: Text(l10n.all),
                 selected: selectedCategory == null,
                 onSelected: (selected) {
                   onCategorySelected(null);
@@ -1601,10 +1548,21 @@ Widget _buildCategoryFilters(
           }
 
           final category = categories[index - 1];
+          final categoryProvider = Provider.of<CategoryProvider>(context);
+          final categorie = categoryProvider.categories.firstWhere(
+                (c) => c.id == category,
+            orElse: () => CategoryModel(
+              id: '',
+              name: l10n.uncategorized,
+              type: 'article',
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            ),
+          );
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
-              label: Text(category),
+              label: Text(categorie.name),
               selected: selectedCategory == category,
               onSelected: (selected) {
                 onCategorySelected(selected ? category : null);
@@ -1648,7 +1606,7 @@ Widget _buildEmptyState(String title, String subtitle, IconData icon, VoidCallba
         ElevatedButton.icon(
           onPressed: onAdd,
           icon: const Icon(Icons.add),
-          label: Text(l10n.addItem), // Localized
+          label: Text(l10n.addItem),
         ),
       ],
     ),
@@ -1656,7 +1614,6 @@ Widget _buildEmptyState(String title, String subtitle, IconData icon, VoidCallba
 }
 
 Widget _buildInfoChip(String label, String value, BuildContext context) {
-  final l10n = AppLocalizations.of(context)!;
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     decoration: BoxDecoration(
@@ -1664,7 +1621,7 @@ Widget _buildInfoChip(String label, String value, BuildContext context) {
       borderRadius: BorderRadius.circular(8),
     ),
     child: Text(
-      '${label}: ${value}', // Localized format
+      '$label: $value',
       style: const TextStyle(
         fontSize: 12,
         color: AppColors.textSecondary,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/screens/admin/cash_registering_screen.dart';
 import '../../../generated/l10n/app_localizations.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../screens/admin/category_management_screen.dart';
 import '../../../screens/admin/employee_management.dart';
 import '../../../screens/admin/stock_management.dart';
 import '../../../screens/admin/occasion_management.dart';
@@ -49,11 +51,16 @@ class DashboardDrawer extends StatelessWidget {
                 l10n.analytics,
                     () => _navigateToSection(context, 3),
               ),
+              _buildDrawerItem(
+                Icons.account_balance_wallet,
+                l10n.cashRegister,
+                    () => _navigateToSection(context, 5),
+              ),
               const Divider(),
               _buildDrawerItem(
                 Icons.settings,
                 l10n.settings,
-                    () => Navigator.pop(context),
+                    () => _navigateToSection(context, 4),
               ),
               _buildDrawerItem(
                 Icons.logout,
@@ -150,6 +157,18 @@ class DashboardDrawer extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ProfitAnalyticsScreen()),
+        );
+        break;
+      case 4:
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CategoryManagementScreen()),
+        );
+        break;
+      case 5:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CashRegisterScreen()),
         );
         break;
     }

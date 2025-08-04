@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:traiteur_management/core/utils/helpers.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
@@ -233,20 +234,21 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.5,
+          crossAxisSpacing: 8, // Reduced spacing
+          mainAxisSpacing: 8, // Reduced spacing
+          childAspectRatio: 1.3, // More narrow aspect ratio
+          padding: const EdgeInsets.all(0), // Remove default padding
           children: [
             _buildMetricCard(
               l10n.totalRevenue, // Localized
-              '\$${stats['totalRevenue'].toStringAsFixed(0)}',
+              Helpers.formatMAD(stats['totalRevenue'], compact:  true),
               Icons.attach_money,
               AppColors.success,
               '+${stats['revenueGrowth'].toStringAsFixed(1)}%',
             ),
             _buildMetricCard(
               l10n.totalProfit, // Localized
-              '\$${stats['totalProfit'].toStringAsFixed(0)}',
+              Helpers.formatMAD(stats['totalProfit'], compact: true),
               Icons.trending_up,
               AppColors.primary,
               '+${stats['profitGrowth'].toStringAsFixed(1)}%',
@@ -260,7 +262,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
             ),
             _buildMetricCard(
               l10n.averageOrderValue, // Localized
-              '\$${stats['averageOrderValue'].toStringAsFixed(0)}',
+              Helpers.formatMAD(stats['averageOrderValue'], compact: true),
               Icons.shopping_cart,
               AppColors.warning,
               '+${stats['aovGrowth'].toStringAsFixed(1)}%',
@@ -545,7 +547,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
                   ),
                 ),
                 Text(
-                  '${occasion.profitPercentage.toStringAsFixed(1)}%',
+                  '${occasion.profit.toStringAsFixed(1)}%',
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.success,
@@ -978,7 +980,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
     final completedEvents = events.where((e) => e.status == 'completed').toList();
     final totalRevenue = completedEvents.fold(0.0, (sum, e) => sum + e.totalPrice);
     final avgProfit = completedEvents.isNotEmpty
-        ? completedEvents.fold(0.0, (sum, e) => sum + e.profitPercentage) / completedEvents.length
+        ? completedEvents.fold(0.0, (sum, e) => sum + e.profit) / completedEvents.length
         : 0.0;
 
     return Padding(
@@ -1173,7 +1175,7 @@ class _ProfitAnalyticsScreenState extends State<ProfitAnalyticsScreen>
     final completedEvents = occasions.where((o) => o.status == 'completed').toList();
     final successRate = occasions.isNotEmpty ? (completedEvents.length / occasions.length) * 100 : 0.0;
     final avgProfitMargin = completedEvents.isNotEmpty
-        ? completedEvents.fold(0.0, (sum, o) => sum + o.profitPercentage) / completedEvents.length
+        ? completedEvents.fold(0.0, (sum, o) => sum + o.profit) / completedEvents.length
         : 0.0;
 
     return {

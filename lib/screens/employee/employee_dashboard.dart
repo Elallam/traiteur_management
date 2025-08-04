@@ -1,6 +1,7 @@
 // lib/screens/employee/enhanced_employee_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/services/notification_service.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/language_selector.dart';
@@ -21,6 +22,7 @@ class EmployeeDashboard extends StatefulWidget {
 
 class _EmployeeDashboardState extends State<EmployeeDashboard> {
   final FirestoreService _firestoreService = FirestoreService();
+  final NotificationService _notificationService = NotificationService();
 
   List<EquipmentCheckout> _myCheckouts = [];
   List<Map<String, dynamic>> _recentActivity = [];
@@ -58,7 +60,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     _myCheckouts = await _firestoreService.getEmployeeCheckouts(employeeId);
     // Only show active checkouts (not returned)
     _myCheckouts = _myCheckouts.where((checkout) => checkout.status == 'checked_out').toList();
-    _myCheckouts.sort((a, b) => b.checkoutDate.compareTo(a.checkoutDate));
+    _myCheckouts.sort((a, b) => b.checkoutDate!.compareTo(a.checkoutDate ?? DateTime.now()));
   }
 
   Future<void> _loadRecentActivity(String employeeId) async {
@@ -71,11 +73,11 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
         'equipmentName': AppLocalizations.of(context)!.loadingMessage, // Localized loading message
         'equipmentId': checkout.equipmentId,
         'quantity': checkout.quantity,
-        'date': checkout.status == 'returned' ? checkout.returnDate ?? checkout.checkoutDate : checkout.checkoutDate,
+        'date': checkout.status == 'returned' ? checkout.returnDate ?? checkout.checkoutDate : checkout.requestDate,
         'status': checkout.status,
       };
     }).toList();
-
+    print(_recentActivity.length);
     // Load equipment names for activities
     for (var activity in _recentActivity) {
       try {
@@ -94,31 +96,90 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     _stats = summary;
   }
 
+  // Updated method to handle equipment return with proper permissions
   Future<void> _returnEquipment(EquipmentCheckout checkout) async {
     try {
-      // Update checkout status
-      EquipmentCheckout updatedCheckout = checkout.copyWith(
-        status: 'returned',
-        returnDate: DateTime.now(),
-      );
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final currentUser = authProvider.currentUser;
+
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Check if user has permission to return this equipment
+      if (currentUser.role != 'admin' && checkout.employeeId != currentUser.id) {
+        throw Exception('Permission denied: You can only return your own equipment');
+      }
+
+      // Update checkout status to returned
+      final updatedCheckout = {
+        'id': checkout.id,
+        'status': 'returned',
+        'returnDate': DateTime.now(),
+      };
+
+      // If user is admin, they can update directly
+      // If user is employee, they can only update their own checkout with return status
       await _firestoreService.updateEquipmentCheckout(updatedCheckout);
 
+      // Only admins can update equipment availability directly
+      // For employees, this should be handled by admin approval or automatic system
       // Get current equipment data
-      EquipmentModel equipment = await _firestoreService.getEquipmentById(checkout.equipmentId);
+      final equipment = await _firestoreService.getEquipmentById(checkout.equipmentId);
 
       // Update equipment availability
-      EquipmentModel updatedEquipment = equipment.copyWith(
-        availableQuantity: equipment.availableQuantity + checkout.quantity,
-        updatedAt: DateTime.now(),
-      );
-      await _firestoreService.updateEquipment(updatedEquipment);
+      final updatedEquipment = {
+        'id' : equipment.id,
+        'availableQuantity': equipment.availableQuantity + checkout.quantity,
+        'updatedAt': DateTime.now(),
+      };
+      await _firestoreService.updateEquipmentByEmployee(updatedEquipment);
+      // For employees, create a notification for admin to process the return
+      await _sendReturnNotificationToAdmin(checkout, currentUser);
 
       // Refresh dashboard data
       await _loadDashboardData();
 
-      _showSuccessSnackBar(AppLocalizations.of(context)!.equipmentReturnedSuccessfully); // Localized success message
+      _showSuccessSnackBar(
+          currentUser.role == 'admin'
+              ? 'Equipment returned successfully'
+              : 'Return request submitted successfully. Admin will process your return.'
+      );
     } catch (e) {
-      _showErrorSnackBar(AppLocalizations.of(context)!.failedToReturnEquipment); // Localized error message
+      _showErrorSnackBar('Failed to return equipment: ${e.toString()}');
+    }
+  }
+
+// Helper method to send notification to admin when employee returns equipment
+  Future<void> _sendReturnNotificationToAdmin(EquipmentCheckout checkout, UserModel employee) async {
+    try {
+      final notification = {
+        'title': 'Equipment Return - ${employee.fullName}',
+        'message': '${employee.fullName} has returned ${checkout.equipmentName ?? 'equipment'} (${checkout.quantity} units). Please verify and update inventory.',
+        'type': 'equipment_return',
+        'priority': 'medium',
+        'isRead': false,
+        'createdAt': DateTime.now(),
+        'data': {
+          'checkoutId': checkout.id,
+          'equipmentId': checkout.equipmentId,
+          'employeeId': checkout.employeeId,
+          'quantity': checkout.quantity,
+          'returnDate': checkout.returnDate,
+        },
+      };
+
+      // Send to all admins
+      final admins = await _firestoreService.getAdminUsers();
+      for (final admin in admins) {
+        final adminNotification = {
+          ...notification,
+          'userId': admin.id,
+        };
+        await _notificationService.sendNotification(notification);
+      }
+    } catch (e) {
+      print('Failed to send return notification: $e');
     }
   }
 
@@ -537,7 +598,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                   children: [
                     Text('${AppLocalizations.of(context)!.quantity}: ${checkout.quantity}'), // Localized
                     Text(
-                      '${AppLocalizations.of(context)!.checkedOut} ${_formatDuration(checkout.checkoutDate)}', // Localized
+                      '${AppLocalizations.of(context)!.checkedOut} ${_formatDuration(checkout.checkoutDate ?? DateTime.now())}', // Localized
                       style: TextStyle(
                         color: checkout.isOverdue ? AppColors.error : AppColors.textSecondary,
                         fontWeight: checkout.isOverdue ? FontWeight.w500 : null,
@@ -868,7 +929,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                     children: [
                       Text('${AppLocalizations.of(context)!.equipment}: $equipmentName', style: const TextStyle(fontWeight: FontWeight.bold)), // Localized
                       Text('${AppLocalizations.of(context)!.quantity}: ${checkout.quantity}'), // Localized
-                      Text('${AppLocalizations.of(context)!.checkedOut}: ${_formatDuration(checkout.checkoutDate)}'), // Localized
+                      Text('${AppLocalizations.of(context)!.checkedOut}: ${_formatDuration(checkout.checkoutDate ?? DateTime.now())}'), // Localized
                       if (checkout.isOverdue)
                         Text('${AppLocalizations.of(context)!.status}: ${AppLocalizations.of(context)!.overdue.toUpperCase()}', style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)), // Localized
                     ],
@@ -948,7 +1009,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
       notifications.add({
         'type': 'overdue',
         'title': AppLocalizations.of(context)!.equipmentOverdue, // Localized
-        'message': AppLocalizations.of(context)!.equipmentCheckedOutAgo(_formatDuration(checkout.checkoutDate)), // Localized
+        'message': AppLocalizations.of(context)!.equipmentCheckedOutAgo(_formatDuration(checkout.checkoutDate ?? DateTime.now())), // Localized
         'checkout': checkout,
       });
     }

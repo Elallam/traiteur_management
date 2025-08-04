@@ -10,7 +10,7 @@ class MealModel {
   final String category; // appetizer, main, dessert, drink, etc.
   final int servings;
   final int preparationTime; // in minutes
-  final String? imageUrl;
+  final String? imagePath; // Changed from imageUrl to imagePath
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isActive;
@@ -26,7 +26,7 @@ class MealModel {
     required this.category,
     required this.servings,
     required this.preparationTime,
-    this.imageUrl,
+    this.imagePath, // Updated parameter name
     required this.createdAt,
     required this.updatedAt,
     this.isActive = true,
@@ -42,12 +42,12 @@ class MealModel {
       ingredients: (map['ingredients'] as List<dynamic>?)
           ?.map((ingredient) => MealIngredient.fromMap(ingredient))
           .toList() ?? [],
-      calculatedPrice: (map['calculatedPrice'] ?? 0.0).uble(),
-      sellingPrice: (map['sellingPrice'] ?? 0.0).uble(),
+      calculatedPrice: (map['calculatedPrice'] ?? 0.0).toDouble(),
+      sellingPrice: (map['sellingPrice'] ?? 0.0).toDouble(),
       category: map['category'] ?? 'main',
       servings: map['servings'] ?? 1,
       preparationTime: map['preparationTime'] ?? 0,
-      imageUrl: map['imageUrl'],
+      imagePath: map['imagePath'], // Updated field name
       createdAt: map['createdAt']?.toDate() ?? DateTime.now(),
       updatedAt: map['updatedAt']?.toDate() ?? DateTime.now(),
       isActive: map['isActive'] ?? true,
@@ -66,7 +66,7 @@ class MealModel {
       'category': category,
       'servings': servings,
       'preparationTime': preparationTime,
-      'imageUrl': imageUrl,
+      'imagePath': imagePath, // Updated field name
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'isActive': isActive,
@@ -85,7 +85,7 @@ class MealModel {
     String? category,
     int? servings,
     int? preparationTime,
-    String? imageUrl,
+    String? imagePath, // Updated parameter name
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isActive,
@@ -101,7 +101,7 @@ class MealModel {
       category: category ?? this.category,
       servings: servings ?? this.servings,
       preparationTime: preparationTime ?? this.preparationTime,
-      imageUrl: imageUrl ?? this.imageUrl,
+      imagePath: imagePath ?? this.imagePath, // Updated field
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isActive: isActive ?? this.isActive,
@@ -157,7 +157,7 @@ class MealModel {
   int get hashCode => id.hashCode;
 }
 
-// Meal ingredient model
+// Meal ingredient model (unchanged)
 class MealIngredient {
   final String articleId;
   final String articleName;
@@ -177,9 +177,9 @@ class MealIngredient {
     return MealIngredient(
       articleId: map['articleId'] ?? '',
       articleName: map['articleName'] ?? '',
-      quantity: (map['quantity'] ?? 0.0).uble(),
+      quantity: (map['quantity'] ?? 0.0).toDouble(),
       unit: map['unit'] ?? '',
-      pricePerUnit: (map['pricePerUnit'] ?? 0.0).uble(),
+      pricePerUnit: (map['pricePerUnit'] ?? 0.0).toDouble(),
     );
   }
 

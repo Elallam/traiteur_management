@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:traiteur_management/core/utils/helpers.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
@@ -16,9 +17,9 @@ class EnhancedOccasionDetailsScreen extends StatefulWidget {
   final OccasionModel occasion;
 
   const EnhancedOccasionDetailsScreen({
-    Key? key,
+    super.key,
     required this.occasion,
-  }) : super(key: key);
+  });
 
   @override
   State<EnhancedOccasionDetailsScreen> createState() => _EnhancedOccasionDetailsScreenState();
@@ -150,52 +151,66 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
   }
 
   Widget _buildStatusCard() {
-    final l10n = AppLocalizations.of(context)!; // Localizations instance
+    final l10n = AppLocalizations.of(context)!;
     Color statusColor = _getStatusColor(widget.occasion.status);
     IconData statusIcon = _getStatusIcon(widget.occasion.status);
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(statusIcon, color: statusColor, size: 32),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.occasion.status.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: statusColor,
-                    ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
                   ),
-                  Text(
-                    _getStatusDescription(widget.occasion.status),
-                    style: const TextStyle(color: AppColors.textSecondary),
-                  ),
-                  if (widget.occasion.isUpcoming)
-                    Text(
-                      l10n.inDays(widget.occasion.daysUntil), // Localized
-                      style: const TextStyle(
-                        color: AppColors.warning,
-                        fontWeight: FontWeight.w500,
+                  child: Icon(statusIcon, color: statusColor, size: 24), // Reduced size
+                ),
+                const SizedBox(width: 12), // Reduced spacing
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _getStatus(widget.occasion.status.toUpperCase()),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1, // Prevent overflow
+                        overflow: TextOverflow.ellipsis, // Add ellipsis if too long
                       ),
-                    ),
-                ],
-              ),
+                      const SizedBox(height: 4), // Added spacing
+                      Text(
+                        _getStatusDescription(widget.occasion.status),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        maxLines: 2, // Allow for longer descriptions
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (widget.occasion.isUpcoming) ...[
+                        const SizedBox(height: 4), // Added spacing
+                        Text(
+                          l10n.inDays(widget.occasion.daysUntil),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.warning,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
-            if (widget.occasion.status != 'completed' && widget.occasion.status != 'cancelled')
+            const SizedBox(height: 10,),
+            if (widget.occasion.status != 'completed' &&
+                widget.occasion.status != 'cancelled')
               _buildStatusChangeButton(),
           ],
         ),
@@ -283,21 +298,21 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
                 Expanded(
                   child: _buildFinancialItem(
                     l10n.totalCost, // Localized
-                    '\$${widget.occasion.totalCost.toStringAsFixed(2)}',
+                    Helpers.formatMAD(widget.occasion.totalCost),
                     AppColors.error,
                   ),
                 ),
                 Expanded(
                   child: _buildFinancialItem(
                     l10n.totalPrice, // Localized
-                    '\$${widget.occasion.totalPrice.toStringAsFixed(2)}',
+                    Helpers.formatMAD(widget.occasion.totalPrice),
                     AppColors.info,
                   ),
                 ),
                 Expanded(
                   child: _buildFinancialItem(
                     l10n.profit, // Localized
-                    '\$${widget.occasion.profit.toStringAsFixed(2)}',
+                    Helpers.formatMAD(widget.occasion.profit),
                     AppColors.success,
                   ),
                 ),
@@ -315,7 +330,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
             ),
             const SizedBox(height: 4),
             Text(
-              l10n.profitMarginValue(widget.occasion.profitPercentage.toStringAsFixed(1)), // Localized
+              l10n.profitMarginValue(widget.occasion.profit.toStringAsFixed(1)), // Localized
               style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textSecondary,
@@ -718,7 +733,7 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
       style: ElevatedButton.styleFrom(
         backgroundColor: _getStatusColor(nextStatus),
       ),
-      child: Text(l10n.markAsStatus(nextStatus.toUpperCase())), // Localized
+      child: Text(l10n.markAsStatus(_getStatus(nextStatus.toUpperCase()))), // Localized
     );
   }
 
@@ -832,6 +847,25 @@ class _EnhancedOccasionDetailsScreenState extends State<EnhancedOccasionDetailsS
         return '';
     }
   }
+
+  String _getStatus(String status) {
+    final l10n = AppLocalizations.of(context)!; // Localizations instance
+    switch (status.toLowerCase()) {
+      case 'planned':
+        return l10n.planned; // Localized
+      case 'confirmed':
+        return l10n.confirmed; // Localized
+      case 'in_progress':
+        return l10n.inProgress; // Localized
+      case 'completed':
+        return l10n.completed; // Localized
+      case 'cancelled':
+        return l10n.cancelled; // Localized
+      default:
+        return l10n.unkown; // Localized
+    }
+  }
+
 
   Color _getEquipmentStatusColor(String status) {
     switch (status.toLowerCase()) {

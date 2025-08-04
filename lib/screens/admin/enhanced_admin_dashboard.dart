@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/widgets/admin/employee/equipment_requests_card.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/dashboard/analytics/revenue_chart_widget.dart';
 import '../../core/widgets/dashboard/common/equipment_utilization_widget.dart';
@@ -28,6 +29,7 @@ import 'employee_management.dart';
 import 'occasion_management.dart';
 import 'stock_management.dart';
 import 'profit_analytics_screen.dart';
+import 'equipment_approval_screen.dart';
 
 /// Enhanced Admin Dashboard - Refactored version
 /// Main dashboard coordinator that manages state and orchestrates components
@@ -184,6 +186,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
           children: [
             // Key Metrics Section
             const KeyMetricsSection(),
+            const SizedBox(height: 24),
+
+            // Equipment Requests Card - NEW ADDITION
+            const EquipmentRequestsCard(),
             const SizedBox(height: 24),
 
             // Alerts and Notifications Section
@@ -389,33 +395,38 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   /// Builds a single quick stat item
   Widget _buildQuickStatItem(String label, String value, IconData icon, Color color) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(width: 8),
+        Icon(icon, color: color, size: 18), // Smaller icon
+        const SizedBox(width: 6), // Reduced spacing
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               value,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14, // Smaller font
                 fontWeight: FontWeight.bold,
                 color: color,
               ),
+              overflow: TextOverflow.fade,
+              maxLines: 1,
             ),
             Text(
               label,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 9, // Smaller font
                 color: AppColors.textSecondary,
               ),
+              overflow: TextOverflow.clip,
+              maxLines: 1,
             ),
           ],
         ),
       ],
     );
   }
-
   /// Builds Recent Activities section
   Widget _buildRecentActivitiesSection() {
     final l10n = AppLocalizations.of(context)!;
@@ -622,12 +633,73 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   /// Shows notifications dialog
   void _showNotifications() {
     final l10n = AppLocalizations.of(context)!;
+    final occasionProvider = Provider.of<OccasionProvider>(context, listen: false);
+    final alerts = occasionProvider.getOccasionsRequiringAttention();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.notifications),
-        content: Text(l10n.noAlertsMessage),
+        title: Row(
+          children: [
+            const Icon(Icons.notifications, color: AppColors.primary),
+            const SizedBox(width: 8),
+            Text(l10n.notifications),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                alerts.length.toString(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Container(
+          width: double.maxFinite,
+          constraints: const BoxConstraints(maxHeight: 400),
+          child: alerts.isEmpty
+              ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.notifications_none,
+                size: 64,
+                color: AppColors.textSecondary.withOpacity(0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.noAlertsMessage,
+                style: const TextStyle(color: AppColors.textSecondary),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          )
+              : ListView.builder(
+            shrinkWrap: true,
+            itemCount: alerts.length,
+            itemBuilder: (context, index) {
+              final alert = alerts[index];
+              return _buildNotificationItem(alert, l10n);
+            },
+          ),
+        ),
         actions: [
+          if (alerts.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _showAllAlerts();
+              },
+              child: Text(l10n.viewAll),
+            ),
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(l10n.close),
@@ -637,6 +709,88 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     );
   }
 
+  /// Builds a single notification item
+  Widget _buildNotificationItem(Map<String, dynamic> alert, AppLocalizations l10n) {
+    Color priorityColor = _getPriorityColor(alert['priority']);
+    IconData priorityIcon = _getPriorityIcon(alert['type']);
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        dense: true,
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: priorityColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            priorityIcon,
+            color: priorityColor,
+            size: 20,
+          ),
+        ),
+        title: Text(
+          alert['title'],
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+        subtitle: Text(
+          alert['message'],
+          style: const TextStyle(fontSize: 12),
+        ),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: priorityColor,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            alert['priority'].toString().toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 8,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+          _handleAlertTap(alert);
+        },
+      ),
+    );
+  }
+
+  /// Gets priority color
+  Color _getPriorityColor(String priority) {
+    switch (priority) {
+      case 'urgent':
+        return AppColors.error;
+      case 'high':
+        return AppColors.warning;
+      case 'medium':
+        return AppColors.info;
+      default:
+        return AppColors.textSecondary;
+    }
+  }
+
+  /// Gets priority icon
+  IconData _getPriorityIcon(String type) {
+    switch (type) {
+      case 'today':
+        return Icons.today;
+      case 'overdue':
+        return Icons.warning;
+      case 'upcoming':
+        return Icons.schedule;
+      default:
+        return Icons.info;
+    }
+  }
   /// Shows quick actions bottom sheet
   void _showQuickActions() {
     final l10n = AppLocalizations.of(context)!;
@@ -674,6 +828,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             _buildQuickActionItem(Icons.person_add, l10n.addEmployee, () {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (_) => const EmployeeManagementScreen()));
+            }),
+            _buildQuickActionItem(Icons.approval, l10n.reviewRequests, () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const EquipmentApprovalScreen()));
             }),
           ],
         ),

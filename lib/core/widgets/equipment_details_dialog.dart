@@ -1,5 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:traiteur_management/core/utils/helpers.dart';
+import 'package:traiteur_management/providers/category_provider.dart';
+
+import '../../models/category_model.dart';
 import '../../models/equipment_model.dart';
 import '../constants/app_colors.dart';
 import 'add_edit_equipment_dialog.dart';
@@ -8,11 +14,22 @@ import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // I
 class EquipmentDetailsDialog extends StatelessWidget {
   final EquipmentModel equipment;
 
-  const EquipmentDetailsDialog({Key? key, required this.equipment}) : super(key: key);
+  const EquipmentDetailsDialog({super.key, required this.equipment});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final category = categoryProvider.categories.firstWhere(
+          (c) => c.id == equipment.category,
+      orElse: () => CategoryModel(
+        id: '',
+        name: l10n.uncategorized,
+        type: 'equipment',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
     return Dialog(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
@@ -35,15 +52,11 @@ class EquipmentDetailsDialog extends StatelessWidget {
                   Container(
                     width: 50,
                     height: 50,
-                    decoration: BoxDecoration(
-                      color: AppColors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: equipment.imageUrl != null
+                    child: equipment.imagePath != null
                         ? ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        equipment.imageUrl!,
+                      child: Image.file(
+                        File(equipment.imagePath!),
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(
@@ -74,7 +87,7 @@ class EquipmentDetailsDialog extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          equipment.category.replaceAll('_', ' ').toUpperCase(),
+                          category.name.replaceAll('_', ' ').toUpperCase(),
                           style: TextStyle(
                             color: AppColors.white.withOpacity(0.8),
                             fontSize: 14,
@@ -186,8 +199,8 @@ class EquipmentDetailsDialog extends StatelessWidget {
                     _buildDetailRow(l10n.totalQuantity, equipment.totalQuantity.toString()), // Localized
                     _buildDetailRow(l10n.available, equipment.availableQuantity.toString()), // Localized
                     _buildDetailRow(l10n.checkedOut, equipment.checkedOutQuantity.toString()), // Localized
-                    _buildDetailRow(l10n.category, equipment.category.replaceAll('_', ' ').toUpperCase()), // Localized
-
+                    _buildDetailRow(l10n.category, category.name.replaceAll('_', ' ').toUpperCase()), // Localized
+                    _buildDetailRow(l10n.price, Helpers.formatMAD(equipment.price ?? 0.00)), // Add 'currency' in ARB files
                     if (equipment.description != null && equipment.description!.isNotEmpty) ...[
                       const SizedBox(height: 16),
                       Text(

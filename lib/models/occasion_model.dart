@@ -11,6 +11,9 @@ class OccasionModel {
   final List<OccasionEquipment> equipment;
   final double totalCost;
   final double totalPrice;
+  final double equipmentPrice; // NEW: Total equipment rental price
+  final double transportPrice; // NEW: Transport/delivery cost
+  final double profitMarginPercentage; // NEW: Profit margin percentage
   final int expectedGuests;
   final String status; // planned, confirmed, in_progress, completed, cancelled
   final String? notes;
@@ -31,6 +34,9 @@ class OccasionModel {
     required this.equipment,
     required this.totalCost,
     required this.totalPrice,
+    this.equipmentPrice = 0.0, // NEW: Default to 0
+    this.transportPrice = 0.0, // NEW: Default to 0
+    this.profitMarginPercentage = 0.0, // NEW: Default to 0
     required this.expectedGuests,
     required this.status,
     this.notes,
@@ -58,6 +64,9 @@ class OccasionModel {
           .toList() ?? [],
       totalCost: (map['totalCost'] ?? 0.0).toDouble(),
       totalPrice: (map['totalPrice'] ?? 0.0).toDouble(),
+      equipmentPrice: (map['equipmentPrice'] ?? 0.0).toDouble(), // NEW
+      transportPrice: (map['transportPrice'] ?? 0.0).toDouble(), // NEW
+      profitMarginPercentage: (map['profitMarginPercentage'] ?? 0.0).toDouble(), // NEW
       expectedGuests: map['expectedGuests'] ?? 0,
       status: map['status'] ?? 'planned',
       notes: map['notes'],
@@ -81,6 +90,9 @@ class OccasionModel {
       'equipment': equipment.map((eq) => eq.toMap()).toList(),
       'totalCost': totalCost,
       'totalPrice': totalPrice,
+      'equipmentPrice': equipmentPrice, // NEW
+      'transportPrice': transportPrice, // NEW
+      'profitMarginPercentage': profitMarginPercentage, // NEW
       'expectedGuests': expectedGuests,
       'status': status,
       'notes': notes,
@@ -104,6 +116,9 @@ class OccasionModel {
     List<OccasionEquipment>? equipment,
     double? totalCost,
     double? totalPrice,
+    double? equipmentPrice, // NEW
+    double? transportPrice, // NEW
+    double? profitMarginPercentage, // NEW
     int? expectedGuests,
     String? status,
     String? notes,
@@ -124,6 +139,9 @@ class OccasionModel {
       equipment: equipment ?? this.equipment,
       totalCost: totalCost ?? this.totalCost,
       totalPrice: totalPrice ?? this.totalPrice,
+      equipmentPrice: equipmentPrice ?? this.equipmentPrice, // NEW
+      transportPrice: transportPrice ?? this.transportPrice, // NEW
+      profitMarginPercentage: profitMarginPercentage ?? this.profitMarginPercentage, // NEW
       expectedGuests: expectedGuests ?? this.expectedGuests,
       status: status ?? this.status,
       notes: notes ?? this.notes,
@@ -133,13 +151,44 @@ class OccasionModel {
     );
   }
 
-  // Calculate profit
-  double get profit => totalPrice - totalCost;
+  // Calculate base cost (meals + equipment + transport)
+  double get baseCost => totalCost + equipmentPrice + transportPrice;
 
-  // Calculate profit percentage
-  double get profitPercentage {
+  // Calculate profit using the profit margin percentage
+  double get calculatedProfit => baseCost * (profitMarginPercentage / 100);
+
+  // Calculate final total price including profit margin
+  double get finalTotalPrice => baseCost + calculatedProfit;
+
+  // Calculate actual profit (difference between total price and base cost)
+  double get profit => totalPrice - baseCost;
+
+  // Calculate actual profit percentage based on current prices
+  double get actualProfitPercentage {
+    if (baseCost == 0) return 0.0;
+    return (profit / baseCost) * 100;
+  }
+
+  // Get meals total cost
+  double get mealsCost => meals.fold(0.0, (sum, meal) => sum + meal.totalPrice);
+
+  // Get breakdown of all costs
+  Map<String, double> get costBreakdown => {
+    'mealsCost': mealsCost,
+    'equipmentPrice': equipmentPrice,
+    'transportPrice': transportPrice,
+    'baseCost': baseCost,
+    'profitAmount': calculatedProfit,
+    'finalTotal': finalTotalPrice,
+  };
+
+  // Legacy profit calculation for backward compatibility
+  double get legacyProfit => totalPrice - totalCost;
+
+  // Legacy profit percentage calculation for backward compatibility
+  double get legacyProfitPercentage {
     if (totalCost == 0) return 0.0;
-    return (profit / totalCost) * 100;
+    return (legacyProfit / totalCost) * 100;
   }
 
   // Check if occasion is upcoming (within next 7 days)
@@ -167,7 +216,7 @@ class OccasionModel {
 
   @override
   String toString() {
-    return 'OccasionModel(id: $id, title: $title, date: $date, status: $status)';
+    return 'OccasionModel(id: $id, title: $title, date: $date, status: $status, equipmentPrice: $equipmentPrice, transportPrice: $transportPrice)';
   }
 
   @override
@@ -222,11 +271,13 @@ class OccasionMeal {
   }
 }
 
-// Occasion equipment model
+// Occasion equipment model - UPDATED with price information
 class OccasionEquipment {
   final String equipmentId;
   final String equipmentName;
   final int quantity;
+  final double unitRentalPrice; // NEW: Price per unit for rental
+  final double totalRentalPrice; // NEW: Total rental price for this equipment
   final DateTime? checkoutDate;
   final DateTime? returnDate;
   final String status; // assigned, checked_out, returned
@@ -235,6 +286,8 @@ class OccasionEquipment {
     required this.equipmentId,
     required this.equipmentName,
     required this.quantity,
+    this.unitRentalPrice = 0.0, // NEW: Default to 0
+    this.totalRentalPrice = 0.0, // NEW: Default to 0
     this.checkoutDate,
     this.returnDate,
     required this.status,
@@ -245,6 +298,8 @@ class OccasionEquipment {
       equipmentId: map['equipmentId'] ?? '',
       equipmentName: map['equipmentName'] ?? '',
       quantity: map['quantity'] ?? 0,
+      unitRentalPrice: (map['unitRentalPrice'] ?? 0.0).toDouble(), // NEW
+      totalRentalPrice: (map['totalRentalPrice'] ?? 0.0).toDouble(), // NEW
       checkoutDate: map['checkoutDate']?.toDate(),
       returnDate: map['returnDate']?.toDate(),
       status: map['status'] ?? 'assigned',
@@ -256,6 +311,8 @@ class OccasionEquipment {
       'equipmentId': equipmentId,
       'equipmentName': equipmentName,
       'quantity': quantity,
+      'unitRentalPrice': unitRentalPrice, // NEW
+      'totalRentalPrice': totalRentalPrice, // NEW
       'checkoutDate': checkoutDate,
       'returnDate': returnDate,
       'status': status,
@@ -266,6 +323,8 @@ class OccasionEquipment {
     String? equipmentId,
     String? equipmentName,
     int? quantity,
+    double? unitRentalPrice, // NEW
+    double? totalRentalPrice, // NEW
     DateTime? checkoutDate,
     DateTime? returnDate,
     String? status,
@@ -274,6 +333,8 @@ class OccasionEquipment {
       equipmentId: equipmentId ?? this.equipmentId,
       equipmentName: equipmentName ?? this.equipmentName,
       quantity: quantity ?? this.quantity,
+      unitRentalPrice: unitRentalPrice ?? this.unitRentalPrice, // NEW
+      totalRentalPrice: totalRentalPrice ?? this.totalRentalPrice, // NEW
       checkoutDate: checkoutDate ?? this.checkoutDate,
       returnDate: returnDate ?? this.returnDate,
       status: status ?? this.status,
@@ -282,6 +343,6 @@ class OccasionEquipment {
 
   @override
   String toString() {
-    return 'OccasionEquipment(equipment: $equipmentName, quantity: $quantity, status: $status)';
+    return 'OccasionEquipment(equipment: $equipmentName, quantity: $quantity, status: $status, rentalPrice: $totalRentalPrice)';
   }
 }

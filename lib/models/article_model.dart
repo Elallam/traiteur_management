@@ -6,7 +6,7 @@ class ArticleModel {
   final String unit; // kg, pieces, liters, etc.
   final String category; // fruits, vegetables, meat, dairy, etc.
   final String? description;
-  final String? imageUrl;
+  final String? imagePath; // Changed from imageUrl to imagePath for local images
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isActive;
@@ -19,7 +19,7 @@ class ArticleModel {
     required this.unit,
     required this.category,
     this.description,
-    this.imageUrl,
+    this.imagePath, // Updated parameter name
     required this.createdAt,
     required this.updatedAt,
     this.isActive = true,
@@ -35,7 +35,7 @@ class ArticleModel {
       unit: map['unit'] ?? 'pieces',
       category: map['category'] ?? 'other',
       description: map['description'],
-      imageUrl: map['imageUrl'],
+      imagePath: map['imagePath'], // Updated field name
       createdAt: map['createdAt']?.toDate() ?? DateTime.now(),
       updatedAt: map['updatedAt']?.toDate() ?? DateTime.now(),
       isActive: map['isActive'] ?? true,
@@ -51,7 +51,7 @@ class ArticleModel {
       'unit': unit,
       'category': category,
       'description': description,
-      'imageUrl': imageUrl,
+      'imagePath': imagePath, // Updated field name
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'isActive': isActive,
@@ -67,7 +67,7 @@ class ArticleModel {
     String? unit,
     String? category,
     String? description,
-    String? imageUrl,
+    String? imagePath, // Updated parameter name
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isActive,
@@ -80,7 +80,7 @@ class ArticleModel {
       unit: unit ?? this.unit,
       category: category ?? this.category,
       description: description ?? this.description,
-      imageUrl: imageUrl ?? this.imageUrl,
+      imagePath: imagePath ?? this.imagePath, // Updated field
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isActive: isActive ?? this.isActive,

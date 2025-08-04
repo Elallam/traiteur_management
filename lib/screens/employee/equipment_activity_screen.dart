@@ -123,8 +123,8 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
         // Filter by date range
         bool matchesDateRange = true;
         if (_dateRange != null) {
-          matchesDateRange = checkout.checkoutDate.isAfter(_dateRange!.start.subtract(const Duration(days: 1))) &&
-              checkout.checkoutDate.isBefore(_dateRange!.end.add(const Duration(days: 1)));
+          matchesDateRange = checkout.checkoutDate!.isAfter(_dateRange!.start.subtract(const Duration(days: 1))) &&
+              checkout.checkoutDate!.isBefore(_dateRange!.end.add(const Duration(days: 1)));
         }
 
         // Filter by search query
@@ -141,7 +141,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
       }).toList();
 
       // Sort by checkout date (newest first)
-      _filteredCheckouts.sort((a, b) => b.checkoutDate.compareTo(a.checkoutDate));
+      _filteredCheckouts.sort((a, b) => b.checkoutDate!.compareTo(a.checkoutDate ?? DateTime.now()));
     });
   }
 
@@ -231,8 +231,8 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text('${AppLocalizations.of(context)!.quantity}: ${checkout.quantity}'), // Localized
-                  Text('${AppLocalizations.of(context)!.checkedOut}: ${_formatDateTime(checkout.checkoutDate)}'), // Localized
-                  Text('${AppLocalizations.of(context)!.duration}: ${_formatDuration(checkout.checkoutDate)}'), // Localized
+                  Text('${AppLocalizations.of(context)!.checkedOut}: ${_formatDateTime(checkout.checkoutDate ?? DateTime.now())}'), // Localized
+                  Text('${AppLocalizations.of(context)!.duration}: ${_formatDuration(checkout.checkoutDate ?? DateTime.now())}'), // Localized
                   if (checkout.isOverdue)
                     Text(
                       '${AppLocalizations.of(context)!.status}: ${AppLocalizations.of(context)!.overdue.toUpperCase()}', // Localized
@@ -296,14 +296,14 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
               _buildDetailRow(AppLocalizations.of(context)!.category, equipment?.category.toUpperCase() ?? AppLocalizations.of(context)!.unkown), // Localized
               _buildDetailRow(AppLocalizations.of(context)!.quantity, '${checkout.quantity}'), // Localized
               _buildDetailRow(AppLocalizations.of(context)!.status, checkout.status.toUpperCase()), // Localized
-              _buildDetailRow(AppLocalizations.of(context)!.checkoutDate, _formatDateTime(checkout.checkoutDate)), // Localized
+              _buildDetailRow(AppLocalizations.of(context)!.checkoutDate, _formatDateTime(checkout.checkoutDate ?? DateTime.now())), // Localized
               if (checkout.returnDate != null)
                 _buildDetailRow(AppLocalizations.of(context)!.returnDate, _formatDateTime(checkout.returnDate!)), // Localized
               _buildDetailRow(
                   AppLocalizations.of(context)!.duration, // Localized
                   checkout.returnDate != null
-                      ? _formatDurationBetween(checkout.checkoutDate, checkout.returnDate!)
-                      : _formatDuration(checkout.checkoutDate)),
+                      ? _formatDurationBetween(checkout.checkoutDate ?? DateTime.now(), checkout.returnDate!)
+                      : _formatDuration(checkout.checkoutDate ?? DateTime.now())),
               if (checkout.occasionId != null)
                 _buildDetailRow(AppLocalizations.of(context)!.occasionId, checkout.occasionId!), // Localized
               if (checkout.notes != null && checkout.notes!.isNotEmpty)
@@ -745,7 +745,7 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                             const Icon(Icons.login, size: 14, color: AppColors.textSecondary),
                             const SizedBox(width: 4),
                             Text(
-                              '${AppLocalizations.of(context)!.out}: ${_formatDate(checkout.checkoutDate)}', // Localized
+                              '${AppLocalizations.of(context)!.out}: ${_formatDate(checkout.checkoutDate ?? DateTime.now())}', // Localized
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -774,8 +774,8 @@ class _EquipmentActivityScreenState extends State<EquipmentActivityScreen>
                     children: [
                       Text(
                         checkout.returnDate != null
-                            ? _formatDurationBetween(checkout.checkoutDate, checkout.returnDate!)
-                            : _formatDuration(checkout.checkoutDate),
+                            ? _formatDurationBetween(checkout.checkoutDate ?? DateTime.now(), checkout.returnDate!)
+                            : _formatDuration(checkout.checkoutDate ?? DateTime.now()),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: isOverdue ? AppColors.error : AppColors.textPrimary,

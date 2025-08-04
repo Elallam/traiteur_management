@@ -1,1 +1,155 @@
-lib  ª       a p p . d a r t   ª       f i r e b a s e _ o p t i o n s . d a r t   ª       m a i n . d a r t   ª       s t r u c t u r e . t x t   ª         + - - - c o r e   ª       ª       f o r m _ v a l i d a t o r s . d a r t   ª       ª         ª       + - - - c o n s t a n t s   ª       ª               a p p _ c o l o r s . d a r t   ª       ª               a p p _ d i m e n s i o n s . d a r t   ª       ª               a p p _ s t r i n g s . d a r t   ª       ª                 ª       + - - - e r r o r   ª       ª               a p p _ e r r o r . d a r t   ª       ª               e r r o r _ h a n d l e r . d a r t   ª       ª                 ª       + - - - t h e m e   ª       ª               a p p _ t h e m e . d a r t   ª       ª                 ª       + - - - u t i l s   ª       ª               d a t e _ u t i l s . d a r t   ª       ª               h e l p e r s . d a r t   ª       ª               i 1 8 n _ u t i l s . d a r t   ª       ª               o p t i m i z e d _ f u t u r e _ b u i l d e r . d a r t   ª       ª               o p t i m i z e d _ t a b _ b a r . d a r t   ª       ª               p e r f o r m a n c e _ u t i l s . d a r t   ª       ª               s m a r t _ r e f r e s h e r . d a r t   ª       ª               v a l i d a t o r s . d a r t   ª       ª                 ª       + - - - w i d g e t s   ª                       a d d _ a r t i c l e _ d i a l o g . d a r t   ª                       a d d _ e d i t _ e q u i p m e n t _ d i a l o g . d a r t   ª                       a d d _ e d i t _ m e a l _ d i a l o g . d a r t   ª                       a r t i c l e _ d e t a i l s _ d i a l o g . d a r t   ª                       c u s t o m _ b u t t o n . d a r t   ª                       c u s t o m _ t e x t _ f i e l d . d a r t   ª                       e q u i p m e n t _ a v a i l a b i l i t y _ w i d g e t . d a r t   ª                       e q u i p m e n t _ b o o k i n g _ c a l e n d a r _ w i d g e t . d a r t   ª                       e q u i p m e n t _ d e t a i l s _ d i a l o g . d a r t   ª                       e r r o r _ b o u n d a r y . d a r t   ª                       e r r o r _ w i d g e t . d a r t   ª                       l a n g u a g e _ s e l e c t o r . d a r t   ª                       l o a d i n g _ w i d g e t . d a r t   ª                       m e a l _ d e t a i l s _ d i a l o g . d a r t   ª                         + - - - g e n e r a t e d   ª       + - - - l 1 0 n   ª                       a p p _ l o c a l i z a t i o n s . d a r t   ª                       a p p _ l o c a l i z a t i o n s _ a r . d a r t   ª                       a p p _ l o c a l i z a t i o n s _ e n . d a r t   ª                       a p p _ l o c a l i z a t i o n s _ f r . d a r t   ª                         + - - - l 1 0 n   ª               a p p _ a r . a r b   ª               a p p _ e n . a r b   ª               a p p _ f r . a r b   ª                 + - - - m o d e l s   ª               a r t i c l e _ m o d e l . d a r t   ª               e q u i p m e n t _ m o d e l . d a r t   ª               m e a l _ m o d e l . d a r t   ª               m o c k _ u s e r c r e d e n t i a l . d a r t   ª               o c c a s i o n _ m o d e l . d a r t   ª               u s e r _ m o d e l . d a r t   ª                 + - - - p r o v i d e r s   ª               a u t h _ p r o v i d e r . d a r t   ª               e m p l o y e e _ p r o v i d e r . d a r t   ª               e q u i p m e n t _ b o o k i n g _ p r o v i d e r . d a r t   ª               l o c a l e _ p r o v i d e r . d a r t   ª               o c c a s i o n _ p r o v i d e r . d a r t   ª               s t o c k _ p r o v i d e r . d a r t   ª                 + - - - r o u t e s   ª               a p p _ r o u t e s . d a r t   ª                 + - - - s c r e e n s   ª       + - - - a d m i n   ª       ª               a d d _ e d i t _ o c c a i o n _ s c r e e n . d a r t   ª       ª               a d m i n _ d a s h b o a r d . d a r t   ª       ª               d a s h b o a r d _ n o t i f i c a t i o n s _ s c r e e n . d a r t   ª       ª               e m p l o y e e _ m a n a g e m e n t . d a r t   ª       ª               e n h a n c e d _ a d m i n _ d a s h b o a r d . d a r t   ª       ª               e n h a n c e d _ o c c a s i o n _ d e t a i l s _ s c r e e n . d a r t   ª       ª               o c c a s i o n _ d e t a i l s _ s c r e e n . d a r t   ª       ª               o c c a s i o n _ m a n a g e m e n t . d a r t   ª       ª               p r o f i t _ a n a l y t i c s _ s c r e e n . d a r t   ª       ª               s t o c k _ m a n a g e m e n t . d a r t   ª       ª                 ª       + - - - a u t h   ª       ª               l o g i n _ s c r e e n . d a r t   ª       ª               s p l a s h _ s c r e e n . d a r t   ª       ª                 ª       + - - - e m p l o y e e   ª                       e m p l o y e e _ d a s h b o a r d . d a r t   ª                       e q u i p m e n t _ a c t i v i t y _ s c r e e n . d a r t   ª                       e q u i p m e n t _ c h e c k o u t . d a r t   ª                         + - - - s e r v i c e s                   a u t h _ s e r v i c e . d a r t                   e q u i p m e n t _ b o o k i n g _ s e r v i c e . d a r t                   f i r e s t o r e _ s e r v i c e . d a r t                   n o t i f i c a t i o n _ s e r v i c e . d a r t                   s t o r a g e _ s e r v i c e . d a r t                     
+Folder PATH listing for volume OS
+Volume serial number is 00000096 3065:E17F
+C:.
+¦   app.dart
+¦   firebase_options.dart
+¦   main.dart
+¦   structure.txt
+¦   tree.txt
+¦   
++---core
+¦   ¦   form_validators.dart
+¦   ¦   
+¦   +---constants
+¦   ¦       app_colors.dart
+¦   ¦       app_dimensions.dart
+¦   ¦       app_strings.dart
+¦   ¦       
+¦   +---error
+¦   ¦       app_error.dart
+¦   ¦       error_handler.dart
+¦   ¦       
+¦   +---theme
+¦   ¦       app_theme.dart
+¦   ¦       
+¦   +---utils
+¦   ¦       date_utils.dart
+¦   ¦       helpers.dart
+¦   ¦       i18n_utils.dart
+¦   ¦       optimized_future_builder.dart
+¦   ¦       optimized_tab_bar.dart
+¦   ¦       performance_utils.dart
+¦   ¦       smart_refresher.dart
+¦   ¦       validators.dart
+¦   ¦       
+¦   +---widgets
+¦       ¦   add_article_dialog.dart
+¦       ¦   add_edit_equipment_dialog.dart
+¦       ¦   add_edit_meal_dialog.dart
+¦       ¦   article_details_dialog.dart
+¦       ¦   custom_button.dart
+¦       ¦   custom_text_field.dart
+¦       ¦   equipment_availability_widget.dart
+¦       ¦   equipment_booking_calendar_widget.dart
+¦       ¦   equipment_details_dialog.dart
+¦       ¦   error_boundary.dart
+¦       ¦   error_widget.dart
+¦       ¦   language_selector.dart
+¦       ¦   loading_widget.dart
+¦       ¦   meal_details_dialog.dart
+¦       ¦   
+¦       +---admin
+¦       ¦   +---employee
+¦       ¦   ¦       add_edit_employee_widget.dart
+¦       ¦   ¦       employee_analytics_widget.dart
+¦       ¦   ¦       employee_card_widget.dart
+¦       ¦   ¦       employee_details_widget.dart
+¦       ¦   ¦       employee_empty_state_widget.dart
+¦       ¦   ¦       employee_search_filter_widget.dart
+¦       ¦   ¦       employee_statistics_widget.dart
+¦       ¦   ¦       
+¦       ¦   +---occasion
+¦       ¦       +---add_edit_occasion
+¦       ¦               basic_info_tab.dart
+¦       ¦               equipment_tab.dart
+¦       ¦               financial_tab.dart
+¦       ¦               meals_tab.dart
+¦       ¦               tabs_header.dart
+¦       ¦               
+¦       +---dashboard
+¦           ¦   dashboard_drawer.dart
+¦           ¦   
+¦           +---analytics
+¦           ¦       revenue_chart_widget.dart
+¦           ¦       
+¦           +---common
+¦           ¦       equipment_utilization_widget.dart
+¦           ¦       metric_card.dart
+¦           ¦       popular_items_widget.dart
+¦           ¦       quick_actions_bottom_sheet.dart
+¦           ¦       section_header.dart
+¦           ¦       
+¦           +---overview
+¦           ¦       alerts_section.dart
+¦           ¦       key_metrics_section.dart
+¦           ¦       
+¦           +---reports
+¦                   equipment_report_widget.dart
+¦                   export_section_widget.dart
+¦                   financial_report_widget.dart
+¦                   report_filters_widget.dart
+¦                   
++---generated
+¦   +---l10n
+¦           app_localizations.dart
+¦           app_localizations_ar.dart
+¦           app_localizations_en.dart
+¦           app_localizations_fr.dart
+¦           
++---l10n
+¦       app_ar.arb
+¦       app_en.arb
+¦       app_fr.arb
+¦       
++---models
+¦       article_model.dart
+¦       category_model.dart
+¦       equipment_model.dart
+¦       meal_model.dart
+¦       mock_usercredential.dart
+¦       occasion_model.dart
+¦       selected_equipment_model.dart
+¦       user_model.dart
+¦       
++---providers
+¦       auth_provider.dart
+¦       category_provider.dart
+¦       employee_provider.dart
+¦       equipment_booking_provider.dart
+¦       locale_provider.dart
+¦       occasion_provider.dart
+¦       stock_provider.dart
+¦       
++---routes
+¦       app_routes.dart
+¦       
++---screens
+¦   +---admin
+¦   ¦       add_edit_occaion_screen.dart
+¦   ¦       admin_dashboard.dart
+¦   ¦       category_management_screen.dart
+¦   ¦       dashboard_notifications_screen.dart
+¦   ¦       employee_management.dart
+¦   ¦       enhanced_admin_dashboard.dart
+¦   ¦       enhanced_occasion_details_screen.dart
+¦   ¦       occasion_details_screen.dart
+¦   ¦       occasion_management.dart
+¦   ¦       profit_analytics_screen.dart
+¦   ¦       stock_management.dart
+¦   ¦       
+¦   +---auth
+¦   ¦       login_screen.dart
+¦   ¦       splash_screen.dart
+¦   ¦       
+¦   +---employee
+¦           employee_dashboard.dart
+¦           equipment_activity_screen.dart
+¦           equipment_checkout.dart
+¦           
++---services
+        auth_service.dart
+        equipment_booking_service.dart
+        firestore_service.dart
+        notification_service.dart
+        storage_service.dart
+        

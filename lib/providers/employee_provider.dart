@@ -181,7 +181,7 @@ class EmployeeProvider extends ChangeNotifier {
   List<EquipmentCheckout> getEmployeeCheckoutHistory(String employeeId) {
     return _equipmentCheckouts.where((checkout) {
       return checkout.employeeId == employeeId;
-    }).toList()..sort((a, b) => b.checkoutDate.compareTo(a.checkoutDate));
+    }).toList()..sort((a, b) => b.checkoutDate!.compareTo(a.checkoutDate ?? DateTime.now()));
   }
 
   /// Get overdue checkouts for employee
@@ -281,7 +281,7 @@ class EmployeeProvider extends ChangeNotifier {
     if (returnedCheckouts.isNotEmpty) {
       int totalDuration = 0;
       for (var checkout in returnedCheckouts) {
-        totalDuration += checkout.returnDate!.difference(checkout.checkoutDate).inHours;
+        totalDuration += checkout.returnDate!.difference(checkout.checkoutDate ?? DateTime.now()).inHours;
       }
       averageCheckoutDuration = totalDuration / returnedCheckouts.length;
     }
@@ -291,8 +291,8 @@ class EmployeeProvider extends ChangeNotifier {
     if (completedCheckouts > 0) {
       int onTimeReturns = returnedCheckouts
           .where((checkout) => checkout.returnDate != null &&
-          checkout.returnDate!.isBefore(checkout.checkoutDate) ||
-          checkout.returnDate!.isAtSameMomentAs(checkout.checkoutDate))
+          checkout.returnDate!.isBefore(checkout.checkoutDate ?? DateTime.now()) ||
+          checkout.returnDate!.isAtSameMomentAs(checkout.checkoutDate ?? DateTime.now()))
           .length;
       reliabilityScore = (onTimeReturns / completedCheckouts) * 100;
     }
@@ -338,7 +338,7 @@ class EmployeeProvider extends ChangeNotifier {
     for (var checkout in _equipmentCheckouts) {
       // Calculate overdue status dynamically
       final isOverdue = checkout.status == 'checked_out' &&
-          now.isAfter(checkout.checkoutDate);
+          now.isAfter(checkout.checkoutDate ?? DateTime.now());
 
       if (isOverdue) {
         if (!overdueByEmployee.containsKey(checkout.employeeId)) {

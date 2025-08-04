@@ -23,6 +23,8 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   String _selectedFilter = 'all';
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  String _sortBy = 'date'; // Default sorting by date
+  final List<String> _sortOptions = ['date', 'name', 'totalCost'];
 
   @override
   void initState() {
@@ -256,49 +258,142 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
   }
 
   Widget _buildOccasionsList(OccasionProvider occasionProvider) {
-    final l10n = AppLocalizations.of(context)!; // Localizations instance
+    final l10n = AppLocalizations.of(context)!;
     List<OccasionModel> filteredOccasions = _getFilteredOccasions(occasionProvider);
 
-    if (filteredOccasions.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.event_busy,
-              size: 64,
-              color: AppColors.textSecondary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _searchQuery.isNotEmpty
-                  ? l10n.noOccasionsFoundSearch(_searchQuery) // Localized
-                  : l10n.noOccasionsFound, // Localized
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 16,
+    return Column(
+      children: [
+        // Add sorting header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Row(
+            children: [
+              Text(
+                l10n.sortBy,
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Date sort button
+              _buildSortButton(
+                context,
+                occasionProvider,
+                field: 'date',
+                label: l10n.date,
+                icon: Icons.calendar_today,
+              ),
+              const SizedBox(width: 8),
+              // Name sort button
+              _buildSortButton(
+                context,
+                occasionProvider,
+                field: 'name',
+                label: l10n.name,
+                icon: Icons.title,
+              ),
+              const SizedBox(width: 8),
+              // Cost sort button
+              _buildSortButton(
+                context,
+                occasionProvider,
+                field: 'totalCost',
+                label: l10n.cost,
+                icon: Icons.attach_money,
+              ),
+            ],
+          ),
+        ),
+
+        // List content
+        if (filteredOccasions.isEmpty)
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.event_busy,
+                    size: 64,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    _searchQuery.isNotEmpty
+                        ? l10n.noOccasionsFoundSearch(_searchQuery)
+                        : l10n.noOccasionsFound,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  CustomButton(
+                    text: l10n.addFirstEvent,
+                    onPressed: () => _showAddOccasionDialog(context),
+                    width: 160,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            CustomButton(
-              text: l10n.addFirstEvent, // Localized
-              onPressed: () => _showAddOccasionDialog(context),
-              width: 160,
+          )
+        else
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: filteredOccasions.length,
+              itemBuilder: (context, index) {
+                final occasion = filteredOccasions[index];
+                return _buildOccasionCard(occasion, occasionProvider);
+              },
             ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: filteredOccasions.length,
-      itemBuilder: (context, index) {
-        final occasion = filteredOccasions[index];
-        return _buildOccasionCard(occasion, occasionProvider);
-      },
+          ),
+      ],
     );
   }
+
+// Helper widget for sort buttons
+  Widget _buildSortButton(
+      BuildContext context,
+      OccasionProvider provider, {
+        required String field,
+        required String label,
+        required IconData icon,
+      }) {
+    final bool isActive = provider.currentSortField == field;
+    final Color activeColor = Theme.of(context).primaryColor;
+    const Color inactiveColor = AppColors.textSecondary;
+
+    return GestureDetector(
+      onTap: () => provider.sortOccasions(field),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 16,
+            color: isActive ? activeColor : inactiveColor,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: isActive ? activeColor : inactiveColor,
+              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          if (isActive)
+            Icon(
+              provider.isSortAscending ? Icons.arrow_upward : Icons.arrow_downward,
+              size: 14,
+              color: activeColor,
+            ),
+        ],
+      ),
+    );
+  }
+
 
   List<OccasionModel> _getFilteredOccasions(OccasionProvider occasionProvider) {
     List<OccasionModel> occasions = [];
@@ -320,7 +415,6 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
     if (_searchQuery.isNotEmpty) {
       occasions = occasionProvider.searchOccasions(_searchQuery);
     }
-
     return occasions;
   }
 
@@ -429,8 +523,8 @@ class _OccasionManagementScreenState extends State<OccasionManagementScreen>
                   Expanded(
                     child: _buildMetricItem(
                       l10n.margin, // Localized
-                      '${occasion.profitPercentage.toStringAsFixed(1)}%',
-                      occasion.profitPercentage >= 0 ? AppColors.success : AppColors.error,
+                      '${occasion.profit.toStringAsFixed(1)}%',
+                      occasion.profit >= 0 ? AppColors.success : AppColors.error,
                     ),
                   ),
                 ],

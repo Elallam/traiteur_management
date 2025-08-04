@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:traiteur_management/providers/category_provider.dart';
 import '../../models/article_model.dart';
+import '../../models/category_model.dart';
 import '../../providers/stock_provider.dart';
 import '../constants/app_colors.dart';
 import 'add_article_dialog.dart';
@@ -9,11 +13,22 @@ import 'package:traiteur_management/generated/l10n/app_localizations.dart'; // I
 class ArticleDetailsDialog extends StatelessWidget {
   final ArticleModel article;
 
-  const ArticleDetailsDialog({Key? key, required this.article}) : super(key: key);
+  const ArticleDetailsDialog({super.key, required this.article});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final category = categoryProvider.categories.firstWhere(
+          (c) => c.id == article.category,
+      orElse: () => CategoryModel(
+        id: '',
+        name: l10n.uncategorized,
+        type: 'article',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
     return Dialog(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
@@ -24,9 +39,9 @@ class ArticleDetailsDialog extends StatelessWidget {
             // Header with article info
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.primary,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
                 ),
@@ -34,18 +49,14 @@ class ArticleDetailsDialog extends StatelessWidget {
               child: Row(
                 children: [
                   // Article image or icon
-                  Container(
+                  SizedBox(
                     width: 60,
                     height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: article.imageUrl != null
+                    child: article.imagePath != null
                         ? ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        article.imageUrl!,
+                      child: Image.file(
+                        File(article.imagePath!),
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(
@@ -76,7 +87,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          article.category.toUpperCase(),
+                          category.name.toUpperCase(),
                           style: TextStyle(
                             color: AppColors.white.withOpacity(0.8),
                             fontSize: 14,
@@ -153,7 +164,7 @@ class ArticleDetailsDialog extends StatelessWidget {
                     _buildDetailRow(l10n.pricePerUnit, '\$${article.price.toStringAsFixed(2)}'), // Localized
                     _buildDetailRow(l10n.totalValue, '\$${article.totalValue.toStringAsFixed(2)}'), // Localized
                     _buildDetailRow(l10n.unit, article.unit), // Localized
-                    _buildDetailRow(l10n.category, article.category), // Localized
+                    _buildDetailRow(l10n.category, category.name), // Localized
 
                     // Description if available
                     if (article.description != null && article.description!.isNotEmpty) ...[

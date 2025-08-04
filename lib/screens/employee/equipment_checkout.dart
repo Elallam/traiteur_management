@@ -10,6 +10,7 @@ import '../../models/equipment_model.dart';
 import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
+import '../../services/notification_service.dart';
 
 class EquipmentCheckoutScreen extends StatefulWidget {
   final String? occasionId;
@@ -28,24 +29,23 @@ class EquipmentCheckoutScreen extends StatefulWidget {
 class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
     with TickerProviderStateMixin {
   final FirestoreService _firestoreService = FirestoreService();
+  final NotificationService _notificationService = NotificationService();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
   List<EquipmentModel> _allEquipment = [];
   List<EquipmentModel> _filteredEquipment = [];
   Map<String, int> _checkoutQuantities = {};
-  String _selectedCategory = 'All'; // This will be updated with localized string
+  String _selectedCategory = 'All';
   bool _isLoading = false;
-  bool _isCheckingOut = false;
+  bool _isSubmittingRequest = false;
 
   late TabController _tabController;
-  // Categories will be dynamically built based on localized strings
   List<String> _categories = [];
 
   @override
   void initState() {
     super.initState();
-    // Initialize _categories after context is available for localization
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeCategories();
     });
@@ -64,9 +64,9 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
         localizations.other
       ];
       _tabController = TabController(length: _categories.length, vsync: this);
-      _tabController.addListener(_handleTabSelection); // Add listener for tab changes
-      _selectedCategory = _categories[0]; // Set initial selected category to 'All' (localized)
-      _filterEquipment(); // Filter initially based on 'All'
+      _tabController.addListener(_handleTabSelection);
+      _selectedCategory = _categories[0];
+      _filterEquipment();
     });
   }
 
@@ -83,7 +83,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
   void dispose() {
     _searchController.dispose();
     _notesController.dispose();
-    _tabController.removeListener(_handleTabSelection); // Remove listener
+    _tabController.removeListener(_handleTabSelection);
     _tabController.dispose();
     super.dispose();
   }
@@ -101,7 +101,6 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
 
   void _filterEquipment() {
     setState(() {
-      // Get the original English category names for filtering logic
       final localizations = AppLocalizations.of(context)!;
       final Map<String, String> localizedCategoryMap = {
         localizations.all: 'All',
@@ -113,17 +112,13 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
       };
       final String actualSelectedCategory = localizedCategoryMap[_selectedCategory] ?? 'All';
 
-
       _filteredEquipment = _allEquipment.where((equipment) {
-        // Filter by active status
         if (!equipment.isActive) return false;
 
-        // Filter by category
         if (actualSelectedCategory != 'All' && equipment.category != actualSelectedCategory) {
           return false;
         }
 
-        // Filter by search query
         if (_searchController.text.isNotEmpty) {
           return equipment.name.toLowerCase().contains(_searchController.text.toLowerCase());
         }
@@ -131,7 +126,6 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
         return true;
       }).toList();
 
-      // Sort by availability (available first) then by name
       _filteredEquipment.sort((a, b) {
         if (a.isAvailable != b.isAvailable) {
           return a.isAvailable ? -1 : 1;
@@ -159,7 +153,8 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
     return _checkoutQuantities.length.toDouble();
   }
 
-  Future<void> _performCheckout() async {
+  // UPDATED: Changed from _performCheckout to _submitCheckoutRequest
+  Future<void> _submitCheckoutRequest() async {
     final localizations = AppLocalizations.of(context)!;
     if (_checkoutQuantities.isEmpty) {
       _showErrorSnackBar(localizations.pleaseSelectEquipmentToCheckout);
@@ -174,7 +169,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
       return;
     }
 
-    setState(() => _isCheckingOut = true);
+    setState(() => _isSubmittingRequest = true);
 
     try {
       // Validate availability for all selected equipment
@@ -196,65 +191,107 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
         return;
       }
 
-      // Process checkout for each selected equipment
-      List<EquipmentCheckout> checkouts = [];
+      // Create checkout requests (pending approval) for each selected equipment
+      List<EquipmentCheckout> checkoutRequests = [];
+      String requestId = DateTime.now().millisecondsSinceEpoch.toString();
 
       for (String equipmentId in _checkoutQuantities.keys) {
         EquipmentModel equipment = _allEquipment.firstWhere((eq) => eq.id == equipmentId);
         int quantity = _checkoutQuantities[equipmentId]!;
 
-        // Create checkout record
-        EquipmentCheckout checkout = EquipmentCheckout(
+        // Create checkout request with pending status
+        EquipmentCheckout checkoutRequest = EquipmentCheckout(
           id: '', // Will be generated by Firestore
           equipmentId: equipmentId,
           employeeId: currentUser.id,
           employeeName: currentUser.fullName,
           quantity: quantity,
-          checkoutDate: DateTime.now(),
+          requestDate: DateTime.now(), // When the request was made
+          checkoutDate: null, // Will be set when approved
           occasionId: widget.occasionId,
-          status: 'checked_out',
+          status: 'pending_approval', // Changed from 'checked_out'
           notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          requestId: requestId, // Group requests together
+          equipmentName: equipment.name, // Add for notification purposes
         );
 
-        // Add checkout to Firestore
-        await _firestoreService.addEquipmentCheckout(checkout);
-
-        // Update equipment availability using your existing method
-        await _firestoreService.updateEquipmentAvailability(
-            equipmentId,
-            equipment.availableQuantity - quantity
-        );
-
-        checkouts.add(checkout);
+        // Add checkout request to Firestore
+        await _firestoreService.addEquipmentCheckout(checkoutRequest);
+        checkoutRequests.add(checkoutRequest);
       }
 
-      // Show success and navigate back
-      _showSuccessDialog(checkouts.length, _getTotalSelectedItems().toInt());
+      // Send notification to admin about the checkout request
+      await _sendCheckoutRequestNotification(currentUser, checkoutRequests, requestId);
+
+      // Show success message for request submission
+      _showRequestSubmissionSuccess(checkoutRequests.length, _getTotalSelectedItems().toInt());
 
     } catch (e) {
-      _showErrorSnackBar('${localizations.checkoutFailed}: $e');
+      _showErrorSnackBar('${localizations.checkoutRequestFailed}: $e');
     } finally {
-      setState(() => _isCheckingOut = false);
+      setState(() => _isSubmittingRequest = false);
     }
   }
 
-  void _showSuccessDialog(int itemTypes, int totalQuantity) {
+  // NEW: Send notification to admin about checkout request
+  Future<void> _sendCheckoutRequestNotification(
+      UserModel employee,
+      List<EquipmentCheckout> requests,
+      String requestId,
+      ) async {
+    final localizations = AppLocalizations.of(context)!;
+
+    // Get all admin users
+    final admins = await _firestoreService.getAdminUsers();
+
+    for (final admin in admins) {
+      final notification = {
+        'id': '', // Will be generated by Firestore
+        'userId': admin.id,
+        'title': 'Equipment Checkout Request', // Using direct string for now
+        'message': '${employee.fullName} has requested to checkout ${requests.length} equipment types (${_getTotalSelectedItems()} total items)',
+        'type': 'equipment_checkout_request',
+        'priority': 'medium',
+        'isRead': false,
+        'createdAt': DateTime.now(),
+        'data': {
+          'requestId': requestId,
+          'employeeId': employee.id,
+          'employeeName': employee.fullName,
+          'occasionId': widget.occasionId,
+          'occasionTitle': widget.occasionTitle,
+          'itemCount': requests.length,
+          'totalQuantity': _getTotalSelectedItems(),
+          'equipment': requests.map((r) => {
+            'equipmentId': r.equipmentId,
+            'equipmentName': r.equipmentName ?? 'Unknown Equipment',
+            'quantity': r.quantity,
+          }).toList(),
+        },
+      };
+
+      await _notificationService.sendNotification(notification);
+    }
+  }
+
+  // UPDATED: Show success dialog for request submission (not immediate checkout)
+  void _showRequestSubmissionSuccess(int itemTypes, int totalQuantity) {
     final localizations = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         icon: const Icon(
-          Icons.check_circle_outline,
-          color: AppColors.success,
+          Icons.schedule_outlined, // Changed from check_circle_outline
+          color: AppColors.info, // Changed from success
           size: 64,
         ),
-        title: Text(localizations.checkoutSuccessful),
+        title: Text(localizations.requestSubmitted), // Changed title
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              localizations.successfullyCheckedOut,
+              localizations.checkoutRequestSubmittedSuccessfully,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 8),
@@ -262,14 +299,14 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
               localizations.equipmentTypesCount(itemTypes),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: AppColors.info, // Changed from primary
               ),
             ),
             Text(
               localizations.totalItemsCount(totalQuantity),
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: AppColors.info, // Changed from primary
               ),
             ),
             if (widget.occasionTitle != null) ...[
@@ -281,6 +318,29 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
                 ),
               ),
             ],
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.info.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline, color: AppColors.info, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      localizations.adminWillReviewRequest,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.info,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
         actions: [
@@ -288,7 +348,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
             text: localizations.done,
             onPressed: () {
               Navigator.of(context).pop();
-              Navigator.of(context).pop(true); // Return to previous screen with success
+              Navigator.of(context).pop(true);
             },
           ),
         ],
@@ -399,7 +459,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           });
         },
         tabs: _categories.map((category) => Tab(
-          text: category.capitalize(localizations), // Categories are already localized
+          text: category.capitalize(localizations),
         )).toList(),
       ),
     );
@@ -490,11 +550,11 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
                     color: _getCategoryColor(equipment.category).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: equipment.imageUrl != null
+                  child: equipment.imagePath != null
                       ? ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      equipment.imageUrl!,
+                      equipment.imagePath!,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Icon(
                         _getCategoryIcon(equipment.category),
@@ -664,7 +724,7 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
           ),
           const SizedBox(height: 16),
 
-          // Summary and checkout button
+          // Summary and submit button
           Row(
             children: [
               Expanded(
@@ -691,9 +751,11 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
               SizedBox(
                 width: 140,
                 child: CustomButton(
-                  text: _isCheckingOut ? localizations.processing : localizations.checkout,
-                  onPressed: _isCheckingOut ? null : _performCheckout,
-                  backgroundColor: AppColors.primary,
+                  text: _isSubmittingRequest
+                      ? localizations.submittingRequest
+                      : localizations.submitRequest, // Changed button text
+                  onPressed: _isSubmittingRequest ? null : _submitCheckoutRequest, // Changed method call
+                  backgroundColor: AppColors.info, // Changed color to info (blue/orange)
                 ),
               ),
             ],
@@ -736,7 +798,6 @@ class _EquipmentCheckoutScreenState extends State<EquipmentCheckoutScreen>
 
 extension StringExtension on String {
   String capitalize(AppLocalizations localizations) {
-    // Check if the string is one of the category keys and return its localized capitalized version
     switch (this.toLowerCase()) {
       case 'all':
         return localizations.all;
@@ -756,7 +817,6 @@ extension StringExtension on String {
     }
   }
 
-  // Helper to capitalize the first letter of each word
   String get capitalizeFirstofEach {
     return split(" ").map((str) => str.isEmpty ? "" : "${str[0].toUpperCase()}${str.substring(1)}").join(" ");
   }
