@@ -73,9 +73,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> wit
       itemBuilder: (context, index) {
         final category = categories[index];
         return ListTile(
-          leading: category.icon != null
-              ? Icon(IconData(int.parse(category.icon!), fontFamily: 'MaterialIcons'))
-              : const Icon(Icons.category),
+          leading: const Icon(Icons.category),
           title: Text(category.name),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,

@@ -27,19 +27,44 @@ class EmployeeProvider extends ChangeNotifier {
 
   /// Load all employees
   Future<void> loadEmployees() async {
-    _setLoading(true);
-    _clearError();
-
-    try {
-      _employees = await _authService.getEmployees();
+    // Only notify if state actually changes
+    if (!_isLoading) {
+      _isLoading = true;
       notifyListeners();
-    } catch (e) {
-      _setError(e.toString());
     }
 
-    _setLoading(false);
+    _errorMessage = null;
+
+    try {
+      final newEmployees = await _authService.getEmployees();
+      if (!listEquals(_employees, newEmployees)) {
+        _employees = newEmployees;
+        notifyListeners();
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+    } finally {
+      if (_isLoading) {
+        _isLoading = false;
+        notifyListeners();
+      }
+    }
   }
 
+  void _setLoading(bool loading) {
+    if (_isLoading != loading) {
+      _isLoading = loading;
+      notifyListeners();
+    }
+  }
+
+  void _setError(String error) {
+    if (_errorMessage != error) {
+      _errorMessage = error;
+      notifyListeners();
+    }
+  }
   /// Create new employee
   Future<bool> createEmployee({
     required String fullName,
@@ -515,15 +540,15 @@ class EmployeeProvider extends ChangeNotifier {
 
   // ==================== HELPER METHODS ====================
 
-  void _setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners();
-  }
-
-  void _setError(String error) {
-    _errorMessage = error;
-    notifyListeners();
-  }
+  // void _setLoading(bool loading) {
+  //   _isLoading = loading;
+  //   notifyListeners();
+  // }
+  //
+  // void _setError(String error) {
+  //   _errorMessage = error;
+  //   notifyListeners();
+  // }
 
   void _clearError() {
     _errorMessage = null;

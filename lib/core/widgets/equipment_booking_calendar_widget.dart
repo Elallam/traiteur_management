@@ -33,8 +33,26 @@ class _EquipmentBookingCalendarWidgetState extends State<EquipmentBookingCalenda
     super.initState();
     _focusedDay = widget.selectedDate ?? DateTime.now();
     _selectedDay = widget.selectedDate;
-    _loadCalendarEvents();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadCalendarEvents();
+    });
   }
+
+  // Future<void> _loadCalendarEvents() async {
+  //   final bookingProvider = Provider.of<EquipmentBookingProvider>(context, listen: false);
+  //
+  //   final startDate = DateTime(_focusedDay.year, _focusedDay.month, 1);
+  //   final endDate = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
+  //
+  //   await bookingProvider.loadBookingCalendar(
+  //     startDate: startDate,
+  //     endDate: endDate,
+  //   );
+  //
+  //   setState(() {
+  //     _events = _normalizeEvents(bookingProvider.bookingCalendar);
+  //   });
+  // }
 
   Future<void> _loadCalendarEvents() async {
     final bookingProvider = Provider.of<EquipmentBookingProvider>(context, listen: false);
@@ -42,14 +60,21 @@ class _EquipmentBookingCalendarWidgetState extends State<EquipmentBookingCalenda
     final startDate = DateTime(_focusedDay.year, _focusedDay.month, 1);
     final endDate = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
 
-    await bookingProvider.loadBookingCalendar(
-      startDate: startDate,
-      endDate: endDate,
-    );
+    try {
+      await bookingProvider.loadBookingCalendar(
+        startDate: startDate,
+        endDate: endDate,
+      );
 
-    setState(() {
-      _events = _normalizeEvents(bookingProvider.bookingCalendar);
-    });
+      if (!mounted) return; // Add this check
+
+      setState(() {
+        _events = _normalizeEvents(bookingProvider.bookingCalendar);
+      });
+    } catch (e) {
+      if (!mounted) return; // Add this check
+      // Handle error if needed
+    }
   }
 
   Map<DateTime, List<Map<String, dynamic>>> _normalizeEvents(

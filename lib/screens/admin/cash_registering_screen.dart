@@ -1,14 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
+import '../../core/constants/app_strings.dart';
 import '../../core/widgets/error_widget.dart';
 import '../../core/widgets/loading_widget.dart';
 import '../../generated/l10n/app_localizations.dart';
 import '../../models/cash_transaction_model.dart';
-import '../../services/firestore_service.dart';
+import '../../providers/cash_transaction_provider.dart';
 import 'add_transaction_dialog.dart';
 
 class CashRegisterScreen extends StatefulWidget {
@@ -21,14 +23,7 @@ class CashRegisterScreen extends StatefulWidget {
 class _CashRegisterScreenState extends State<CashRegisterScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final FirestoreService _firestoreService = FirestoreService();
   final DateFormat _dateFormat = DateFormat();
-  List<CashTransactionModel> _allTransactions = [];
-  List<CashTransactionModel> _filteredTransactions = [];
-  CashRegisterSummary _summary = CashRegisterSummary.empty();
-
-  bool _isLoading = true;
-  String? _error;
 
   String _selectedType = 'all';
   String _selectedPeriod = 'all';
@@ -39,7 +34,10 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadData();
+    // Load data when screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CashTransactionProvider>().loadData();
+    });
   }
 
   @override
@@ -48,33 +46,9 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
     super.dispose();
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      final transactions = await _firestoreService.getCashTransactions();
-      final summary = await _firestoreService.getCashRegisterSummary();
-
-      setState(() {
-        _allTransactions = transactions;
-        _summary = summary;
-        _isLoading = false;
-      });
-
-      _applyFilters();
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _applyFilters() {
-    List<CashTransactionModel> filtered = List.from(_allTransactions);
+  List<CashTransactionModel> _getFilteredTransactions(
+      List<CashTransactionModel> allTransactions) {
+    List<CashTransactionModel> filtered = List.from(allTransactions);
 
     if (_selectedType != 'all') {
       filtered = filtered.where((t) => t.type == _selectedType).toList();
@@ -90,7 +64,7 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
           startDate = DateTime(now.year, now.month, now.day);
           break;
         case 'week':
-          startDate = now.subtract(Duration(days: now.weekday - 1));
+          startDate = now.subtract(const Duration(days: 6));
           startDate = DateTime(startDate.year, startDate.month, startDate.day);
           break;
         case 'month':
@@ -106,19 +80,20 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
 
       if (startDate != null) {
         filtered = filtered.where((t) =>
-        t.date.isAfter(startDate!) && t.date.isBefore(endDate!.add(const Duration(days: 1)))
+        t.date.isAfter(startDate!) &&
+            t.date.isBefore(endDate!.add(const Duration(days: 1)))
         ).toList();
       }
     }
 
-    setState(() {
-      _filteredTransactions = filtered;
-    });
+    return filtered;
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<CashTransactionProvider>();
     final l10n = AppLocalizations.of(context)!;
+    final filteredTransactions = _getFilteredTransactions(provider.transactions);
 
     return Scaffold(
       appBar: AppBar(
@@ -140,23 +115,23 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loadData,
+            onPressed: provider.loadData,
           ),
         ],
       ),
-      body: _isLoading
+      body: provider.isLoading
           ? LoadingWidget(message: l10n.loadingCashData)
-          : _error != null
+          : provider.error != null
           ? LoadingErrorWidget(
-        message: _error!,
-        onRetry: _loadData,
+        message: provider.error!,
+        onRetry: provider.loadData,
       )
           : TabBarView(
         controller: _tabController,
         children: [
-          _buildOverviewTab(),
-          _buildTransactionsTab(),
-          _buildAnalyticsTab(),
+          _buildOverviewTab(provider.summary, provider.transactions),
+          _buildTransactionsTab(filteredTransactions),
+          _buildAnalyticsTab(provider.transactions, provider.summary),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -171,28 +146,28 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
     );
   }
 
-  Widget _buildOverviewTab() {
+  Widget _buildOverviewTab(CashRegisterSummary summary, List<CashTransactionModel> transactions) {
     final l10n = AppLocalizations.of(context)!;
 
     return RefreshIndicator(
-      onRefresh: _loadData,
+      onRefresh: () => context.read<CashTransactionProvider>().loadData(),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppDimensions.paddingM),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildBalanceCard(),
+            _buildBalanceCard(summary),
             const SizedBox(height: AppDimensions.marginM),
-            _buildQuickStatsRow(),
+            _buildQuickStatsRow(summary),
             const SizedBox(height: AppDimensions.marginM),
-            _buildRecentTransactionsSection(),
+            _buildRecentTransactionsSection(transactions),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBalanceCard() {
+  Widget _buildBalanceCard(CashRegisterSummary summary) {
     final l10n = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('MMM dd, yyyy HH:mm', Localizations.localeOf(context).languageCode);
 
@@ -237,7 +212,7 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
           ),
           const SizedBox(height: AppDimensions.marginM),
           Text(
-            '${_summary.balance.toStringAsFixed(2)} ${AppStrings.currencySymbol}',
+            '${summary.balance.toStringAsFixed(2)} ${AppStrings.currencySymbol}',
             style: const TextStyle(
               color: AppColors.white,
               fontSize: 32,
@@ -246,8 +221,8 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
           ),
           const SizedBox(height: AppDimensions.marginS),
           Text(
-            _summary.lastTransactionDate != null
-                ? '${l10n.lastUpdated}: ${dateFormat.format(_summary.lastTransactionDate!)}'
+            summary.lastTransactionDate != null
+                ? '${l10n.lastUpdated}: ${dateFormat.format(summary.lastTransactionDate!)}'
                 : l10n.noTransactionsYet,
             style: TextStyle(
               color: AppColors.white.withOpacity(0.8),
@@ -259,7 +234,7 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
     );
   }
 
-  Widget _buildQuickStatsRow() {
+  Widget _buildQuickStatsRow(CashRegisterSummary summary) {
     final l10n = AppLocalizations.of(context)!;
 
     return Row(
@@ -267,20 +242,20 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
         Expanded(
           child: _buildStatCard(
             l10n.totalDeposits,
-            '${_summary.totalDeposits.toStringAsFixed(2)} ${AppStrings.currencySymbol}',
+            '${summary.totalDeposits.toStringAsFixed(2)} ${AppStrings.currencySymbol}',
             Icons.arrow_upward,
             AppColors.success,
-            '${_summary.depositsCount} ${l10n.transactionsCount(_summary.depositsCount)}',
+            '${summary.depositsCount} ${l10n.transactionsCount(summary.depositsCount)}',
           ),
         ),
         const SizedBox(width: AppDimensions.marginM),
         Expanded(
           child: _buildStatCard(
             l10n.totalWithdrawals,
-            '${_summary.totalWithdrawals.toStringAsFixed(2)} ${AppStrings.currencySymbol}',
+            '${summary.totalWithdrawals.toStringAsFixed(2)} ${AppStrings.currencySymbol}',
             Icons.arrow_downward,
             AppColors.error,
-            '${_summary.withdrawalsCount} ${l10n.transactionsCount(_summary.withdrawalsCount)}',
+            '${summary.withdrawalsCount} ${l10n.transactionsCount(summary.withdrawalsCount)}',
           ),
         ),
       ],
@@ -343,9 +318,9 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
     );
   }
 
-  Widget _buildRecentTransactionsSection() {
+  Widget _buildRecentTransactionsSection(List<CashTransactionModel> transactions) {
     final l10n = AppLocalizations.of(context)!;
-    final recentTransactions = _allTransactions.take(5).toList();
+    final recentTransactions = transactions.take(5).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,7 +356,7 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
     );
   }
 
-  Widget _buildTransactionsTab() {
+  Widget _buildTransactionsTab(List<CashTransactionModel> filteredTransactions) {
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -389,8 +364,8 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
         _buildFiltersSection(),
         Expanded(
           child: RefreshIndicator(
-            onRefresh: _loadData,
-            child: _filteredTransactions.isEmpty
+            onRefresh: () => context.read<CashTransactionProvider>().loadData(),
+            child: filteredTransactions.isEmpty
                 ? EmptyStateWidget(
               title: l10n.noTransactions,
               message: _selectedType == 'all' && _selectedPeriod == 'all'
@@ -401,9 +376,9 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
             )
                 : ListView.builder(
               padding: const EdgeInsets.all(AppDimensions.paddingM),
-              itemCount: _filteredTransactions.length,
+              itemCount: filteredTransactions.length,
               itemBuilder: (context, index) {
-                return _buildTransactionTile(_filteredTransactions[index]);
+                return _buildTransactionTile(filteredTransactions[index]);
               },
             ),
           ),
@@ -439,7 +414,6 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
                     setState(() {
                       _selectedType = value!;
                     });
-                    _applyFilters();
                   },
                 ),
               ),
@@ -461,8 +435,6 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
                     });
                     if (value == 'custom') {
                       _showCustomDateRangePicker();
-                    } else {
-                      _applyFilters();
                     }
                   },
                 ),
@@ -608,7 +580,7 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
     );
   }
 
-  Widget _buildAnalyticsTab() {
+  Widget _buildAnalyticsTab(List<CashTransactionModel> transactions, CashRegisterSummary summary) {
     final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
@@ -625,21 +597,21 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
             ),
           ),
           const SizedBox(height: AppDimensions.marginM),
-          _buildAnalyticsSummaryCards(),
+          _buildAnalyticsSummaryCards(summary),
           const SizedBox(height: AppDimensions.marginL),
-          _buildCashFlowChart(),
+          _buildCashFlowChart(transactions),
         ],
       ),
     );
   }
 
-  Widget _buildAnalyticsSummaryCards() {
+  Widget _buildAnalyticsSummaryCards(CashRegisterSummary summary) {
     final l10n = AppLocalizations.of(context)!;
-    final avgDeposit = _summary.depositsCount > 0
-        ? _summary.totalDeposits / _summary.depositsCount
+    final avgDeposit = summary.depositsCount > 0
+        ? summary.totalDeposits / summary.depositsCount
         : 0.0;
-    final avgWithdrawal = _summary.withdrawalsCount > 0
-        ? _summary.totalWithdrawals / _summary.withdrawalsCount
+    final avgWithdrawal = summary.withdrawalsCount > 0
+        ? summary.totalWithdrawals / summary.withdrawalsCount
         : 0.0;
 
     return Column(
@@ -649,7 +621,7 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
             Expanded(
               child: _buildAnalyticsCard(
                 l10n.transactionCount,
-                _summary.totalTransactions.toString(),
+                summary.totalTransactions.toString(),
                 Icons.receipt_long,
                 AppColors.info,
               ),
@@ -680,9 +652,9 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
             Expanded(
               child: _buildAnalyticsCard(
                 l10n.netFlow,
-                '${(_summary.totalDeposits - _summary.totalWithdrawals).toStringAsFixed(2)} ${AppStrings.currencySymbol}',
+                '${(summary.totalDeposits - summary.totalWithdrawals).toStringAsFixed(2)} ${AppStrings.currencySymbol}',
                 Icons.account_balance,
-                _summary.balance >= 0 ? AppColors.success : AppColors.error,
+                summary.balance >= 0 ? AppColors.success : AppColors.error,
               ),
             ),
           ],
@@ -732,16 +704,15 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
     );
   }
 
-  Widget _buildCashFlowChart() {
+  Widget _buildCashFlowChart(List<CashTransactionModel> transactions) {
     final l10n = AppLocalizations.of(context)!;
-    final isRTL = Localizations.localeOf(context).languageCode == 'ar';
     final theme = Theme.of(context);
 
     // Group transactions by month
     final monthlyData = <DateTime, Map<String, double>>{};
     final now = DateTime.now();
 
-    for (final transaction in _allTransactions) {
+    for (final transaction in transactions) {
       final monthStart = DateTime(transaction.date.year, transaction.date.month);
       monthlyData.putIfAbsent(monthStart, () => {'deposit': 0.0, 'withdraw': 0.0});
 
@@ -798,7 +769,6 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
             style: theme.textTheme.titleMedium?.copyWith(
               color: AppColors.textPrimary,
             ),
-            // textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
           ),
           const SizedBox(height: AppDimensions.marginS),
           Expanded(
@@ -809,7 +779,6 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
-                    // tooltipBgColor: AppColors.surface,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final month = last6Months[groupIndex];
                       final type = rodIndex == 0 ? l10n.deposits : l10n.withdrawals;
@@ -838,7 +807,6 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: AppColors.textSecondary,
                             ),
-                            // textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                           ),
                         );
                       },
@@ -854,7 +822,6 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
                           ),
-                          // textDirection: isRTL ? TextDirection.RTL : TextDirection!.LTR,
                         );
                       },
                       reservedSize: 30,
@@ -931,8 +898,7 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
     showDialog(
       context: context,
       builder: (context) => AddTransactionDialog(
-        onTransactionAdded: () {
-          _loadData();
+        onTransactionAdded: (transaction) {
         },
       ),
     );
@@ -967,8 +933,8 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
       context: context,
       builder: (context) => EditTransactionDialog(
         transaction: transaction,
-        onTransactionUpdated: () {
-          _loadData();
+        onTransactionUpdated: (updatedTransaction) {
+          context.read<CashTransactionProvider>().updateTransaction(updatedTransaction);
         },
       ),
     );
@@ -990,17 +956,11 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              try {
-                await _firestoreService.deleteCashTransaction(transaction.id);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.transactionDeletedSuccess)),
-                );
-                _loadData();
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.deleteTransactionFailed(e))),
-                );
-              }
+              await context.read<CashTransactionProvider>().deleteTransaction(transaction.id);
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.transactionDeletedSuccess)),
+              );
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.delete),
@@ -1026,7 +986,6 @@ class _CashRegisterScreenState extends State<CashRegisterScreen>
         _customStartDate = dateRange.start;
         _customEndDate = dateRange.end;
       });
-      _applyFilters();
     }
   }
 }

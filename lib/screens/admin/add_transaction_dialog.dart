@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:traiteur_management/generated/l10n/app_localizations.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/custom_text_field.dart';
 import '../../models/cash_transaction_model.dart';
+import '../../providers/cash_transaction_provider.dart';
 import '../../services/firestore_service.dart';
 
 class AddTransactionDialog extends StatefulWidget {
-  final VoidCallback onTransactionAdded;
+  final void Function(dynamic transaction) onTransactionAdded;
 
   const AddTransactionDialog({
     super.key,
@@ -139,10 +141,14 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                         hint: s.enterOperationName,
                         controller: _operationNameController,
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
+                          if (value == null || value
+                              .trim()
+                              .isEmpty) {
                             return s.operationNameRequired;
                           }
-                          if (value.trim().length < 2) {
+                          if (value
+                              .trim()
+                              .length < 2) {
                             return s.operationNameMinLength;
                           }
                           return null;
@@ -153,15 +159,19 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
 
                       // Amount
                       CustomTextField(
-                        label: s.amount.toString().replaceFirst('{currencySymbol}', AppStrings.currencySymbol),
+                        label: s.amount.toString().replaceFirst(
+                            '{currencySymbol}', AppStrings.currencySymbol),
                         hint: s.enterAmount,
                         controller: _amountController,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                          FilteringTextInputFormatter.allow(RegExp(
+                              r'^\d+\.?\d{0,2}')),
                         ],
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
+                          if (value == null || value
+                              .trim()
+                              .isEmpty) {
                             return s.amountRequired;
                           }
                           final amount = double.tryParse(value.trim());
@@ -226,7 +236,8 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
     );
   }
 
-  Widget _buildTypeButton(String label, String type, IconData icon, Color color) {
+  Widget _buildTypeButton(String label, String type, IconData icon,
+      Color color) {
     final isSelected = _selectedType == type;
 
     return GestureDetector(
@@ -356,11 +367,14 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
     try {
       final transaction = CashTransactionModel(
         id: '',
+        // This will be set by Firestore
         operationName: _operationNameController.text.trim(),
         amount: double.parse(_amountController.text.trim()),
         type: _selectedType,
         date: _selectedDate,
-        description: _descriptionController.text.trim().isEmpty
+        description: _descriptionController.text
+            .trim()
+            .isEmpty
             ? null
             : _descriptionController.text.trim(),
         userId: null,
@@ -369,7 +383,8 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
         updatedAt: DateTime.now(),
       );
 
-      await _firestoreService.addCashTransaction(transaction);
+      // Use the fixed addTransaction method
+      await context.read<CashTransactionProvider>().addTransaction(transaction);
 
       if (mounted) {
         Navigator.pop(context);
@@ -385,13 +400,14 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                 : AppColors.error,
           ),
         );
-        widget.onTransactionAdded();
+        // Don't call widget.onTransactionAdded since the provider handles the state update
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(s.addTransactionFailed.toString().replaceFirst('{error}', e.toString())),
+            content: Text(s.addTransactionFailed.toString().replaceFirst(
+                '{error}', e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -576,13 +592,13 @@ class TransactionDetailsDialog extends StatelessWidget {
 
 class EditTransactionDialog extends StatefulWidget {
   final CashTransactionModel transaction;
-  final VoidCallback onTransactionUpdated;
+  final void Function(dynamic transaction) onTransactionUpdated;
 
   const EditTransactionDialog({
-    Key? key,
+    super.key,
     required this.transaction,
     required this.onTransactionUpdated,
-  }) : super(key: key);
+  });
 
   @override
   State<EditTransactionDialog> createState() => _EditTransactionDialogState();
@@ -951,7 +967,7 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
             backgroundColor: AppColors.success,
           ),
         );
-        widget.onTransactionUpdated();
+        widget.onTransactionUpdated(updatedTransaction);
       }
     } catch (e) {
       if (mounted) {

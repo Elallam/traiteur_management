@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/admin/employee/equipment_requests_card.dart';
@@ -25,6 +26,7 @@ import '../../providers/occasion_provider.dart';
 import '../../providers/stock_provider.dart';
 import '../../providers/equipment_booking_provider.dart';
 import '../../providers/employee_provider.dart';
+import '../../providers/notification_provider.dart';
 import 'employee_management.dart';
 import 'occasion_management.dart';
 import 'stock_management.dart';
@@ -49,7 +51,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    _loadDashboardData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadDashboardData();
+    });
   }
 
   @override
@@ -60,17 +64,22 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
 
   /// Loads all necessary dashboard data from providers
   Future<void> _loadDashboardData() async {
+    if (!mounted) return;
+
     setState(() => _isLoading = true);
 
     try {
+      final occasionProvider = Provider.of<OccasionProvider>(context, listen: false);
+      final stockProvider = Provider.of<StockProvider>(context, listen: false);
+      final employeeProvider = Provider.of<EmployeeProvider>(context, listen: false);
+      final bookingProvider = Provider.of<EquipmentBookingProvider>(context, listen: false);
+
       await Future.wait([
-        Provider.of<OccasionProvider>(context, listen: false).loadOccasions(),
-        Provider.of<StockProvider>(context, listen: false).loadAllStockData(),
-        Provider.of<EmployeeProvider>(context, listen: false).loadEmployees(),
+        occasionProvider.loadOccasions(),
+        stockProvider.loadAllStockData(),
+        employeeProvider.loadEmployees(),
       ]);
 
-      // Load equipment booking calendar for current month
-      final bookingProvider = Provider.of<EquipmentBookingProvider>(context, listen: false);
       final now = DateTime.now();
       await bookingProvider.loadBookingCalendar(
         startDate: DateTime(now.year, now.month, 1),
@@ -79,7 +88,9 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
     } catch (e) {
       _showErrorSnackBar(e.toString());
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -137,18 +148,21 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
 
   /// Builds the notification icon with badge
   Widget _buildNotificationBadge(AppLocalizations l10n) {
-    return IconButton(
-      onPressed: _showNotifications,
-      icon: Badge(
-        label: Consumer<OccasionProvider>(
-          builder: (context, provider, child) {
-            final alertCount = provider.getAlertCount();
-            return Text(alertCount > 99 ? '99+' : alertCount.toString());
-          },
-        ),
-        child: const Icon(Icons.notifications),
-      ),
-      tooltip: l10n.notifications,
+    return Consumer<NotificationProvider>(
+      builder: (context, notificationProvider, child) {
+        return IconButton(
+          onPressed: _showNotifications,
+          icon: Badge(
+            label: Text(
+                notificationProvider.unreadCount > 99
+                    ? '99+'
+                    : notificationProvider.unreadCount.toString()
+            ),
+            child: const Icon(Icons.notifications),
+          ),
+          tooltip: l10n.notifications,
+        );
+      },
     );
   }
 
@@ -195,7 +209,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             // Alerts and Notifications Section
             AlertsSection(
               onViewAllPressed: _showAllAlerts,
-              onAlertTapped: _handleAlertTap,
+              onAlertTapped: _handleNotificationTap,
             ),
             const SizedBox(height: 24),
 
@@ -427,6 +441,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
       ],
     );
   }
+
   /// Builds Recent Activities section
   Widget _buildRecentActivitiesSection() {
     final l10n = AppLocalizations.of(context)!;
@@ -633,8 +648,8 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   /// Shows notifications dialog
   void _showNotifications() {
     final l10n = AppLocalizations.of(context)!;
-    final occasionProvider = Provider.of<OccasionProvider>(context, listen: false);
-    final alerts = occasionProvider.getOccasionsRequiringAttention();
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    final notifications = notificationProvider.notifications;
 
     showDialog(
       context: context,
@@ -652,7 +667,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                alerts.length.toString(),
+                notificationProvider.unreadCount.toString(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -665,7 +680,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
         content: Container(
           width: double.maxFinite,
           constraints: const BoxConstraints(maxHeight: 400),
-          child: alerts.isEmpty
+          child: notifications.isEmpty
               ? Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -684,15 +699,22 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
           )
               : ListView.builder(
             shrinkWrap: true,
-            itemCount: alerts.length,
+            itemCount: notifications.length,
             itemBuilder: (context, index) {
-              final alert = alerts[index];
-              return _buildNotificationItem(alert, l10n);
+              final notification = notifications[index];
+              return _buildNotificationItem(notification, l10n);
             },
           ),
         ),
         actions: [
-          if (alerts.isNotEmpty)
+          if (notifications.isNotEmpty) ...[
+            TextButton(
+              onPressed: () async {
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                await notificationProvider.markAllAsRead(authProvider.currentUser!.id);
+              },
+              child: Text('Mark All Read'),
+            ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -700,6 +722,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
               },
               child: Text(l10n.viewAll),
             ),
+          ],
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(l10n.close),
@@ -710,12 +733,14 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   }
 
   /// Builds a single notification item
-  Widget _buildNotificationItem(Map<String, dynamic> alert, AppLocalizations l10n) {
-    Color priorityColor = _getPriorityColor(alert['priority']);
-    IconData priorityIcon = _getPriorityIcon(alert['type']);
+  Widget _buildNotificationItem(Map<String, dynamic> notification, AppLocalizations l10n) {
+    Color priorityColor = _getPriorityColor(notification['priority'] ?? 'medium');
+    IconData priorityIcon = _getNotificationTypeIcon(notification['type'] ?? 'general');
+    bool isRead = notification['isRead'] ?? false;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
+      color: isRead ? null : AppColors.primary.withOpacity(0.05),
       child: ListTile(
         dense: true,
         leading: Container(
@@ -730,16 +755,44 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             size: 20,
           ),
         ),
-        title: Text(
-          alert['title'],
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                notification['title'] ?? '',
+                style: TextStyle(
+                  fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            if (!isRead)
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+          ],
         ),
-        subtitle: Text(
-          alert['message'],
-          style: const TextStyle(fontSize: 12),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              notification['message'] ?? '',
+              style: const TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _formatNotificationTime(notification['createdAt']),
+              style: TextStyle(
+                fontSize: 10,
+                color: AppColors.textSecondary.withOpacity(0.7),
+              ),
+            ),
+          ],
         ),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -748,7 +801,7 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            alert['priority'].toString().toUpperCase(),
+            (notification['priority'] ?? 'medium').toString().toUpperCase(),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 8,
@@ -756,9 +809,13 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
             ),
           ),
         ),
-        onTap: () {
+        onTap: () async {
+          if (!isRead) {
+            final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+            await notificationProvider.markAsRead(notification['id']);
+          }
           Navigator.pop(context);
-          _handleAlertTap(alert);
+          _handleNotificationTap(notification);
         },
       ),
     );
@@ -779,8 +836,10 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   }
 
   /// Gets priority icon
-  IconData _getPriorityIcon(String type) {
+  IconData _getNotificationTypeIcon(String type) {
     switch (type) {
+      case 'equipment_checkout_request':
+        return Icons.build_outlined;
       case 'today':
         return Icons.today;
       case 'overdue':
@@ -791,6 +850,34 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
         return Icons.info;
     }
   }
+
+  /// Formats notification time
+  String _formatNotificationTime(dynamic createdAt) {
+    if (createdAt == null) return '';
+
+    DateTime dateTime;
+    if (createdAt is Timestamp) {
+      dateTime = createdAt.toDate();
+    } else if (createdAt is DateTime) {
+      dateTime = createdAt;
+    } else {
+      return '';
+    }
+
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
   /// Shows quick actions bottom sheet
   void _showQuickActions() {
     final l10n = AppLocalizations.of(context)!;
@@ -860,15 +947,27 @@ class _EnhancedAdminDashboardState extends State<EnhancedAdminDashboard>
   }
 
   /// Handles alert tap
-  void _handleAlertTap(Map<String, dynamic> alert) {
-    if (alert['occasionId'] != null) {
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${l10n.occasionDetails}: ${alert['occasionId']}'),
-          backgroundColor: AppColors.info,
-        ),
-      );
+  void _handleNotificationTap(Map<String, dynamic> notification) {
+    String? type = notification['type'];
+
+    switch (type) {
+      case 'equipment_checkout_request':
+      // Navigate to equipment approval screen
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const EquipmentApprovalScreen())
+        );
+        break;
+      default:
+        if (notification['occasionId'] != null) {
+          final l10n = AppLocalizations.of(context)!;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.occasionDetails}: ${notification['occasionId']}'),
+              backgroundColor: AppColors.info,
+            ),
+          );
+        }
     }
   }
 

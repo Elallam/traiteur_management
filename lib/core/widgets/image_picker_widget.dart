@@ -1,5 +1,6 @@
 // image_picker_widget.dart
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -166,7 +167,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   Future<bool> _requestPermission(ImageSource source) async {
     Permission permission = source == ImageSource.camera
         ? Permission.camera
-        : Permission.photos;
+        : Platform.isIOS ? Permission.photos : Permission.storage;
 
     PermissionStatus status = await permission.status;
 
@@ -249,7 +250,17 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.file(
+              child: kIsWeb
+                  ? Image.network(
+                _selectedImagePath!,
+                width: widget.width,
+                height: widget.height,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildPlaceholder(l10n);
+                },
+              )
+                  : Image.file(
                 File(_selectedImagePath!),
                 width: widget.width,
                 height: widget.height,
@@ -368,7 +379,7 @@ class CustomImageDisplay extends StatelessWidget {
       child: imagePath != null && imagePath!.isNotEmpty
           ? ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image.file(
+        child: kIsWeb ? const Icon(Icons.account_circle) : Image.file(
           File(imagePath!),
           width: width,
           height: height,

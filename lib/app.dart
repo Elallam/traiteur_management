@@ -3,12 +3,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:traiteur_management/generated/l10n/app_localizations.dart';
 import 'package:traiteur_management/providers/locale_provider.dart';
+import 'package:traiteur_management/providers/notification_provider.dart';
 import 'package:traiteur_management/screens/admin/enhanced_admin_dashboard.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'screens/auth/splash_screen.dart';
 import 'screens/auth/login_screen.dart';
-import 'screens/admin/admin_dashboard.dart';
 import 'screens/employee/employee_dashboard.dart';
 
 class TraiteurApp extends StatelessWidget {
@@ -23,8 +23,6 @@ class TraiteurApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           home: const AuthWrapper(),
           debugShowCheckedModeBanner: false,
-
-          // Internationalization setup
           locale: localeProvider.locale,
           supportedLocales: LocaleProvider.supportedLocales,
           localizationsDelegates: const [
@@ -33,10 +31,7 @@ class TraiteurApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-
-          // Locale resolution callback
           localeResolutionCallback: (locale, supportedLocales) {
-            // If the device locale is supported, use it
             if (locale != null) {
               for (var supportedLocale in supportedLocales) {
                 if (supportedLocale.languageCode == locale.languageCode) {
@@ -44,21 +39,17 @@ class TraiteurApp extends StatelessWidget {
                 }
               }
             }
-            // Fallback to the first supported locale (English)
             return supportedLocales.first;
           },
-
-          // RTL support for Arabic
           builder: (context, child) {
             return Directionality(
-              textDirection: localeProvider.textDirection,
-              child: MediaQuery(
-                // Ensure text scale factor is reasonable for all languages
+                textDirection: localeProvider.textDirection,
+                child: MediaQuery(
                 data: MediaQuery.of(context).copyWith(
-                  textScaleFactor: MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.3),
+              textScaleFactor: MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.3),
+            ),
+            child: child!,
                 ),
-                child: child!,
-              ),
             );
           },
         );
@@ -76,30 +67,67 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _isInitialized = false;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _initializeApp();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeApp();
+    });
   }
 
   Future<void> _initializeApp() async {
-    // Initialize authentication
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    try {
+      debugPrint('Starting app initialization...');
 
-    // Initialize locale with system locale if available
-    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+      final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
 
-    // Run initialization tasks concurrently
-    await Future.wait([
-      authProvider.checkAuthState(),
-      localeProvider.initializeWithSystemLocale(),
-    ]);
+      // Initialize auth and locale concurrently
+      await Future.wait([
+        _initializeAuth(authProvider),
+        localeProvider.initializeWithSystemLocale(),
+      ], eagerError: true);
 
-    if (mounted) {
-      setState(() {
-        _isInitialized = true;
-      });
+      debugPrint('Auth state: ${authProvider.isAuthenticated}');
+
+      if (authProvider.isAuthenticated && authProvider.currentUser != null) {
+        try {
+          await notificationProvider.initialize(authProvider.currentUser!.id);
+          debugPrint('Notifications initialized');
+        } catch (e) {
+          debugPrint('Notification init error: $e');
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+          _errorMessage = null;
+        });
+      }
+    } catch (e, stack) {
+      debugPrint('Initialization error: $e');
+      debugPrint('Stack trace: $stack');
+
+      if (mounted) {
+        setState(() {
+          _isInitialized = true; // Still set to true to show error UI
+          _errorMessage = e.toString();
+        });
+      }
+    }
+  }
+
+  Future<void> _initializeAuth(AuthProvider authProvider) async {
+    try {
+      await authProvider.checkAuthState();
+    } catch (e, stack) {
+      debugPrint('Auth initialization error: $e');
+      debugPrint('Stack trace: $stack');
+      rethrow;
     }
   }
 
@@ -109,98 +137,71 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return const SplashScreen();
     }
 
+    if (_errorMessage != null) {
+      return _buildErrorScreen();
+    }
+
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        // Show loading screen while authentication is being processed
         if (authProvider.isLoading) {
           return const SplashScreen();
         }
 
-        // Route to appropriate dashboard based on authentication and role
-        if (authProvider.isAuthenticated) {
-          final userRole = authProvider.currentUser?.role;
-
-          switch (userRole) {
-            case 'admin':
-              return const EnhancedAdminDashboard();
-            case 'employee':
-              return const EmployeeDashboard();
-            default:
-            // Fallback for unknown roles
-              return const EmployeeDashboard();
-          }
+        if (!authProvider.isAuthenticated) {
+          return const LoginScreen();
         }
 
-        // Not authenticated, show login screen
-        return const LoginScreen();
+        final userRole = authProvider.currentUser?.role?.toLowerCase();
+        debugPrint('User role: $userRole');
+
+        switch (userRole) {
+          case 'admin':
+            return const EnhancedAdminDashboard();
+          case 'employee':
+            return const EmployeeDashboard();
+          default:
+            debugPrint('Unknown role: $userRole - defaulting to login');
+            return const LoginScreen();
+        }
       },
     );
   }
-}
 
-// Optional: Global error handler for localization issues
-class LocalizationErrorHandler extends StatelessWidget {
-  final Widget child;
-
-  const LocalizationErrorHandler({
-    super.key,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        try {
-          // Try to access localizations to ensure they're loaded
-          AppLocalizations.of(context);
-          return child;
-        } catch (e) {
-          // Fallback UI if localizations fail to load
-          return MaterialApp(
-            home: Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Localization Error',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Failed to load language resources: $e',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Try to reload the app
-                        if (context.mounted) {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (_) => const TraiteurApp()),
-                          );
-                        }
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
+  Widget _buildErrorScreen() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 20),
+            const Text(
+              'Initialization Error',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                _errorMessage ?? 'Unknown error occurred',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
-          );
-        }
-      },
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _isInitialized = false;
+                  _errorMessage = null;
+                });
+                _initializeApp();
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

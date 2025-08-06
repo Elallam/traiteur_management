@@ -191,7 +191,7 @@ class OccasionProvider extends ChangeNotifier {
 
     //Todo: update the totalCost and totalPrice based on the given formula
     double totalCost = totalMealCost + equipmentCost + transportCost;
-    double totalPrice = totalMealPrice;
+    double totalPrice = totalMealPrice + totalCost + totalCost*profitMargin/100;
 
     return {
       'totalCost': totalCost,

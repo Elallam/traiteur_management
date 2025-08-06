@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../models/mock_usercredential.dart';
 import '../models/user_model.dart';
+import 'enhanced_notification_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -13,6 +15,23 @@ class AuthService {
 
   // Get current Firebase user
   User? get currentUser => _auth.currentUser;
+
+  Future<void> _registerFCMToken(String userId) async {
+    try {
+      final notificationService = EnhancedNotificationService();
+      await notificationService.saveUserToken(userId);
+      print('FCM token registered for user $userId');
+    } catch (e) {
+      print('Error registering FCM token: $e');
+    }
+  }
+
+  Future<void> _setupTokenRefreshListener(String userId) async {
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+      print('FCM token refreshed for user $userId');
+      await _registerFCMToken(userId);
+    });
+  }
 
   // Sign in with email and password
   Future<UserModel?> signInWithEmailAndPassword(
@@ -26,6 +45,8 @@ class AuthService {
       );
 
       if (result.user != null) {
+        await _registerFCMToken(result.user!.uid);
+        await _setupTokenRefreshListener(result.user!.uid);
         return await getUserData(result.user!.uid);
       }
       return null;

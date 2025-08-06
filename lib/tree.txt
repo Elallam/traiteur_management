@@ -1,7 +1,10 @@
-lib
+Folder PATH listing for volume OS
+Volume serial number is 3065-E17F
+C:.
 ¦   app.dart
 ¦   firebase_options.dart
 ¦   main.dart
+¦   structure.txt
 ¦   tree.txt
 ¦   
 +---core
@@ -41,10 +44,30 @@ lib
 ¦       ¦   equipment_details_dialog.dart
 ¦       ¦   error_boundary.dart
 ¦       ¦   error_widget.dart
+¦       ¦   image_picker_widget.dart
 ¦       ¦   language_selector.dart
 ¦       ¦   loading_widget.dart
 ¦       ¦   meal_details_dialog.dart
 ¦       ¦   
+¦       +---admin
+¦       ¦   +---employee
+¦       ¦   ¦       add_edit_employee_widget.dart
+¦       ¦   ¦       employee_analytics_widget.dart
+¦       ¦   ¦       employee_card_widget.dart
+¦       ¦   ¦       employee_details_widget.dart
+¦       ¦   ¦       employee_empty_state_widget.dart
+¦       ¦   ¦       employee_search_filter_widget.dart
+¦       ¦   ¦       employee_statistics_widget.dart
+¦       ¦   ¦       equipment_requests_card.dart
+¦       ¦   ¦       
+¦       ¦   +---occasion
+¦       ¦       +---add_edit_occasion
+¦       ¦               basic_info_tab.dart
+¦       ¦               equipment_tab.dart
+¦       ¦               financial_tab.dart
+¦       ¦               meals_tab.dart
+¦       ¦               tabs_header.dart
+¦       ¦               
 ¦       +---dashboard
 ¦           ¦   dashboard_drawer.dart
 ¦           ¦   
@@ -82,17 +105,23 @@ lib
 ¦       
 +---models
 ¦       article_model.dart
+¦       cash_transaction_model.dart
+¦       category_model.dart
 ¦       equipment_model.dart
 ¦       meal_model.dart
 ¦       mock_usercredential.dart
 ¦       occasion_model.dart
+¦       selected_equipment_model.dart
 ¦       user_model.dart
 ¦       
 +---providers
 ¦       auth_provider.dart
+¦       cash_transaction_provider.dart
+¦       category_provider.dart
 ¦       employee_provider.dart
 ¦       equipment_booking_provider.dart
 ¦       locale_provider.dart
+¦       notification_provider.dart
 ¦       occasion_provider.dart
 ¦       stock_provider.dart
 ¦       
@@ -102,11 +131,15 @@ lib
 +---screens
 ¦   +---admin
 ¦   ¦       add_edit_occaion_screen.dart
+¦   ¦       add_transaction_dialog.dart
 ¦   ¦       admin_dashboard.dart
+¦   ¦       cash_registering_screen.dart
+¦   ¦       category_management_screen.dart
 ¦   ¦       dashboard_notifications_screen.dart
 ¦   ¦       employee_management.dart
 ¦   ¦       enhanced_admin_dashboard.dart
 ¦   ¦       enhanced_occasion_details_screen.dart
+¦   ¦       equipment_approval_screen.dart
 ¦   ¦       occasion_details_screen.dart
 ¦   ¦       occasion_management.dart
 ¦   ¦       profit_analytics_screen.dart
@@ -120,9 +153,11 @@ lib
 ¦           employee_dashboard.dart
 ¦           equipment_activity_screen.dart
 ¦           equipment_checkout.dart
+¦           equipment_requests_screen.dart
 ¦           
 +---services
         auth_service.dart
+        enhanced_notification_service.dart
         equipment_booking_service.dart
         firestore_service.dart
         notification_service.dart
